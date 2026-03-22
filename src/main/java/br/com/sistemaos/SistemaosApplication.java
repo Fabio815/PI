@@ -7,6 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SistemaosApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SistemaosApplication.class, args);
+		SpringApplication.run(SistemaosApplication.class, args  );
 	}
 }
