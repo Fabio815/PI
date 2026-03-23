@@ -1,16 +1,25 @@
 package br.com.sistemaos.applicationservice;
 
+import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
-@Service //classe Server - dados no banco
-@RequiredArgsConstructor //lombok -cria um construtor com todos os parametros
-
+@Service // Classe Server - dados no banco
+@RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros
 
 public class ClienteService {
-    private ClienteRepository clienteRepository;
-    public static void adicionarCliente() {
+    private final ClienteRepository clienteRepository;
+    public Cliente adicionarCliente(Cliente cliente) {
+        //Ultima modificação 23/03/26
+        if (cliente.getEndereco() != null) { // Garante que endereço tenha cliente
+            cliente.getEndereco().setCliente(cliente);
+        }
 
+        return clienteRepository.save(cliente); // Retorna o repositório do cliente já salvo
+        }
     }
-}
+
+

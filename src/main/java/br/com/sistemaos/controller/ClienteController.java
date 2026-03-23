@@ -1,19 +1,28 @@
 package br.com.sistemaos.controller;
 
-import br.com.sistemaos.dto.Cliente;
+import br.com.sistemaos.applicationservice.ClienteService;
+import br.com.sistemaos.domain.entity.Cliente;
+import br.com.sistemaos.dto.ClienteDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+//Ultima modificação 23/03/26
 @RestController
+@RequestMapping("/cliente") //Teste do banco de dados
 public class ClienteController {
-/*    @PostMapping
-    public ResponseEntity <String> adicionarCliente(@RequestBody Cliente) {
-        return ResponseEntity.ok("Ok");
+
+    private final ClienteService clienteService; //Para não ter alteração de dados "final"
+
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
     }
-*/
+
+    @PostMapping
+    //Cadastro do cliente
+    public ResponseEntity<Cliente> cadastrar(@RequestBody Cliente cliente) { //Mapeia o corpo
+        Cliente salvo = clienteService.adicionarCliente(cliente);
+        return ResponseEntity.ok(salvo);
+    }
 
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {

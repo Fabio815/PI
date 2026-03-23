@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Cliente {
+public class ClienteDTO {
 
     private Long id;
 
@@ -23,5 +23,3 @@ public class Cliente {
 
     private List<Os> ordensServico;
 }
-
-
