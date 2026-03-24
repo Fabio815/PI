@@ -1,0 +1,5 @@
+$kind: http-request
+name: http://localhost:8080/cliente
+url: http://localhost:8080/cliente
+method: GET
+order: 1774318835464

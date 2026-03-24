@@ -24,6 +24,11 @@ public class ClienteController {
         return ResponseEntity.ok(salvo);
     }
 
+    @GetMapping
+    public ResponseEntity<java.util.List<Cliente>> listar() {
+        return ResponseEntity.ok(clienteService.buscarTodos());
+    }
+
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {
         return ResponseEntity.ok("Ok");

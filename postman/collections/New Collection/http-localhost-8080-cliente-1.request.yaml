@@ -1,0 +1,28 @@
+$kind: http-request
+name: http://localhost:8080/cliente
+url: http://localhost:8080/cliente
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nome\": \"João Silva\",\r
+
+    \  \"telefone\": \"47999998888\",\r
+
+    \  \"status\": \"ATIVO\",\r
+
+    \  \"endereco\": {\r
+
+    \    \"rua\": \"Rua das Flores\",\r
+
+    \    \"numero\": \"123\",\r
+
+    \    \"logradouro\": \"Centro\",\r
+
+    \    \"complemento\": \"Apto 202\"\r
+
+    \  }\r
+
+    }"
+order: 1883689999697992

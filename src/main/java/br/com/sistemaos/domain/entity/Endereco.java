@@ -1,9 +1,11 @@
 package br.com.sistemaos.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Entity
@@ -28,6 +30,8 @@ public class Endereco {
     @Column(name = "complemento", length = 200)
     private String complemento;
 
+    @JsonIgnore
+    @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class Cliente {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Endereco endereco;
 
