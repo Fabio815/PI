@@ -1,0 +1,4 @@
+#Esse arquivo faz o mesmo trabalho do application.properties
+#porém traz uma forma mais fácil de entender
+#O application é como se fosse a central de configuração do spring
+#Nele posso definir config como: banco de dados, porta do servidor, logs, etc...
