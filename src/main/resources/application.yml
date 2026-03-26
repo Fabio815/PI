@@ -2,3 +2,15 @@
 #porém traz uma forma mais fácil de entender
 #O application é como se fosse a central de configuração do spring
 #Nele posso definir config como: banco de dados, porta do servidor, logs, etc...
+
+spring:
+  application:
+    name: sistemaos
+  datasource:
+    url: jdbc:mysql://localhost:3306/bike_facil
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
