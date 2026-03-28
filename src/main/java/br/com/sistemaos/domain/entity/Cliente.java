@@ -2,14 +2,13 @@ package br.com.sistemaos.domain.entity;
 
 import br.com.sistemaos.domain.model.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Builder
+@Table(name = "cliente")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
