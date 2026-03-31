@@ -4,6 +4,9 @@ import br.com.sistemaos.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +24,9 @@ public class ClienteController {
 
     @PostMapping
     //Cadastro do cliente
-    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody ClienteDTO cliente) { //Mapeia o corpo
-        ClienteRespostaDTO salvo = clienteService.adicionarCliente(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody ClienteDTO cliente) {
+        Cliente salvo = clienteService.adicionarCliente(cliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ClienteRespostaDTO.criar(salvo));
     }
 
     @GetMapping

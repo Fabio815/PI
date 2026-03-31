@@ -21,7 +21,7 @@ public class ClienteRespostaDTO {
     private EnderecoDTO endereco;
     private List<Os> ordensServico;
 
-    public static ClienteRespostaDTO retorno(Cliente cliente) {
+    public static ClienteRespostaDTO criar(Cliente cliente) {
         EnderecoDTO enderecoDTO = new EnderecoDTO();
         enderecoDTO.setId(cliente.getEndereco().getId());
         enderecoDTO.setRua(cliente.getEndereco().getRua());
