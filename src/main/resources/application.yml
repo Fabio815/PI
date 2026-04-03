@@ -14,8 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
