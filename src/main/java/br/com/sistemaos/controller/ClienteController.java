@@ -4,6 +4,7 @@ import br.com.sistemaos.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
