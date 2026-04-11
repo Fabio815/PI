@@ -8,7 +8,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     proxy: {
         type: 'ajax',
-        url: 'http://localhost:8080/sistema-os/api/cliente/listar',
+        url: 'http://localhost:8080/cliente/listar',
         reader: {
             type: 'json',
             rootProperty: 'clientes'
