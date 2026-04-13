@@ -27,7 +27,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
     items: [{
         xtype: 'form',
         width: 350,
-        height: 190,
+        height: 210,
         title: 'Login',
         frame: true,
         bodyPadding: '20 5 5 5',
@@ -40,6 +40,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
             emptyText: 'Nome do usuário',
             msgTarget: 'under',
             labelAlign: 'right',
+            blankText: 'Este campo é obrigatório',
             //labelWidth: 50,
         }, {
             allowBlank: false,
@@ -48,6 +49,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
             emptyText: 'Senha',
             inputType: 'password',
             labelAlign: 'right',
+            blankText: 'Este campo é obrigatório',
             //labelWidth: 50,
         }],
         defaults: {

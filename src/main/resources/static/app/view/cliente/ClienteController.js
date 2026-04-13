@@ -15,11 +15,15 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 	salvarCliente: function() {
 		var me = this, vw = me.getView(),
 		form = vw.down('form').getForm().getValues();
+
+		console.log(form);
 		Ext.Ajax.request({
-			url: 'http://localhost:8080/sistema-os/api/cliente/cadastrar',
+			url: 'http://localhost:8080/cliente/cadastrar',
 			method: 'POST',
 			jsonData: form,
 			callback: function(options, success, response) {
+				debugger;
+
 				if (vw && !vw.destroyed && !vw.isDestroying) {
 					var r = Ext.decode(response.responseText, true);
 					if (r && r.sucesso) {
