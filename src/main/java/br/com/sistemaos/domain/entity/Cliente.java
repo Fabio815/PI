@@ -28,6 +28,7 @@ public class Cliente {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Endereco endereco;
 
