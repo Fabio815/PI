@@ -15,10 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service // Classe Server - dados no banco
 @RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros
@@ -28,12 +33,20 @@ public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
 
-    public List<Cliente> buscarTodos() {
-        // O findAll() é um metodo padrão do JpaRepository que traz tudo do banco
-        return clienteRepository.findAll();
+    public Map<String, Object> buscarTodos(int start, int limit) {
+        int page = start / limit;
+
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<Cliente> pagina = clienteRepository.findAll(pageable);
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("clientes", pagina.getContent());
+        resposta.put("total", pagina.getTotalElements());
+
+        return resposta;
     }
 
-    //Essa marcação serve para que tudo seja feito ou nada seja feito, caso dê ruim na transação ele cancela;
+    //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
     public Cliente adicionarCliente(ClienteDTO cliente) {
         if (cliente == null) {

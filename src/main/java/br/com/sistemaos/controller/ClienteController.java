@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 //Ultima modificação 23/03/26
 @RestController
@@ -39,8 +40,8 @@ public class ClienteController {
     //@GetMapping
     @ResponseBody
     @RequestMapping(path = "/listar", method = RequestMethod.GET)
-    public ResponseEntity<List<ClienteRespostaDTO>> listar() {
-        return ResponseEntity.ok(ClienteRespostaDTO.listar(clienteService.buscarTodos()));
+    public ResponseEntity<Map<String, Object>> listar(@RequestParam int start, @RequestParam int limit) {
+        return ResponseEntity.ok(ClienteRespostaDTO.listar(clienteService.buscarTodos(start, limit)));
     }
 
     @GetMapping("/teste")

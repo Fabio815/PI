@@ -10,4 +10,5 @@ import java.util.List;
 @Repository //Ele vai armazenar o crud
 
 public interface ClienteRepository extends JpaRepository <Cliente, Long> {
+    
 }

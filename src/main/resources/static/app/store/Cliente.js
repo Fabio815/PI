@@ -5,6 +5,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     remoteFilter: true,
     autoLoad: true,
+    pageSize: 25,
 
     proxy: {
         type: 'ajax',
@@ -12,30 +13,6 @@ Ext.define('ProjSistemaOs.store.Cliente', {
         reader: {
             type: 'json',
             rootProperty: 'clientes'
-        }
-    },
-    listeners: {
-        beforeload: function(store, operation) {
-
-            var filtros = store.getFilters().items;
-            var arrayFiltro = [];
-
-            for (var f of filtros) {
-                var valor = f.getValue();
-                if (f.getProperty() === "statusCliente") {
-                    valor = valor ? 1 : 0;
-                }
-
-                arrayFiltro.push({
-                    propriedade: f.getProperty(),
-                    operador: f.getOperator(),
-                    valor: valor
-                });
-            }
-
-            store.getProxy().setExtraParams({
-                filtros: Ext.encode(arrayFiltro)
-            });
         }
     }
 })

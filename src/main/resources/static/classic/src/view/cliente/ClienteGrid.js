@@ -130,8 +130,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             type: 'textfield'
         }
     }, {
-        text: 'Bairro',
-        dataIndex: 'bairro',
+        text: 'Logradouro',
+        dataIndex: 'logradouro',
         flex: 1,
         sortable: false,
         editor: {
@@ -156,7 +156,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     }, {
         xtype: 'checkcolumn',
         text: 'Ativo',
-        dataIndex: 'statusCliente',
+        dataIndex: 'status',
         width: 80,
         filter: {
             type: 'boolean',

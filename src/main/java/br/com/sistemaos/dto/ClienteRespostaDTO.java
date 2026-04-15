@@ -11,7 +11,10 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -42,12 +45,17 @@ public class ClienteRespostaDTO {
         return resposta;
     }
 
-    public static List<ClienteRespostaDTO> listar(List<Cliente> clientes) {
-        if (clientes == null) {
+    public static Map<String, Object> listar(Map<String, Object> dados) {
+        if (dados == null) {
             log.info("Não existe clientes cadastrado");
             return null;
         }
-        List<ClienteRespostaDTO> resposta = new ArrayList<>();
+        List<Cliente> clientes = new ArrayList<>();
+        clientes = (List<Cliente>) dados.get("clientes");
+
+        Long total = (Long) dados.get("total");
+
+        List<ClienteRespostaDTO> lista = new ArrayList<>();
         for (Cliente c : clientes) {
             EnderecoDTO enderecoDTO = new EnderecoDTO();
             ClienteRespostaDTO clienteDTO = new ClienteRespostaDTO();
@@ -65,8 +73,12 @@ public class ClienteRespostaDTO {
                 clienteDTO.setEndereco(enderecoDTO);
             }
 
-            resposta.add(clienteDTO);
+            lista.add(clienteDTO);
         }
-        return resposta;
+
+        Map<String, Object> retorno = new HashMap<>();
+        retorno.put("clientes", lista);
+        retorno.put("total", total);
+        return retorno;
     }
 }
