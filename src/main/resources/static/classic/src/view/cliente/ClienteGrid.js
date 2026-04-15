@@ -178,7 +178,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     },
     bbar: {
         xtype: 'pagingtoolbar',
-        pageSize: 10,
+        pageSize: 25,
         displayInfo: true,
         beforePageText: 'Página',
         displayMsg: 'Página {0} - {1} de {2}',
