@@ -35,15 +35,10 @@ public class ClienteService {
 
     public Map<String, Object> buscarTodos(int start, int limit) {
         int page = start / limit;
-
         Pageable pageable = PageRequest.of(page, limit);
-        Page<Cliente> pagina = clienteRepository.findAll(pageable);
+        Page<Cliente> dados = clienteRepository.findAll(pageable);
 
-        Map<String, Object> resposta = new HashMap<>();
-        resposta.put("clientes", pagina.getContent());
-        resposta.put("total", pagina.getTotalElements());
-
-        return resposta;
+        return ClienteRespostaDTO.converter(dados);
     }
 
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;

@@ -181,8 +181,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         pageSize: 10,
         displayInfo: true,
         beforePageText: 'Página',
-        displayMsg: 'Página {0} - {1} de {2}',
-        emptyMsg: 'Sem dados',
+        afterPageText: 'de {0}',
+        displayMsg: 'Clientes {0} - {1} de {2}',
+        emptyMsg: 'Não existe clientes cadastrados',
         store: this.store,
         listeners: { //Para esconder o botão de reload...
             afterrender: function(toolbar) {

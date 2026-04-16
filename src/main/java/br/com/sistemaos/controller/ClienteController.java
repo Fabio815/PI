@@ -41,7 +41,7 @@ public class ClienteController {
     @ResponseBody
     @RequestMapping(path = "/listar", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> listar(@RequestParam int start, @RequestParam int limit) {
-        return ResponseEntity.ok(ClienteRespostaDTO.listar(clienteService.buscarTodos(start, limit)));
+        return ResponseEntity.ok(clienteService.buscarTodos(start, limit));
     }
 
     @GetMapping("/teste")

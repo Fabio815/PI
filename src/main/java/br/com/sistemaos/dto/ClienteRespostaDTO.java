@@ -4,11 +4,15 @@ import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.entity.Os;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.repository.ClienteRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,18 +49,12 @@ public class ClienteRespostaDTO {
         return resposta;
     }
 
-    public static Map<String, Object> listar(Map<String, Object> dados) {
-        if (dados == null) {
-            log.info("Não existe clientes cadastrado");
-            return null;
-        }
-        List<Cliente> clientes = new ArrayList<>();
-        clientes = (List<Cliente>) dados.get("clientes");
-
-        Long total = (Long) dados.get("total");
+    public static Map<String, Object> converter(Page<Cliente> dados) {
+        if (dados == null) { return null; }
 
         List<ClienteRespostaDTO> lista = new ArrayList<>();
-        for (Cliente c : clientes) {
+
+        for (Cliente c : dados.getContent()) {
             EnderecoDTO enderecoDTO = new EnderecoDTO();
             ClienteRespostaDTO clienteDTO = new ClienteRespostaDTO();
             clienteDTO.setId(c.getId());
@@ -78,7 +76,7 @@ public class ClienteRespostaDTO {
 
         Map<String, Object> retorno = new HashMap<>();
         retorno.put("clientes", lista);
-        retorno.put("total", total);
+        retorno.put("total", dados.getTotalElements());
         return retorno;
     }
 }
