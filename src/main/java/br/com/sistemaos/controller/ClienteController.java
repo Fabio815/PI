@@ -2,6 +2,7 @@ package br.com.sistemaos.controller;
 
 import br.com.sistemaos.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
+import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ public class ClienteController {
     //@GetMapping
     @ResponseBody
     @RequestMapping(path = "/listar", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> listar(@RequestParam int start, @RequestParam int limit) {
+    public ResponseEntity<Map<String, Object>> listar(@RequestParam int start, @RequestParam int limit /*@RequestParam Filtro filtro*/) {
         return ResponseEntity.ok(clienteService.buscarTodos(start, limit));
     }
 

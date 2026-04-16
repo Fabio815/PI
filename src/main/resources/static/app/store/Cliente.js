@@ -14,5 +14,10 @@ Ext.define('ProjSistemaOs.store.Cliente', {
             type: 'json',
             rootProperty: 'clientes'
         }
+    },
+    listeners: {
+        beforeLoad: function (record) {
+            console.log(record);
+        }
     }
 })
