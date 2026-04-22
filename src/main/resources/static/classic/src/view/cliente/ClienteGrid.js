@@ -95,6 +95,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     }],
     columns: [{
         text: 'Id',
+        itemId: 'id',
         dataIndex: 'id',
         width: 60,
         filter: {
@@ -103,6 +104,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Nome',
+        imtemId: 'nome',
         dataIndex: 'nome',
         width: 220,
         filter: 'string',
@@ -113,6 +115,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Telefone',
+        itemId: 'telefone',
         dataIndex: 'telefone',
         flex: 1,
         sortable: false,
@@ -123,6 +126,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Rua',
+        itemId: 'rua',
         dataIndex: 'rua',
         flex: 2,
         sortable: false,
@@ -131,6 +135,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Logradouro',
+        itemId: 'logradouro',
         dataIndex: 'logradouro',
         flex: 1,
         sortable: false,
@@ -139,6 +144,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Número',
+        itemId: 'nomero',
         dataIndex: 'numero',
         width: 100,
         sortable: false,
@@ -147,6 +153,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Complemento',
+        itemId: 'complemento',
         dataIndex: 'complemento',
         flex: 2,
         sortable: false,
@@ -155,6 +162,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         xtype: 'checkcolumn',
+        itemId: 'checkcolumn',
         text: 'Ativo',
         dataIndex: 'status',
         width: 80,

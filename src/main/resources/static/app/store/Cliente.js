@@ -16,8 +16,25 @@ Ext.define('ProjSistemaOs.store.Cliente', {
         }
     },
     listeners: {
-        beforeLoad: function (record) {
-            console.log(record);
+        beforeLoad: function(store, operation){
+            var filtros = store.getFilters().items;
+            var arrayFiltro = [];
+
+            for (var f of filtros) {
+                var valor = f.getValue();
+                if (f.getProperty() === "status") {
+                    valor = valor ? "ATIVO" : "INATIVO";
+                }
+
+                arrayFiltro.push({
+                    propriedade: f.getProperty(),
+                    operador: f.getOperator(),
+                    valor: valor
+                });
+            }
+            store.getProxy().setExtraParams({
+                filtros: Ext.encode(arrayFiltro)
+            });
         }
     }
-})
+});

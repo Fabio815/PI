@@ -5,6 +5,8 @@ import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
+import br.com.sistemaos.dto.FiltroDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -39,11 +41,17 @@ public class ClienteController {
     }
 
     //@GetMapping
-    @ResponseBody
     @RequestMapping(path = "/listar", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> listar(@RequestParam int start, @RequestParam int limit /*@RequestParam Filtro filtro*/) {
-        return ResponseEntity.ok(clienteService.buscarTodos(start, limit));
+    public ResponseEntity<Map<String, Object>> listar(
+            @RequestParam(value = "start", defaultValue = "0") int start,
+            @RequestParam(value = "limit", defaultValue = "25") int limit, @RequestParam(value = "filtros") String filtros) {
+
+        log.info("start={}, limit={}, filtros {}", start, limit, filtros);
+        //return ResponseEntity.ok(clienteService.buscarTodos(filtros.getStart(), filtros.getLimit()));
+        return null;
     }
+
+
 
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {
