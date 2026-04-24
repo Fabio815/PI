@@ -4,6 +4,7 @@ import br.com.sistemaos.controller.ClienteController;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
@@ -18,9 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +38,34 @@ public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
 
-    public Map<String, Object> buscarTodos(int start, int limit) {
+    public Map<String, Object> buscarTodos(int start, int limit, String filtros) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Filtro> listaFiltros = new ArrayList<>();
+        if (filtros != null) {
+            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
+        }
+        String valorFiltro = null;
+        for (Filtro filtro : listaFiltros) {
+            switch (filtro.getOperador()) {
+                case "like":
+                    valorFiltro = filtro.getValor();
+                    break;
+                case "eq":
+                case "==":
+
+                    break;
+            }
+        }
+
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-        Page<Cliente> dados = clienteRepository.findAll(pageable);
+
+        Page<Cliente> dados;
+        if (valorFiltro != null && !valorFiltro.isBlank()) {
+            dados = clienteRepository.findByNomeContainingIgnoreCase(valorFiltro, pageable);
+        } else {
+            dados = clienteRepository.findAll(pageable);
+        }
 
         return ClienteRespostaDTO.converter(dados);
     }
