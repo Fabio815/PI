@@ -1,6 +1,7 @@
 package br.com.sistemaos.repository;
 
 import br.com.sistemaos.domain.entity.Cliente;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface ClienteRepository extends JpaRepository <Cliente, Long> {
     List<Cliente> findByNomeContainingIgnoreCase(String nome);
 
     Page<Cliente> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+    Page<Cliente> findById(Long id, Pageable pageable);
+    Page<Cliente> findByStatus(Status status, Pageable pageable);
 }

@@ -7,9 +7,13 @@ Ext.define('ProjSistemaOs.model.Cliente', {
         { name: 'id', type: 'int' },
         { name: 'nome', type: 'string' },
         { name: 'telefone', type: 'string' },
-        { name: 'status',
+        { name: 'status', defaultValue: true,
             convert: function (valor) {
+                if (valor === null || valor === undefined) return true;
                 return valor === 'ATIVO' || valor === true;
+            },
+            serialize: function (valor) {
+                return valor ? 'ATIVO' : 'INATIVO';
             }
         },
 

@@ -1,32 +1,26 @@
 package br.com.sistemaos.applicationservice;
 
-import br.com.sistemaos.controller.ClienteController;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
-import br.com.sistemaos.domain.entity.Os;
 import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.domain.model.TipoFiltro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.repository.ClienteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,15 +38,25 @@ public class ClienteService {
         if (filtros != null) {
             listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
+
         String valorFiltro = null;
+        byte tipoFiltro = -1;
+
         for (Filtro filtro : listaFiltros) {
             switch (filtro.getOperador()) {
                 case "like":
                     valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.NOME;
                     break;
                 case "eq":
-                case "==":
-
+                    valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.ID;
+                    break;
+                case "in":
+                    valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.CHECKCOLUMN;
+                    break;
+                default:
                     break;
             }
         }
@@ -60,13 +64,24 @@ public class ClienteService {
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
 
-        Page<Cliente> dados;
+        Page<Cliente> dados = null;
         if (valorFiltro != null && !valorFiltro.isBlank()) {
-            dados = clienteRepository.findByNomeContainingIgnoreCase(valorFiltro, pageable);
+            switch (tipoFiltro) {
+                case TipoFiltro.NOME:
+                    dados = clienteRepository.findByNomeContainingIgnoreCase(valorFiltro, pageable);
+                    break;
+                case TipoFiltro.ID:
+                    dados = clienteRepository.findById(Long.parseLong(valorFiltro), pageable);
+                    break;
+                case TipoFiltro.CHECKCOLUMN:
+                    dados = clienteRepository.findByStatus(Status.valueOf(valorFiltro), pageable);
+                    break;
+                default:
+                    break;
+            }
         } else {
             dados = clienteRepository.findAll(pageable);
         }
-
         return ClienteRespostaDTO.converter(dados);
     }
 

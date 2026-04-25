@@ -104,7 +104,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Nome',
-        imtemId: 'nome',
+        itemId: 'nome',
         dataIndex: 'nome',
         width: 220,
         filter: 'string',
@@ -160,19 +160,15 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         editor: {
             type: 'textfield'
         }
-    }, {
+    },{
         xtype: 'checkcolumn',
-        itemId: 'checkcolumn',
         text: 'Ativo',
         dataIndex: 'status',
         width: 80,
         filter: {
             type: 'boolean',
-            yes: 'true',
-            no: 'false',
             yesText: 'Sim',
-            noText: 'Não',
-            default: true
+            noText: 'Não'
         }
     }],
     plugins: {
