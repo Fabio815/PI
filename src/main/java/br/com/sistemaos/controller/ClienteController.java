@@ -37,9 +37,9 @@ public class ClienteController {
     @ResponseBody
     @RequestMapping(path = "/cadastrar", method = RequestMethod.POST)
     //Cadastro do cliente
-    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody ClienteDTO cliente) {
+    public ResponseEntity<Cliente> cadastrar(@RequestBody Cliente cliente) {
         Cliente salvo = clienteService.adicionarCliente(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ClienteRespostaDTO.criar(salvo));
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     //@GetMapping

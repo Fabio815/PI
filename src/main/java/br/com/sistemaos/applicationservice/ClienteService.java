@@ -87,7 +87,7 @@ public class ClienteService {
 
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
-    public Cliente adicionarCliente(ClienteDTO cliente) {
+    public Cliente adicionarCliente(Cliente cliente) {
         if (cliente == null) {
             log.info("O Cliente não pode ser nulo");
             return null;
