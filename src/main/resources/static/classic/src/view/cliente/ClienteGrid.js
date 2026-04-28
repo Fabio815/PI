@@ -37,11 +37,11 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 oldValue = context.originalValue,
                 newValue = context.value;
             console.log(record);
-            record.data.statusCliente = record.data.statusCliente ? 1 : 2;
-            if (oldValue != newValue) {
+            record.data.status = record.data.status ? 'ATIVO' : 'INATIVO';
+            if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/sistema-os/api/cliente/atualizar',
-                    method: 'POST',
+                    url: 'http://localhost:8080/cliente/atualizar',
+                    method: 'PUT',
                     jsonData: record.getData(),
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
@@ -56,13 +56,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                         }
                     },
                     failure: function(response) {
-                        var r = Ext.decode(response.responseText, true);
                         record.reject();
-                        if (r && r.mensagem) {
-                           Avisos.mensagemAviso(r.mensagem);
-                        } else {
-                           Avisos.mostrarServidorIndisponivel();
-                        }
+                        Avisos.mostrarServidorIndisponivel();
                     }
                 })
             }

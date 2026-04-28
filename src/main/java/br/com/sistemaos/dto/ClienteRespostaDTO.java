@@ -1,24 +1,18 @@
 package br.com.sistemaos.dto;
 
 import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.entity.Endereco;
-import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
-import br.com.sistemaos.repository.ClienteRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -30,22 +24,35 @@ public class ClienteRespostaDTO {
     private String telefone;
     private Status status;
     private EnderecoDTO endereco;
+    private Resposta resposta;
     //private List<Os> ordensServico;
 
     public static ClienteRespostaDTO criar(Cliente cliente) {
+        if (cliente == null) { return null; }
+
         EnderecoDTO enderecoDTO = new EnderecoDTO();
+        ClienteRespostaDTO resposta = new ClienteRespostaDTO();
+
+        /*if (cliente.getNome() == null || cliente.getTelefone() == null) {
+            log.info("Campos obrigatórios não preenchidos");
+            resposta.setResposta(Resposta.falha());
+            return resposta;
+        }*/
+
         enderecoDTO.setId(cliente.getEndereco().getId());
         enderecoDTO.setRua(cliente.getEndereco().getRua());
         enderecoDTO.setNumero(cliente.getEndereco().getNumero());
         enderecoDTO.setLogradouro(cliente.getEndereco().getLogradouro());
         enderecoDTO.setComplemento(cliente.getEndereco().getComplemento());
 
-        ClienteRespostaDTO resposta = new ClienteRespostaDTO();
+
         resposta.setId(cliente.getId());
         resposta.setNome(cliente.getNome());
         resposta.setTelefone(cliente.getTelefone());
         resposta.setStatus(cliente.getStatus());
         resposta.setEndereco(enderecoDTO);
+
+        resposta.setResposta(Resposta.sucesso());
         return resposta;
     }
 

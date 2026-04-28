@@ -50,6 +50,11 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.buscarTodos(start, limit, filtros));
     }
 
+    @RequestMapping(path = "/atualizar", method = RequestMethod.PUT)
+    public ResponseEntity<ClienteRespostaDTO> atualizar(@RequestBody ClienteDTO cliente) {
+        return null;
+    }
+
 
 
     @GetMapping("/teste")

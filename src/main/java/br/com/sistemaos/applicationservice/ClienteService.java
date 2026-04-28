@@ -3,6 +3,7 @@ package br.com.sistemaos.applicationservice;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.model.Filtro;
+import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.TipoFiltro;
 import br.com.sistemaos.dto.ClienteDTO;
@@ -90,8 +91,10 @@ public class ClienteService {
     public Cliente adicionarCliente(ClienteDTO cliente) {
         if (cliente == null) {
             log.info("O Cliente não pode ser nulo");
+
             return null;
         }
+
         Cliente salvo = Cliente.builder()
                 .nome(cliente.getNome())
                 .telefone(cliente.getTelefone())
