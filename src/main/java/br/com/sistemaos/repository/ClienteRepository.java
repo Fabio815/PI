@@ -18,4 +18,6 @@ public interface ClienteRepository extends JpaRepository <Cliente, Long> {
     Page<Cliente> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
     Page<Cliente> findById(Long id, Pageable pageable);
     Page<Cliente> findByStatus(Status status, Pageable pageable);
+
+    Cliente findClienteById(Long id);
 }

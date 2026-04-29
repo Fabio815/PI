@@ -36,11 +36,10 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             var record = context.record,
                 oldValue = context.originalValue,
                 newValue = context.value;
-            console.log(record);
             record.data.status = record.data.status ? 'ATIVO' : 'INATIVO';
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/cliente/atualizar',
+                    url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
                     method: 'PUT',
                     jsonData: record.getData(),
                     success: function (response) {

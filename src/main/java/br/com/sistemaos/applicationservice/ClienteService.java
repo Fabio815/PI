@@ -24,6 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service // Classe Server - dados no banco
 @RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros
@@ -32,6 +33,35 @@ import java.util.Map;
 public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
+
+    //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
+    @Transactional
+    public Cliente adicionarCliente(ClienteDTO cliente) {
+        if (cliente == null) {
+            log.info("O Cliente não pode ser nulo");
+
+            return null;
+        }
+
+        Cliente salvo = Cliente.builder()
+                .nome(cliente.getNome())
+                .telefone(cliente.getTelefone())
+                .status(cliente.getStatus())
+                .build();
+
+        Endereco endereco = Endereco.builder()
+                .rua(cliente.getEndereco().getRua())
+                .numero(cliente.getEndereco().getNumero())
+                .logradouro(cliente.getEndereco().getLogradouro())
+                .complemento(cliente.getEndereco().getComplemento())
+                .cliente(salvo).build();
+
+        salvo.setEndereco(endereco);
+
+        clienteRepository.save(salvo);
+        log.info("Cliente adicionado com sucesso {}", salvo);
+        return salvo;
+    }
 
     public Map<String, Object> buscarTodos(int start, int limit, String filtros) {
         ObjectMapper mapper = new ObjectMapper();
@@ -86,33 +116,15 @@ public class ClienteService {
         return ClienteRespostaDTO.converter(dados);
     }
 
-    //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
-    @Transactional
-    public Cliente adicionarCliente(ClienteDTO cliente) {
-        if (cliente == null) {
-            log.info("O Cliente não pode ser nulo");
+    public Cliente atualizarClienteId(ClienteDTO cliente, Long id) {
+        Optional<Cliente> clienteOp = clienteRepository.findById(id);
+        if (clienteOp.isPresent()) {
+            Cliente cl = clienteOp.get();
+            if (cl.getNome() != null) {
 
-            return null;
+            }
         }
-
-        Cliente salvo = Cliente.builder()
-                .nome(cliente.getNome())
-                .telefone(cliente.getTelefone())
-                .status(cliente.getStatus())
-                .build();
-
-        Endereco endereco = Endereco.builder()
-                .rua(cliente.getEndereco().getRua())
-                .numero(cliente.getEndereco().getNumero())
-                .logradouro(cliente.getEndereco().getLogradouro())
-                .complemento(cliente.getEndereco().getComplemento())
-                .cliente(salvo).build();
-
-        salvo.setEndereco(endereco);
-
-        clienteRepository.save(salvo);
-        log.info("Cliente adicionado com sucesso {}", salvo);
-        return salvo;
+        return null;
     }
 }
 
