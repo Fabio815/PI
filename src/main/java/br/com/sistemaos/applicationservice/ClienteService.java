@@ -116,13 +116,32 @@ public class ClienteService {
         return ClienteRespostaDTO.converter(dados);
     }
 
-    public Cliente atualizarClienteId(ClienteDTO cliente, Long id) {
+    public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id, Long idEndereco) {
         Optional<Cliente> clienteOp = clienteRepository.findById(id);
         if (clienteOp.isPresent()) {
-            Cliente cl = clienteOp.get();
-            if (cl.getNome() != null) {
+            Endereco endereco = Endereco.builder()
+                    .id(idEndereco)
+                    .rua(cliente.getEndereco().getRua())
+                    .logradouro(cliente.getEndereco().getLogradouro())
+                    .numero(cliente.getEndereco().getNumero())
+                    .complemento(cliente.getEndereco().getComplemento())
+                    .build();
 
+            Cliente cl = clienteOp.get();
+            if (cliente.getNome() != null) {
+                cl.setNome(cliente.getNome());
             }
+            if (cliente.getTelefone() != null) {
+                cl.setTelefone(cliente.getTelefone());
+            }
+            if (cliente.getStatus() != null) {
+                cl.setStatus(cliente.getStatus());
+            }
+            if (endereco != null) {
+                cl.setEndereco(endereco);
+            }
+            clienteRepository.save(cl);
+            return ClienteRespostaDTO.criar(cl);
         }
         return null;
     }
