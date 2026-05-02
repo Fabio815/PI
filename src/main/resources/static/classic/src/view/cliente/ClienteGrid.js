@@ -37,12 +37,11 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             var record = context.record,
                 oldValue = context.originalValue,
                 newValue = context.value;
-            console.log(record);
-            console.log('batata');
             var dadosFormato = formataDadosCliente.converteEstrtura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
+            console.log(dadosFormato);
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/cliente/atualizar/' + record.get('id') + "/" + record.get('id'),
+                    url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
                     method: 'PUT',
                     jsonData: dadosFormato,
                     headers: {
@@ -168,7 +167,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         filter: {
             type: 'boolean',
             yesText: 'Sim',
-            noText: 'Não'
+            noText: 'Não',
+            default: true
         }
     }],
     plugins: {

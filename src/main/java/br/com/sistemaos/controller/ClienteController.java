@@ -50,9 +50,9 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.buscarTodos(start, limit, filtros));
     }
 
-    @RequestMapping(path = "/atualizar/{id}/{idEndereco}", method = RequestMethod.PUT)
-    public ResponseEntity<ClienteRespostaDTO> atualizar(@RequestBody ClienteDTO cliente, @PathVariable Long id, @PathVariable Long idEndereco) {
-        return ResponseEntity.ok().body(clienteService.atualizarClienteId(cliente, id, idEndereco));
+    @RequestMapping(path = "/atualizar/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<ClienteRespostaDTO> atualizar(@RequestBody ClienteDTO cliente, @PathVariable Long id) {
+        return ResponseEntity.ok().body(clienteService.atualizarClienteId(cliente, id));
     }
 
 

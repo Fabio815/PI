@@ -26,7 +26,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                     arrayFiltro.push ({
                         propriedade: 'checkcolumn',
                         operador: 'in',
-                        valor: valor === 1 ? "ATIVO" : "INATIVO"
+                        valor: valor ? "ATIVO" : "INATIVO"
                     });
                     continue;
                 }

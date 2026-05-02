@@ -39,11 +39,13 @@ public class ClienteRespostaDTO {
             return resposta;
         }*/
 
-        enderecoDTO.setId(cliente.getEndereco().getId());
-        enderecoDTO.setRua(cliente.getEndereco().getRua());
-        enderecoDTO.setNumero(cliente.getEndereco().getNumero());
-        enderecoDTO.setLogradouro(cliente.getEndereco().getLogradouro());
-        enderecoDTO.setComplemento(cliente.getEndereco().getComplemento());
+        if (cliente.getEndereco() != null) {
+            enderecoDTO.setId(cliente.getEndereco().getId());
+            enderecoDTO.setRua(cliente.getEndereco().getRua());
+            enderecoDTO.setNumero(cliente.getEndereco().getNumero());
+            enderecoDTO.setLogradouro(cliente.getEndereco().getLogradouro());
+            enderecoDTO.setComplemento(cliente.getEndereco().getComplemento());
+        }
 
 
         resposta.setId(cliente.getId());

@@ -8,6 +8,7 @@ Ext.define('ProjSistemaOs.util.MensagemUtil', {
             telefone: record.telefone,
             status: status,
             endereco: {
+                id: record.idEndereco ?? null,
                 rua: record.rua,
                 numero: record.numero,
                 logradouro: record.logradouro,

@@ -9,6 +9,7 @@ import br.com.sistemaos.domain.model.TipoFiltro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.repository.ClienteRepository;
+import br.com.sistemaos.repository.EnderecoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import java.util.Optional;
 public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
+    private final EnderecoRepository enderecoRepository;
 
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
@@ -111,36 +113,56 @@ public class ClienteService {
                     break;
             }
         } else {
-            dados = clienteRepository.findAll(pageable);
+            dados = clienteRepository.findAllByStatus(Status.ATIVO ,pageable);
         }
         return ClienteRespostaDTO.converter(dados);
     }
 
-    public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id, Long idEndereco) {
+    public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id) {
         Optional<Cliente> clienteOp = clienteRepository.findById(id);
         if (clienteOp.isPresent()) {
-            Endereco endereco = Endereco.builder()
-                    .id(idEndereco)
-                    .rua(cliente.getEndereco().getRua())
-                    .logradouro(cliente.getEndereco().getLogradouro())
-                    .numero(cliente.getEndereco().getNumero())
-                    .complemento(cliente.getEndereco().getComplemento())
+            Cliente clienteExistente = clienteOp.get();
+            Endereco endereco = null;
+
+            if (cliente.getEndereco() != null) {
+                if (cliente.getEndereco().getId() == null) {
+                    endereco = Endereco.builder()
+                            .rua(cliente.getEndereco().getRua())
+                            .numero(cliente.getEndereco().getNumero())
+                            .logradouro(cliente.getEndereco().getLogradouro())
+                            .complemento(cliente.getEndereco().getComplemento())
+                            .cliente(clienteExistente)
+                            .build();
+                    endereco = enderecoRepository.save(endereco);
+                } else {
+                    enderecoRepository.updateEndereco(
+                            cliente.getEndereco().getComplemento(),
+                            cliente.getEndereco().getLogradouro(),
+                            cliente.getEndereco().getNumero(),
+                            cliente.getEndereco().getRua(),
+                            cliente.getEndereco().getId());
+
+                    endereco = Endereco.builder()
+                            .id(cliente.getEndereco().getId())
+                            .rua(cliente.getEndereco().getRua())
+                            .numero(cliente.getEndereco().getNumero())
+                            .logradouro(cliente.getEndereco().getLogradouro())
+                            .complemento(cliente.getEndereco().getComplemento())
+                            .cliente(clienteExistente)
+                            .build();
+                }
+            }
+
+            // updateCliente só precisa atualizar nome e telefone agora
+            clienteRepository.updateCliente(cliente.getNome(), cliente.getTelefone(), id);
+
+            Cliente cl = Cliente.builder()
+                    .id(id)
+                    .nome(cliente.getNome())
+                    .telefone(cliente.getTelefone())
+                    .endereco(endereco)
                     .build();
 
-            Cliente cl = clienteOp.get();
-            if (cliente.getNome() != null) {
-                cl.setNome(cliente.getNome());
-            }
-            if (cliente.getTelefone() != null) {
-                cl.setTelefone(cliente.getTelefone());
-            }
-            if (cliente.getStatus() != null) {
-                cl.setStatus(cliente.getStatus());
-            }
-            if (endereco != null) {
-                cl.setEndereco(endereco);
-            }
-            clienteRepository.save(cl);
             return ClienteRespostaDTO.criar(cl);
         }
         return null;
