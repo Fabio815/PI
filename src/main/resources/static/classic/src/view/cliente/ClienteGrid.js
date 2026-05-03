@@ -11,7 +11,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         'ProjSistemaOs.store.Cliente',
         'ProjSistemaOs.view.cliente.ClienteWindow',
         'ProjSistemaOs.util.MensagemUtil',
-        'ProjSistemaOs.util.MensagemUtil'
+        'ProjSistemaOs.util.ClienteUtil'
     ],
 
     controller: {
@@ -37,8 +37,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             var record = context.record,
                 oldValue = context.originalValue,
                 newValue = context.value;
-            var dadosFormato = formataDadosCliente.converteEstrtura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
+            var dadosFormato = ProjSistemaOs.util.ClienteUtil.converteEstrutura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
             console.log(dadosFormato);
+            console.log('Batata');
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
                     url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
@@ -65,6 +66,11 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                     }
                 })
             }
+        },
+        onStatusChange: function (rowIndex, checked, record, e, eOpts) {
+            console.log(record);
+
+
         }
     },
 
@@ -169,6 +175,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             yesText: 'Sim',
             noText: 'Não',
             default: true
+        },
+        listeners: {
+            checkchange: 'onStatusChange'
         }
     }],
     plugins: {

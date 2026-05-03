@@ -73,7 +73,7 @@ public class ClienteService {
         }
 
         String valorFiltro = null;
-        byte tipoFiltro = -1;
+        byte tipoFiltro = 0;
 
         for (Filtro filtro : listaFiltros) {
             switch (filtro.getOperador()) {
