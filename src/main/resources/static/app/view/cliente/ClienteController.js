@@ -15,23 +15,38 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 	salvarCliente: function() {
 		var me = this, vw = me.getView(),
 		form = vw.down('form').getForm().getValues();
+
+		var dados = {
+			nome: form.nome,
+			telefone: form.telefone,
+			status: "ATIVO",
+			endereco: {
+				rua: form.rua,
+				numero: form.numero,
+				logradouro: form.logradouro,
+				complemento: form.complemento
+			}
+		}
+
 		Ext.Ajax.request({
-			url: 'http://localhost:8080/sistema-os/api/cliente/cadastrar',
+			url: 'http://localhost:8080/cliente/cadastrar',
 			method: 'POST',
-			jsonData: form,
-			callback: function(options, success, response) {
-				if (vw && !vw.destroyed && !vw.isDestroying) {
-					var r = Ext.decode(response.responseText, true);
-					if (r && r.sucesso) {
-						vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o cliente.
-					 	Avisos.mensagemSucesso(r.mensagem);
-						vw.close();
-					} else if (r) {
-						 Avisos.mensagemAviso(r.mensagem);
-					} else {
-						Avisos.mostrarServidorIndisponivel();
-					}
+			jsonData: JSON.stringify(dados),
+			success: function (conn, response, options, eOpts) {
+				let r = Ext.JSON.decode(conn.responseText, true);
+				console.log(r);
+				if (r && r.resposta.sucesso) {
+					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o cliente.
+					Avisos.mensagemSucesso(r.resposta.mensagem);
+					vw.close();
+				} else if (r) {
+					Avisos.mensagemAviso(r.resposta.mensagem);
+				} else {
+					Avisos.mostrarServidorIndisponivel();
 				}
+			},
+			failure: function (conn, response, options, eOpts) {
+				Avisos.mostrarServidorIndisponivel();
 			}
 		});
 	}

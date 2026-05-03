@@ -1,24 +1,31 @@
 package br.com.sistemaos.applicationservice;
 
-import br.com.sistemaos.controller.ClienteController;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
-import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.model.Filtro;
+import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.domain.model.TipoFiltro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.repository.ClienteRepository;
+import br.com.sistemaos.repository.EnderecoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service // Classe Server - dados no banco
 @RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros
@@ -27,19 +34,19 @@ import java.util.List;
 public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
+    private final EnderecoRepository enderecoRepository;
 
-    public List<Cliente> buscarTodos() {
-        // O findAll() é um metodo padrão do JpaRepository que traz tudo do banco
-        return clienteRepository.findAll();
-    }
-
-    //Essa marcação serve para que tudo seja feito ou nada seja feito, caso dê ruim na transação ele cancela;
+    //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
-    public Cliente adicionarCliente(ClienteDTO cliente) {
+    public ClienteRespostaDTO adicionarCliente(ClienteDTO cliente) {
+        ClienteRespostaDTO resposta = new ClienteRespostaDTO();
+
         if (cliente == null) {
             log.info("O Cliente não pode ser nulo");
+            resposta.setResposta(Resposta.falha("O Cliente não pode ser nulo"));
             return null;
         }
+
         Cliente salvo = Cliente.builder()
                 .nome(cliente.getNome())
                 .telefone(cliente.getTelefone())
@@ -56,9 +63,126 @@ public class ClienteService {
         salvo.setEndereco(endereco);
 
         clienteRepository.save(salvo);
-        log.info("Cliente adicionado com sucesso {}", salvo);
-        return salvo;
+
+        resposta = ClienteRespostaDTO.criar(salvo);
+        resposta.setResposta(Resposta.sucesso("Cliente cadstrado com sucesso!"));
+        return resposta;
+    }
+
+    public Map<String, Object> buscarTodos(int start, int limit, String filtros) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Filtro> listaFiltros = new ArrayList<>();
+        if (filtros != null) {
+            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
+        }
+
+        String valorFiltro = null;
+        byte tipoFiltro = 0;
+
+        for (Filtro filtro : listaFiltros) {
+            switch (filtro.getOperador()) {
+                case "like":
+                    valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.NOME;
+                    break;
+                case "eq":
+                    valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.ID;
+                    break;
+                case "in":
+                    valorFiltro = filtro.getValor();
+                    tipoFiltro = TipoFiltro.CHECKCOLUMN;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        int page = start / limit;
+        Pageable pageable = PageRequest.of(page, limit);
+
+        Page<Cliente> dados = null;
+        if (valorFiltro != null && !valorFiltro.isBlank()) {
+            switch (tipoFiltro) {
+                case TipoFiltro.NOME:
+                    dados = clienteRepository.findByNomeContainingIgnoreCase(valorFiltro, pageable);
+                    break;
+                case TipoFiltro.ID:
+                    dados = clienteRepository.findById(Long.parseLong(valorFiltro), pageable);
+                    break;
+                case TipoFiltro.CHECKCOLUMN:
+                    dados = clienteRepository.findByStatus(Status.valueOf(valorFiltro), pageable);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            dados = clienteRepository.findAllByStatus(Status.ATIVO ,pageable);
+        }
+        return ClienteRespostaDTO.converter(dados);
+    }
+
+    public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id) {
+        Optional<Cliente> clienteOp = clienteRepository.findById(id);
+        if (clienteOp.isPresent()) {
+            Cliente clienteExistente = clienteOp.get();
+            Endereco endereco = null;
+
+            if (cliente.getEndereco() != null) {
+                if (cliente.getEndereco().getId() == null) {
+                    endereco = Endereco.builder()
+                            .rua(cliente.getEndereco().getRua())
+                            .numero(cliente.getEndereco().getNumero())
+                            .logradouro(cliente.getEndereco().getLogradouro())
+                            .complemento(cliente.getEndereco().getComplemento())
+                            .cliente(clienteExistente)
+                            .build();
+                    endereco = enderecoRepository.save(endereco);
+                } else {
+                    enderecoRepository.updateEndereco(
+                            cliente.getEndereco().getComplemento(),
+                            cliente.getEndereco().getLogradouro(),
+                            cliente.getEndereco().getNumero(),
+                            cliente.getEndereco().getRua(),
+                            cliente.getEndereco().getId());
+
+                    endereco = Endereco.builder()
+                            .id(cliente.getEndereco().getId())
+                            .rua(cliente.getEndereco().getRua())
+                            .numero(cliente.getEndereco().getNumero())
+                            .logradouro(cliente.getEndereco().getLogradouro())
+                            .complemento(cliente.getEndereco().getComplemento())
+                            .cliente(clienteExistente)
+                            .build();
+                }
+            }
+
+            // updateCliente só precisa atualizar nome e telefone agora
+            clienteRepository.updateCliente(cliente.getNome(), cliente.getTelefone(), id);
+
+            Cliente cl = Cliente.builder()
+                    .id(id)
+                    .nome(cliente.getNome())
+                    .telefone(cliente.getTelefone())
+                    .endereco(endereco)
+                    .build();
+
+            ClienteRespostaDTO reposta = ClienteRespostaDTO.criar(cl);
+            reposta.setResposta(Resposta.sucesso("Cliente atualizado com sucesso!"));
+            return reposta;
+        }
+        return null;
+    }
+
+    public Resposta atualizarStatus(String status, Long id) {
+        Resposta resposta;
+        if (status == null || id == null) {
+            resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
+            return resposta;
+        }
+        Status s = Status.valueOf(status);
+        clienteRepository.udpateStatus(s, id);
+        resposta = Resposta.sucesso("Cliente atualizado com sucesso!");
+        return resposta;
     }
 }
-
-

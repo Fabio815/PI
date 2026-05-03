@@ -6,7 +6,7 @@ Ext.define('ProjSistemaOs.model.Endereco', {
         { name: 'id', type: 'int' },
         { name: 'cliente_id', type: 'int' },
         { name: 'rua', type: 'string' },
-        { name: 'bairro', type: 'string' },
+        { name: 'logradouro', type: 'string' },
         { name: 'numero', type: 'string' },
         { name: 'complemento', type: 'string' }
     ],

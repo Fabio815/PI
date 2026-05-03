@@ -82,8 +82,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 					labelAlign: 'right',
 				},
 				items: [{
-				    fieldLabel: 'Bairro',
-				    name: 'bairro',
+				    fieldLabel: 'Logradouro',
+				    name: 'logradouro',
 				    flex: 1,
 				    emptyText: 'First',
 				}]

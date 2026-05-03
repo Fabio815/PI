@@ -10,7 +10,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
 
         'ProjSistemaOs.store.Cliente',
         'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.util.MensagemUtil'
+        'ProjSistemaOs.util.MensagemUtil',
+        'ProjSistemaOs.util.ClienteUtil'
     ],
 
     controller: {
@@ -36,36 +37,57 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             var record = context.record,
                 oldValue = context.originalValue,
                 newValue = context.value;
-            console.log(record);
-            record.data.statusCliente = record.data.statusCliente ? 1 : 2;
-            if (oldValue != newValue) {
+            var dadosFormato = ProjSistemaOs.util.ClienteUtil.converteEstrutura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
+            console.log(dadosFormato);
+            console.log('Batata');
+            if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/sistema-os/api/cliente/atualizar',
-                    method: 'POST',
-                    jsonData: record.getData(),
+                    url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
+                    method: 'PUT',
+                    jsonData: dadosFormato,
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
-                        if (r && r.sucesso) {
+                        console.log(r);
+                        if (r && r.resposta.sucesso) {
                             record.commit();
-                            Avisos.mensagemSucesso(r.mensagem);
-                        } else if (r) {
+                            Avisos.mensagemSucesso(r.resposta.mensagem);
+                        } else if (!r && !r.resposta.sucesso) {
                             record.reject();
-                            Avisos.mensagemAviso(r.mensagem);
+                            Avisos.mensagemAviso(r.resposta.mensagem);
                         } else {
-                            Avisos.mostrarServidorIndisponivel();
+                            Avisos.contateAdm();
                         }
                     },
                     failure: function(response) {
-                        var r = Ext.decode(response.responseText, true);
                         record.reject();
-                        if (r && r.mensagem) {
-                           Avisos.mensagemAviso(r.mensagem);
-                        } else {
-                           Avisos.mostrarServidorIndisponivel();
-                        }
+                        Avisos.mostrarServidorIndisponivel();
                     }
                 })
             }
+        },
+        onStatusChange: function (rowIndex, checked, record, e, eOpts) {
+            let status = record ? "ATIVO" : "INATIVO",
+                me = this, vw = me.getViewModel();
+            Ext.Ajax.request({
+                url: 'http://localhost:8080/cliente/status/' + e.data.id + '/' + status,
+                method: 'PUT',
+                success: function (response) {
+                    var r = Ext.decode(response.responseText, true);
+                    console.log(r);
+                    if (r && r.sucesso) {
+                        if (vw && !vw.destroyed && !vw.isDestroying) {
+                            me.getView().getStore().load();
+                        }
+                    } else if (!r && !r.sucesso) {
+                        Avisos.mensagemAviso(r.mensagem);
+                    } else {
+                        Avisos.contateAdm();
+                    }
+                },
+                failure: function(response) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            })
         }
     },
 
@@ -95,6 +117,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     }],
     columns: [{
         text: 'Id',
+        itemId: 'id',
         dataIndex: 'id',
         width: 60,
         filter: {
@@ -103,6 +126,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Nome',
+        itemId: 'nome',
         dataIndex: 'nome',
         width: 220,
         filter: 'string',
@@ -113,6 +137,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Telefone',
+        itemId: 'telefone',
         dataIndex: 'telefone',
         flex: 1,
         sortable: false,
@@ -123,6 +148,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Rua',
+        itemId: 'rua',
         dataIndex: 'rua',
         flex: 2,
         sortable: false,
@@ -130,8 +156,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             type: 'textfield'
         }
     }, {
-        text: 'Bairro',
-        dataIndex: 'bairro',
+        text: 'Logradouro',
+        itemId: 'logradouro',
+        dataIndex: 'logradouro',
         flex: 1,
         sortable: false,
         editor: {
@@ -139,6 +166,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Número',
+        itemId: 'nomero',
         dataIndex: 'numero',
         width: 100,
         sortable: false,
@@ -147,24 +175,26 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     }, {
         text: 'Complemento',
+        itemId: 'complemento',
         dataIndex: 'complemento',
         flex: 2,
         sortable: false,
         editor: {
             type: 'textfield'
         }
-    }, {
+    },{
         xtype: 'checkcolumn',
         text: 'Ativo',
-        dataIndex: 'statusCliente',
+        dataIndex: 'status',
         width: 80,
         filter: {
             type: 'boolean',
-            yes: 'true',
-            no: 'false',
             yesText: 'Sim',
             noText: 'Não',
             default: true
+        },
+        listeners: {
+            checkchange: 'onStatusChange'
         }
     }],
     plugins: {
@@ -181,8 +211,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         pageSize: 10,
         displayInfo: true,
         beforePageText: 'Página',
-        displayMsg: 'Página {0} - {1} de {2}',
-        emptyMsg: 'Sem dados',
+        afterPageText: 'de {0}',
+        displayMsg: 'Clientes {0} - {1} de {2}',
+        emptyMsg: 'Não existe clientes cadastrados',
         store: this.store,
         listeners: { //Para esconder o botão de reload...
             afterrender: function(toolbar) {

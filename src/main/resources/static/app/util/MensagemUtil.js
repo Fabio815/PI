@@ -10,5 +10,8 @@ Ext.define('ProjSistemaOs.util.MensagemUtil', {
     },
     mostrarServidorIndisponivel: function() {
         Ext.toast('Servidor indisponível', '<i class="fa fa-bell"></i> Aviso', 't');
+    },
+    contateAdm: function () {
+        Ext.toast('Contate o adminstrador', '<i class="fa fa-check"></i> Aviso', 't');
     }
 });

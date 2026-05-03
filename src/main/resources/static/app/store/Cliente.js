@@ -5,6 +5,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     remoteFilter: true,
     autoLoad: true,
+    pageSize: 25,
 
     proxy: {
         type: 'ajax',
@@ -15,15 +16,19 @@ Ext.define('ProjSistemaOs.store.Cliente', {
         }
     },
     listeners: {
-        beforeload: function(store, operation) {
-
+        beforeLoad: function(store, operation){
             var filtros = store.getFilters().items;
             var arrayFiltro = [];
 
             for (var f of filtros) {
-                var valor = f.getValue();
-                if (f.getProperty() === "statusCliente") {
-                    valor = valor ? 1 : 0;
+                let valor = f.getValue();
+                if (f.getProperty() === "status") {
+                    arrayFiltro.push ({
+                        propriedade: 'checkcolumn',
+                        operador: 'in',
+                        valor: valor ? "ATIVO" : "INATIVO"
+                    });
+                    continue;
                 }
 
                 arrayFiltro.push({
@@ -32,10 +37,9 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                     valor: valor
                 });
             }
-
             store.getProxy().setExtraParams({
                 filtros: Ext.encode(arrayFiltro)
             });
         }
     }
-})
+});
