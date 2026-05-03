@@ -3,6 +3,7 @@ package br.com.sistemaos.controller;
 import br.com.sistemaos.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.model.Filtro;
+import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.dto.FiltroDTO;
@@ -38,8 +39,7 @@ public class ClienteController {
     @RequestMapping(path = "/cadastrar", method = RequestMethod.POST)
     //Cadastro do cliente
     public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody ClienteDTO cliente) {
-        Cliente salvo = clienteService.adicionarCliente(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ClienteRespostaDTO.criar(salvo));
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.adicionarCliente(cliente));
     }
 
     //@GetMapping
@@ -53,6 +53,11 @@ public class ClienteController {
     @RequestMapping(path = "/atualizar/{id}", method = RequestMethod.PUT)
     public ResponseEntity<ClienteRespostaDTO> atualizar(@RequestBody ClienteDTO cliente, @PathVariable Long id) {
         return ResponseEntity.ok().body(clienteService.atualizarClienteId(cliente, id));
+    }
+
+    @RequestMapping(path = "/status/{id}/{status}", method = RequestMethod.PUT)
+    public ResponseEntity<Resposta> atualizarStatus(@PathVariable Long id, @PathVariable String status) {
+        return ResponseEntity.ok().body(clienteService.atualizarStatus(status, id));
     }
 
 

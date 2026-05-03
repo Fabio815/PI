@@ -45,19 +45,17 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                     url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
                     method: 'PUT',
                     jsonData: dadosFormato,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
-                        if (r && r.sucesso) {
+                        console.log(r);
+                        if (r && r.resposta.sucesso) {
                             record.commit();
-                            Avisos.mensagemSucesso(r.mensagem);
-                        } else if (!r) {
+                            Avisos.mensagemSucesso(r.resposta.mensagem);
+                        } else if (!r && !r.resposta.sucesso) {
                             record.reject();
-                            Avisos.mensagemAviso(r.mensagem);
+                            Avisos.mensagemAviso(r.resposta.mensagem);
                         } else {
-                            Avisos.mostrarServidorIndisponivel();
+                            Avisos.contateAdm();
                         }
                     },
                     failure: function(response) {
@@ -68,9 +66,28 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             }
         },
         onStatusChange: function (rowIndex, checked, record, e, eOpts) {
-            console.log(record);
-
-
+            let status = record ? "ATIVO" : "INATIVO",
+                me = this, vw = me.getViewModel();
+            Ext.Ajax.request({
+                url: 'http://localhost:8080/cliente/status/' + e.data.id + '/' + status,
+                method: 'PUT',
+                success: function (response) {
+                    var r = Ext.decode(response.responseText, true);
+                    console.log(r);
+                    if (r && r.sucesso) {
+                        if (vw && !vw.destroyed && !vw.isDestroying) {
+                            me.getView().getStore().load();
+                        }
+                    } else if (!r && !r.sucesso) {
+                        Avisos.mensagemAviso(r.mensagem);
+                    } else {
+                        Avisos.contateAdm();
+                    }
+                },
+                failure: function(response) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            })
         }
     },
 

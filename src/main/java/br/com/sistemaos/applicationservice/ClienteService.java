@@ -38,10 +38,12 @@ public class ClienteService {
 
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
-    public Cliente adicionarCliente(ClienteDTO cliente) {
+    public ClienteRespostaDTO adicionarCliente(ClienteDTO cliente) {
+        ClienteRespostaDTO resposta = new ClienteRespostaDTO();
+
         if (cliente == null) {
             log.info("O Cliente não pode ser nulo");
-
+            resposta.setResposta(Resposta.falha("O Cliente não pode ser nulo"));
             return null;
         }
 
@@ -61,8 +63,10 @@ public class ClienteService {
         salvo.setEndereco(endereco);
 
         clienteRepository.save(salvo);
-        log.info("Cliente adicionado com sucesso {}", salvo);
-        return salvo;
+
+        resposta = ClienteRespostaDTO.criar(salvo);
+        resposta.setResposta(Resposta.sucesso("Cliente cadstrado com sucesso!"));
+        return resposta;
     }
 
     public Map<String, Object> buscarTodos(int start, int limit, String filtros) {
@@ -163,10 +167,22 @@ public class ClienteService {
                     .endereco(endereco)
                     .build();
 
-            return ClienteRespostaDTO.criar(cl);
+            ClienteRespostaDTO reposta = ClienteRespostaDTO.criar(cl);
+            reposta.setResposta(Resposta.sucesso("Cliente atualizado com sucesso!"));
+            return reposta;
         }
         return null;
     }
+
+    public Resposta atualizarStatus(String status, Long id) {
+        Resposta resposta;
+        if (status == null || id == null) {
+            resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
+            return resposta;
+        }
+        Status s = Status.valueOf(status);
+        clienteRepository.udpateStatus(s, id);
+        resposta = Resposta.sucesso("Cliente atualizado com sucesso!");
+        return resposta;
+    }
 }
-
-

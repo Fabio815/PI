@@ -28,7 +28,10 @@ public class ClienteRespostaDTO {
     //private List<Os> ordensServico;
 
     public static ClienteRespostaDTO criar(Cliente cliente) {
-        if (cliente == null) { return null; }
+        if (cliente == null) {
+
+            return null;
+        }
 
         EnderecoDTO enderecoDTO = new EnderecoDTO();
         ClienteRespostaDTO resposta = new ClienteRespostaDTO();
@@ -54,7 +57,6 @@ public class ClienteRespostaDTO {
         resposta.setStatus(cliente.getStatus());
         resposta.setEndereco(enderecoDTO);
 
-        resposta.setResposta(Resposta.sucesso());
         return resposta;
     }
 

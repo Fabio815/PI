@@ -7,17 +7,17 @@ public class Resposta {
     private boolean sucesso;
     private String mensagem;
 
-    public static Resposta sucesso() {
+    public static Resposta sucesso(String mensagem) {
         Resposta resposta = new Resposta();
         resposta.sucesso = true;
-        resposta.mensagem = "Cliente cadastro com sucesso!";
+        resposta.mensagem = mensagem;
         return resposta;
     }
 
-    public static Resposta falha() {
+    public static Resposta falha(String mensagem) {
         Resposta resposta = new Resposta();
-        resposta.sucesso = true;
-        resposta.mensagem = "Cliente não cadastrado!";
+        resposta.sucesso = false;
+        resposta.mensagem = mensagem;
         return resposta;
     }
 }
