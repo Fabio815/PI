@@ -44,9 +44,9 @@ public class ClienteController {
 
     //@GetMapping
     @RequestMapping(path = "/listar", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> listar(
-            @RequestParam(value = "start", defaultValue = "0") int start,
-            @RequestParam(value = "limit", defaultValue = "25") int limit, @RequestParam(value = "filtros") String filtros) {
+    public ResponseEntity<Map<String, Object>> listar(@RequestParam(value = "start") int start,
+            @RequestParam(value = "limit") int limit,
+            @RequestParam(value = "filtros") String filtros) {
         return ResponseEntity.ok(clienteService.buscarTodos(start, limit, filtros));
     }
 
