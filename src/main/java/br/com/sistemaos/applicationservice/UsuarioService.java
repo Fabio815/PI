@@ -1,6 +1,8 @@
 package br.com.sistemaos.applicationservice;
 
 import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.dto.UsuarioDTO;
 import br.com.sistemaos.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,14 +20,27 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> login(String email, String senha) {
+    public Optional<UsuarioDTO> login(String email, String senha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
         if (usuarioOpt.isPresent()) {
+
             Usuario usuario = usuarioOpt.get();
+
             if (passwordEncoder.matches(senha, usuario.getSenha())) {
-                return Optional.of(usuario);
+
+                UsuarioDTO dto = new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        null,
+                        new Resposta(true, "Login realizado com sucesso")
+                );
+
+                return Optional.of(dto);
             }
         }
+
         return Optional.empty();
     }
 }
