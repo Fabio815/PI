@@ -8,6 +8,7 @@ import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.dto.FiltroDTO;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class ClienteController {
     @ResponseBody
     @RequestMapping(path = "/cadastrar", method = RequestMethod.POST)
     //Cadastro do cliente
-    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody ClienteDTO cliente) {
+    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody @Valid ClienteDTO cliente) {
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.adicionarCliente(cliente));
     }
 
