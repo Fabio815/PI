@@ -21,15 +21,15 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
 
             win.on('clienteSalvo', () => { //Aqui está escutando o envento que é disparadp quando salva o cliente.
                 if (vw && !vw.destroyed && !vw.isDestroying) {
-                    me.getView().getStore().load();
+                    me.getView().getStore().reload();
                 }
             });
             win.show();
         },
         recarregarGrid: function () {
             var me = this, vw = me.getView();
-            if (vw && !vw.destroyed && !vw.isDestroying) {
-                me.getView().getStore().load();
+            if (me.getView() && !me.getView().destroyed) {
+                me.getView().getStore().reload();
             }
         },
         atualizarCliente: function (edit, context) {
@@ -38,8 +38,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 oldValue = context.originalValue,
                 newValue = context.value;
             var dadosFormato = ProjSistemaOs.util.ClienteUtil.converteEstrutura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
-            console.log(dadosFormato);
-            console.log('Batata');
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
                     url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
@@ -65,26 +63,28 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 })
             }
         },
-        onStatusChange: function (rowIndex, checked, record, e, eOpts) {
-            let status = record ? "ATIVO" : "INATIVO",
-                me = this, vw = me.getViewModel();
+        onStatusChange: function (checkColumn, rowIndex, checked, record) {
+            console.log(checked);
+            let me = this;
             Ext.Ajax.request({
-                url: 'http://localhost:8080/cliente/status/' + e.data.id + '/' + status,
+                url: 'http://localhost:8080/cliente/status/' + record.get('id') + '/' + (checked ? 'ATIVO' : 'INATIVO'),
                 method: 'PUT',
                 success: function (response) {
                     var r = Ext.decode(response.responseText, true);
-                    console.log(r);
+
                     if (r && r.sucesso) {
-                        if (vw && !vw.destroyed && !vw.isDestroying) {
-                            me.getView().getStore().load();
-                        }
+                        record.set('status', checked);
+                        record.commit();
+                        me.getView().getStore().reload();
                     } else if (!r && !r.sucesso) {
                         Avisos.mensagemAviso(r.mensagem);
+                        record.reject();
                     } else {
                         Avisos.contateAdm();
                     }
                 },
                 failure: function(response) {
+                    record.reject();
                     Avisos.mostrarServidorIndisponivel();
                 }
             })
@@ -214,7 +214,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         afterPageText: 'de {0}',
         displayMsg: 'Clientes {0} - {1} de {2}',
         emptyMsg: 'Não existe clientes cadastrados',
-        store: this.store,
+        bind: {
+            store: '{clientes}'
+        },
         listeners: { //Para esconder o botão de reload...
             afterrender: function(toolbar) {
                 toolbar.down('#refresh').hide();//Buscando pelo itemId

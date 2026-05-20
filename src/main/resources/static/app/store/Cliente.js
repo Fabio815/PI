@@ -19,8 +19,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
         beforeLoad: function(store, operation){
             var filtros = store.getFilters().items;
             var arrayFiltro = [];
-
-            for (var f of filtros) {
+            for (let f of filtros) {
                 let valor = f.getValue();
                 if (f.getProperty() === "status") {
                     arrayFiltro.push ({
@@ -30,7 +29,6 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                     });
                     continue;
                 }
-
                 arrayFiltro.push({
                     propriedade: f.getProperty(),
                     operador: f.getOperator(),
