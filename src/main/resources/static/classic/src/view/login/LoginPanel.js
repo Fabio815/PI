@@ -3,22 +3,46 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
     alias: 'widget.loginPanel',
 
     requires: [
-        'ProjSistemaOs.view.main.Main'
+        'ProjSistemaOs.view.main.Main',
+        'ProjSistemaOs.util.MensagemUtil',
     ],
 
     controller: {
         enviar: function() {
-            var viewport = this.getView();
-            viewport.removeAll();
-
-            //Basicamente aqui estou criando um Viewport que é um container especial que se ajusta automaticamente
-            // ao tamanho da tela e colocando o main dentro dele com o layout fit que faz ocupar a tela inteiro
-            Ext.create('Ext.container.Viewport', {
-                layout: 'fit',
-                items: [{
-                    xtype: 'app-main'
-                }]
-            });
+            var viewport = this.getView(),
+                me = this, vw = me.getView(),
+                form = vw.down('form').getForm().getValues();
+            Ext.Ajax.request({
+                url: 'http://localhost:8080/usuarios/login',
+                method: 'POST',
+                jsonData: {
+                    email: form.login,
+                    senha: form.senha
+                },
+                scope: this,
+                success: function(conn, response, options, eOpts) {
+                    let r = Ext.JSON.decode(conn.responseText, true);
+                    console.log(r.resposta);
+                    if (r && r.resposta.sucesso) {
+                        viewport.removeAll();
+                        //Basicamente aqui estou criando um Viewport que é um container especial que se ajusta automaticamente
+                        // ao tamanho da tela e colocando o main dentro dele com o layout fit que faz ocupar a tela inteiro
+                        Ext.create('Ext.container.Viewport', {
+                            layout: 'fit',
+                            items: [{
+                                xtype: 'app-main'
+                            }]
+                        });
+                    } else if (r && !r.resposta.sucesso) {
+                        Avisos.mensagemAviso(r.resposta.mensagem);
+                    } else {
+                        Avisos.contateAdm();
+                    }
+                },
+                failure: function(response) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            })
         }
     },
 
