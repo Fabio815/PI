@@ -20,11 +20,11 @@ import java.util.List;
 public class ClienteDTO {
 
     private Long id;
-    @NotNull
-    @Size(min = 1, max = 50)
+    @NotNull(message = "O nome do cliente não pode ser vazio")
+    @Size(min = 1, max = 50, message = "Nome maior que 50 caracteres")
     private String nome;
-    @NotNull
-    @Size(min = 1, max = 14)
+    @NotNull(message = "O telefone não pode ser vazio")
+    @Size(min = 1, max = 14, message = "Telefone maior que 14 caracteres")
     private String telefone;
     private Status status;
     private EnderecoDTO endereco;

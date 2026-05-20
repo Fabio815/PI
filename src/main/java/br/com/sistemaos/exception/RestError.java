@@ -8,6 +8,7 @@ import lombok.Data;
 public class RestError {
     private final String codigo;
     private final String mensagem;
-    private final int status;
+    private final int statusRequisicao;
     private final String caminho;
+    private final boolean status;
 }
