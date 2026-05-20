@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,13 +14,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository //Ele vai armazenar o crud
 
-public interface ClienteRepository extends JpaRepository <Cliente, Long> {
-
-    Page<Cliente> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-    Page<Cliente> findById(Long id, Pageable pageable);
-    Page<Cliente> findAllByStatus(Status status, Pageable pageable);
-    Page<Cliente> findByStatus(Status status, Pageable pageable);
-
+public interface ClienteRepository extends JpaRepository <Cliente, Long>, JpaSpecificationExecutor<Cliente> {
     @Transactional
     @Modifying
     @Query("update Cliente as c set c.nome=:nome, c.telefone=:telefone where c.id=:id")

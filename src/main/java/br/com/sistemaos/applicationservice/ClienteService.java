@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tools.jackson.core.type.TypeReference;
@@ -76,50 +77,14 @@ public class ClienteService {
             listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
 
-        String valorFiltro = null;
-        byte tipoFiltro = 0;
-
-        for (Filtro filtro : listaFiltros) {
-            switch (filtro.getOperador()) {
-                case "like":
-                    valorFiltro = filtro.getValor();
-                    tipoFiltro = TipoFiltro.NOME;
-                    break;
-                case "eq":
-                    valorFiltro = filtro.getValor();
-                    tipoFiltro = TipoFiltro.ID;
-                    break;
-                case "in":
-                    valorFiltro = filtro.getValor();
-                    tipoFiltro = TipoFiltro.CHECKCOLUMN;
-                    break;
-                default:
-                    break;
-            }
-        }
-
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-
         Page<Cliente> dados = null;
-        if (valorFiltro != null && !valorFiltro.isBlank()) {
-            switch (tipoFiltro) {
-                case TipoFiltro.NOME:
-                    dados = clienteRepository.findByNomeContainingIgnoreCase(valorFiltro, pageable);
-                    break;
-                case TipoFiltro.ID:
-                    dados = clienteRepository.findById(Long.parseLong(valorFiltro), pageable);
-                    break;
-                case TipoFiltro.CHECKCOLUMN:
-                    dados = clienteRepository.findByStatus(Status.valueOf(valorFiltro), pageable);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            dados = clienteRepository.findAllByStatus(Status.ATIVO ,pageable);
-        }
-        return ClienteRespostaDTO.converter(dados);
+        Specification<Cliente> especificacao = Specification.where((Specification<Cliente>) null);
+
+
+
+        return null;
     }
 
     public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id) {
