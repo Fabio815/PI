@@ -8,6 +8,7 @@ import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.TipoFiltro;
 import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
+import br.com.sistemaos.repository.ClienteCostumizadoRepository;
 import br.com.sistemaos.repository.ClienteRepository;
 import br.com.sistemaos.repository.EnderecoRepository;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class ClienteService {
     //private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
     private final EnderecoRepository enderecoRepository;
+    private final ClienteCostumizadoRepository listagemCostumizadaRepository;
 
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
@@ -77,11 +79,9 @@ public class ClienteService {
             listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
 
+        List<Cliente> dados = listagemCostumizadaRepository.listagemClientes(listaFiltros);
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-        Page<Cliente> dados = null;
-
-
 
         return null;
     }
