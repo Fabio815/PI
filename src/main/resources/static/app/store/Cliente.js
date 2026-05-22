@@ -35,6 +35,13 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                     valor: valor
                 });
             }
+            if (!arrayFiltro.some(v => v.propriedade === "checkcolumn")) {
+                arrayFiltro.push({
+                    propriedade: 'checkcolumn',
+                    operador: 'in',
+                    valor: "ATIVO"
+                })
+            }
             store.getProxy().setExtraParams({
                 filtros: Ext.encode(arrayFiltro)
             });

@@ -80,7 +80,6 @@ public class ClienteService {
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
         Page<Cliente> dados = null;
-        Specification<Cliente> especificacao = Specification.where((Specification<Cliente>) null);
 
 
 
