@@ -71,7 +71,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 method: 'PUT',
                 success: function (response) {
                     var r = Ext.decode(response.responseText, true);
-
                     if (r && r.sucesso) {
                         record.set('status', checked);
                         record.commit();
