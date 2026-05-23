@@ -79,11 +79,12 @@ public class ClienteService {
             listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
 
-        List<Cliente> dados = listagemCostumizadaRepository.listagemClientes(listaFiltros);
+        //List<Cliente> dados = listagemCostumizadaRepository.listagemClientes(listaFiltros);
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
+        Page<Cliente> dados = listagemCostumizadaRepository.listagemClientes(listaFiltros, pageable);
 
-        return null;
+        return ClienteRespostaDTO.converter(dados);
     }
 
     public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id) {
