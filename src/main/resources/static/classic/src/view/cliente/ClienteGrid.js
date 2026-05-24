@@ -63,7 +63,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 })
             }
         },
-        onStatusChange: function (checkColumn, rowIndex, checked, record) {
+        mudarStatus: function (checkColumn, rowIndex, checked, record) {
             console.log(checked);
             let me = this;
             Ext.Ajax.request({
@@ -193,7 +193,35 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             default: true
         },
         listeners: {
-            checkchange: 'onStatusChange'
+            //checkchange: 'onStatusChange'
+            checkchange: function (checkColumn, rowIndex, checked, record) {
+                var me = this;
+                var grid = checkColumn.up('grid');
+                var controller = grid.getController();
+
+                //me.cliqueCont = me.cliqueCont === undefined || me.cliqueCont == null ? 0 : me.cliqueCont + 1;
+                me.cliqueCont = (me.cliqueCont || 0) + 1; //Aqui basicamente estou pegando o me.cliqueCont que provalvelmente é undefined ou null
+                //e fazendo ele receber 0 e quando receber 0 soma 1;
+                if (me.cliqueCont === 1) {
+                    let view = grid.getView();
+                    let cell = view.getCell(record, checkColumn);
+                    Ext.fly(cell).down('.x-grid-checkcolumn').setStyle({
+                        border: '2px solid #f75459',
+                        borderRadius: '4px',
+                        height: '18px',
+                        width: '17.6px',
+                        boxSizing: 'border-box'
+                    });
+                } else {
+                    controller.mudarStatus(
+                        checkColumn,
+                        rowIndex,
+                        checked,
+                        record
+                    );
+                    me.cliqueCont = 0;
+                }
+            }
         }
     }],
     plugins: {
