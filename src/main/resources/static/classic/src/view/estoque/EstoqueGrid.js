@@ -25,10 +25,21 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
         flex: 1
     }, {
         text: 'Preço',
-        dataIndex: 'valor_unitario'
+        dataIndex: 'valor_unitario',
+        flex: 2,
+        renderer: function(value) {
+            if (Ext.isNumber(value)) {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value);
+            }
+            return value;
+        }
     }, {
         xtype: 'checkcolumn',
         text: 'Ativo',
+        dataIndex: 'ativo',
         width: 70
     }]
 });
