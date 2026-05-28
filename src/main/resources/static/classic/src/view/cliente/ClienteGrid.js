@@ -115,7 +115,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         handler: 'recarregarGrid'
     }],
     columns: [{
-        text: 'Id',
+        text: '<span style="color:#00a79a;">Id</span>',
         itemId: 'id',
         dataIndex: 'id',
         width: 60,
@@ -124,7 +124,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             menuItems: ['eq']
         }
     }, {
-        text: 'Nome',
+        text: '<span style="color:#00a79a;">Nome</span>',
         itemId: 'nome',
         dataIndex: 'nome',
         width: 220,
@@ -182,48 +182,34 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             type: 'textfield'
         }
     },{
-        xtype: 'checkcolumn',
-        text: 'Ativo',
-        dataIndex: 'status',
-        width: 80,
-        filter: {
-            type: 'boolean',
-            yesText: 'Sim',
-            noText: 'Não',
-            default: true
-        },
-        listeners: {
-            beforecheckchange: function (checkColumn, rowIndex, checked, record) {
-                var key = 'cliqueCont_' + record.get('id')
-                var grid = checkColumn.up('grid'),
-                    view = grid.getView(),
-                    cell = view.getCell(record, checkColumn);
-
-                checkColumn[key] = (checkColumn[key] || 0) + 1;
-
-                if (checkColumn[key] === 1) {
-                    Ext.fly(cell).down('.x-grid-checkcolumn').setStyle({
-                        border: '3px solid #ff3300',
-                        borderRadius: '4px',
-                    });
+        xtype: 'actioncolumn',
+        width: 75,
+        dataIndex: 'checkcolumn',
+        text: '<span style="color:#00a79a;">Status</span>',
+        align: 'center',
+        items: [{
+            getClass: function (v, meta, record) {
+                meta.style = 'font-size: 4px';
+                if (record.get("status")) {
+                    return 'fa fa-check-square';
                 }
-                if (checkColumn[key] >= 2) {
-                    Ext.fly(cell).setStyle({
-                        border: '',
-                        borderRadius: ''
-                    });
-
-                    checkColumn[key] = 0;
-                    return true;
-                }
-
-                return false;
+                return 'fa fa-square';
             },
-            checkchange: function (checkColumn, rowIndex, checked, record) {
-                var grid = checkColumn.up('grid');
-                var controller = grid.getController();
-                controller.mudarStatus(checkColumn, rowIndex, checked, record);
+            getTip: function(v, meta, record) {
+                if (record.get('status')) {
+                    return 'Inativar';
+                }
+
+                return 'Ativar';
+            },
+            handler: function() {
+                console.log('Batata');
             }
+        }],
+        filter: {
+            type: 'list',
+            options: [['ATIVO', 'Sim'], ['INATIVO', 'Não']],
+            value: 'ATIVO'
         }
     }],
     plugins: {
