@@ -7,7 +7,8 @@ Ext.define('ProjSistemaOs.model.Cliente', {
         { name: 'id', type: 'int' },
         { name: 'nome', type: 'string' },
         { name: 'telefone', type: 'string' },
-        { name: 'status', defaultValue: true,
+        { name: '_status', type: 'string', default: undefined },
+        /*{ name: 'status', defaultValue: true,
             convert: function (valor) {
                 if (valor === null || valor === undefined) return true;
                 return valor === 'ATIVO' || valor === true;
@@ -15,8 +16,8 @@ Ext.define('ProjSistemaOs.model.Cliente', {
             serialize: function (valor) {
                 return valor ? 'ATIVO' : 'INATIVO';
             }
-        },
-
+        },*/
+        {name: 'status', type: 'string'},
         { name: 'idEndereco', mapping: 'endereco.id' },
         { name: 'rua', mapping: 'endereco.rua' },
         { name: 'logradouro', mapping: 'endereco.logradouro' },

@@ -3,6 +3,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     xtype: 'clienteGrid',
 
     requires: [
+        'Ext.grid.column.Action',
         'Ext.grid.column.Check',
         'Ext.grid.plugin.CellEditing',
         'Ext.grid.filters.Filters',
@@ -184,22 +185,49 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     },{
         xtype: 'actioncolumn',
         width: 75,
-        dataIndex: 'checkcolumn',
-        text: '<span style="color:#00a79a;">Status</span>',
+        dataIndex: 'status',
+        text: 'Ativo',
         align: 'center',
+        editable: false,
         items: [{
             getClass: function (v, meta, record) {
-                meta.style = 'font-size: 4px';
-                if (record.get("status")) {
-                    return 'fa fa-check-square';
+                console.log(record);
+                console.log(v);
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get("_status")) {
+                        case 'ATIVO':
+                            return "far fa-square red";
+                        case 'INATIVO':
+                            return "far fa-check-square green"
+                    }
+                } else {
+                    if (record.get("status") && record.get("_status"))
+                        switch (record.get("_fgStatus")) {
+                            case 'ATIVAR':
+                                return "Realmente inativar";
+                            case 'INATIVO':
+                                return "Realmente ativar"
+                        } else {
+                            switch (e.get("fgStatus")) {
+                                case 'ATIVAR':
+                                    return "Inativar";
+                                case 'INATIVO':
+                                    return "Ativar"
+                            }
+                    }
                 }
-                return 'fa fa-square';
             },
             getTip: function(v, meta, record) {
+                if (record.get('_status') !== undefined) {
+                    if (record.get('_status')) {
+                        return 'Realmente ativar?';
+                    } else {
+                        return 'Realmente inativar?';
+                    }
+                }
                 if (record.get('status')) {
                     return 'Inativar';
                 }
-
                 return 'Ativar';
             },
             handler: function() {
