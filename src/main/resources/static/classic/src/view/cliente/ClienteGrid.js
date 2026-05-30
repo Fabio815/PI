@@ -64,6 +64,13 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 })
             }
         },
+        limparPesquisa: function (e, t, eOpts) {
+            let a = e.up('grid');
+            if (a) {
+                a.filters.clearFilters();
+                a.getStore().getSorters().removeAll();
+            }
+        },
         listen: {
             component: {
                 'grid-cliente actioncolumn#status': {
@@ -123,7 +130,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
 
     title: 'Clientes',
     layout: 'fit',
-
     store: {
         type: 'cliente-listagem-store'
     },
@@ -132,16 +138,19 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
 		xtype: 'button',
 		tooltip: 'Adicionar',
 		iconCls: 'fa fa-plus',
-		width: 40,
-		height: 40,
 		handler: 'adicionarCliente'
-	}, {
+	}, '-', {
         xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
-        width: 40,
-        height: 40,
         handler: 'recarregarGrid'
+    }, '-', {
+        xtype: "button",
+        iconCls: "fas fa-ban",
+        tooltip: "Limpar Pesquisa",
+        listeners: {
+            click: "limparPesquisa"
+        }
     }],
     columns: [{
         text: "Id",
@@ -223,10 +232,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 if (record.get('status') && record.get('_status')) {
                     switch (record.get('_status')) {
                         case 'ATIVO':
-                            //console.log("Está no ATIVO com status");
                             return 'far fa-square red';
                         case 'INATIVO':
-                            //console.log("Está no INATIVO com status");
                             return 'far fa-check-square green';
                     }
                 } else {
@@ -256,10 +263,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 }
             },
             handler: function(a, b, e, f, h, record, k) {
-
                 if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
                     this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
-                    console.log('Entrou no if do evento');
+                    //console.log('Entrou no if do evento');
                 } else {
                     record.set('_status', record.get('status'));
                 }

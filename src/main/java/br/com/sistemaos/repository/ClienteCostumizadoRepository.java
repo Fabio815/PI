@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.beans.ConstructorProperties;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -47,8 +48,8 @@ public class ClienteCostumizadoRepository {
                     break;
 
                 case "in":
-                    sql.append(condicao).append(" c.status = :status ");
-                    countSql.append(condicao).append(" c.status = :status ");
+                    sql.append(condicao).append(" c.status in :status ");
+                    countSql.append(condicao).append(" c.status in :status ");
                     condicao = " and ";
                     break;
             }
@@ -69,7 +70,12 @@ public class ClienteCostumizadoRepository {
                     countQuery.setParameter("nome", "%" + f.getValor() + "%");
                     break;
                 case "in":
-                    Status status = Status.valueOf(f.getValor());
+                    List<String> statusStrings = (List<String>)  f.getValor();
+                    List<Status> status = new ArrayList<>();
+
+                    for (String s : statusStrings) {
+                        status.add(Status.valueOf(s));
+                    }
                     query.setParameter("status", status);
                     countQuery.setParameter("status", status);
                     break;
