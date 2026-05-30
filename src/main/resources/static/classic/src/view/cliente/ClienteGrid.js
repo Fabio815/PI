@@ -194,41 +194,37 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 console.log(record);
                 console.log(v);
                 if (record.get('status') && record.get('_status')) {
-                    switch (record.get("_status")) {
+                    switch (record.get('_status')) {
                         case 'ATIVO':
-                            return "far fa-square red";
+                            return 'far fa-square red';
                         case 'INATIVO':
-                            return "far fa-check-square green"
+                            return 'far fa-check-square green';
                     }
                 } else {
-                    if (record.get("status") && record.get("_status"))
-                        switch (record.get("_fgStatus")) {
-                            case 'ATIVAR':
-                                return "Realmente inativar";
-                            case 'INATIVO':
-                                return "Realmente ativar"
-                        } else {
-                            switch (e.get("fgStatus")) {
-                                case 'ATIVAR':
-                                    return "Inativar";
-                                case 'INATIVO':
-                                    return "Ativar"
-                            }
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'far fa-check-square';
+                        case 'INATIVO':
+                            return 'far fa-square';
                     }
                 }
             },
             getTip: function(v, meta, record) {
-                if (record.get('_status') !== undefined) {
-                    if (record.get('_status')) {
-                        return 'Realmente ativar?';
-                    } else {
-                        return 'Realmente inativar?';
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get('_status')) {
+                        case 'ATIVO':
+                            return 'Realmente inativar?';
+                        case 'INATIVO':
+                            return 'Realmente ativar?';
+                    }
+                } else {
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'Inativar';
+                        case 'INATIVO':
+                            return 'Ativar';
                     }
                 }
-                if (record.get('status')) {
-                    return 'Inativar';
-                }
-                return 'Ativar';
             },
             handler: function() {
                 console.log('Batata');
