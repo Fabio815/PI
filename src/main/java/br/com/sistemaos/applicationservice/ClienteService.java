@@ -139,14 +139,14 @@ public class ClienteService {
         return null;
     }
 
-    public Resposta atualizarStatus(String status, Long id) {
+    public Resposta atualizarStatus(ClienteDTO cliente) {
         Resposta resposta;
-        if (status == null || id == null) {
+        if (cliente == null) {
             resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
             return resposta;
         }
-        Status s = Status.valueOf(status);
-        clienteRepository.udpateStatus(s, id);
+        Status status = cliente.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
+        clienteRepository.udpateStatus(status, cliente.getId());
         resposta = Resposta.sucesso("Cliente atualizado com sucesso!");
         return resposta;
     }

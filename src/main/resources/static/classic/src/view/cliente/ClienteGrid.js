@@ -68,7 +68,26 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             component: {
                 'grid-cliente actioncolumn#status': {
                     trocarStatus: function (a, b, e, f, h, record, k) {
-
+                        let me = this, vw = me.getView();
+                        Ext.Ajax.request({
+                            url: 'http://localhost:8080/cliente/status',
+                            method: 'POST',
+                            jsonData: record.data,
+                            callback: function (success, response, options){
+                                if (vw && !vw.destroyed && !vw.isDestroying) {
+                                    let r = Ext.decode(options.responseText, true);
+                                    if (r) {
+                                        if (r && r.sucesso) {
+                                            a.getStore().reload();
+                                        } else {
+                                            Avisos.mensagemAviso(r.mensagem);
+                                        }
+                                    } else {
+                                        Avisos.mostrarServidorIndisponivel();
+                                    }
+                                }
+                            }
+                        });
                     }
                 }
             }

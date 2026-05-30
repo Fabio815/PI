@@ -56,9 +56,13 @@ public class ClienteController {
         return ResponseEntity.ok().body(clienteService.atualizarClienteId(cliente, id));
     }
 
-    @RequestMapping(path = "/status/{id}/{status}", method = RequestMethod.PUT)
+    /*@RequestMapping(path = "/status/{id}/{status}", method = RequestMethod.PUT)
     public ResponseEntity<Resposta> atualizarStatus(@PathVariable Long id, @PathVariable String status) {
         return ResponseEntity.ok().body(clienteService.atualizarStatus(status, id));
+    }*/
+    @RequestMapping(path = "/status", method = RequestMethod.POST)
+    public ResponseEntity<Resposta> atualizarStatus(@RequestBody ClienteDTO cliente) {
+        return ResponseEntity.ok().body(clienteService.atualizarStatus(cliente));
     }
 
 
