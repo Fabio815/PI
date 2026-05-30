@@ -116,7 +116,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         handler: 'recarregarGrid'
     }],
     columns: [{
-        text: '<span style="color:#00a79a;">Id</span>',
+        text: "Id",
         itemId: 'id',
         dataIndex: 'id',
         width: 60,
@@ -125,7 +125,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             menuItems: ['eq']
         }
     }, {
-        text: '<span style="color:#00a79a;">Nome</span>',
+        text: "Nome",
         itemId: 'nome',
         dataIndex: 'nome',
         width: 220,
@@ -196,8 +196,10 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 if (record.get('status') && record.get('_status')) {
                     switch (record.get('_status')) {
                         case 'ATIVO':
+                            console.log("Está no ATIVO com status");
                             return 'far fa-square red';
                         case 'INATIVO':
+                            console.log("Está no INATIVO com status");
                             return 'far fa-check-square green';
                     }
                 } else {
@@ -226,8 +228,11 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                     }
                 }
             },
-            handler: function() {
-                console.log('Batata');
+            handler: function(a, b, e, f, h, record, k) {
+                if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
+                } else {
+                    record.set('_status', record.get('status'));
+                }
             }
         }],
         filter: {
