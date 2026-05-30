@@ -1,6 +1,6 @@
 Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
     extend: 'Ext.grid.Panel',
-    xtype: 'clienteGrid',
+    xtype: 'grid-cliente',
 
     requires: [
         'Ext.grid.column.Action',
@@ -64,7 +64,16 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 })
             }
         },
-        mudarStatus: function (checkColumn, rowIndex, checked, record) {
+        listen: {
+            component: {
+                'grid-cliente actioncolumn#status': {
+                    trocarStatus: function (a, b, e, f, h, record, k) {
+
+                    }
+                }
+            }
+        }
+        /*mudarStatus: function (checkColumn, rowIndex, checked, record) {
             console.log(checked);
             let me = this;
             Ext.Ajax.request({
@@ -88,7 +97,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                     Avisos.mostrarServidorIndisponivel();
                 }
             })
-        }
+        }*/
     },
 
     enableColumnHide: false,
@@ -184,22 +193,21 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
         }
     },{
         xtype: 'actioncolumn',
-        width: 75,
         dataIndex: 'status',
+        itemId: 'status',
+        width: 75,
         text: 'Ativo',
         align: 'center',
         editable: false,
         items: [{
             getClass: function (v, meta, record) {
-                console.log(record);
-                console.log(v);
                 if (record.get('status') && record.get('_status')) {
                     switch (record.get('_status')) {
                         case 'ATIVO':
-                            console.log("Está no ATIVO com status");
+                            //console.log("Está no ATIVO com status");
                             return 'far fa-square red';
                         case 'INATIVO':
-                            console.log("Está no INATIVO com status");
+                            //console.log("Está no INATIVO com status");
                             return 'far fa-check-square green';
                     }
                 } else {
@@ -229,7 +237,10 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                 }
             },
             handler: function(a, b, e, f, h, record, k) {
+
                 if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
+                    this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
+                    console.log('Entrou no if do evento');
                 } else {
                     record.set('_status', record.get('status'));
                 }
