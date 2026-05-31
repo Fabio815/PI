@@ -2,7 +2,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     extend: 'Ext.data.Store',
     alias: 'store.cliente-listagem-store',
     model: 'ProjSistemaOs.model.Cliente',
-
+    //Refazer esse store
     remoteFilter: true,
     autoLoad: true,
     pageSize: 25,
