@@ -70,11 +70,15 @@ public class ClienteCostumizadoRepository {
                     countQuery.setParameter("nome", "%" + f.getValor() + "%");
                     break;
                 case "in":
-                    List<String> statusStrings = (List<String>)  f.getValor();
                     List<Status> status = new ArrayList<>();
+                    if (f.getValor() instanceof List<?>) {
+                        List<?> valores = (List<?>) f.getValor();
 
-                    for (String s : statusStrings) {
-                        status.add(Status.valueOf(s));
+                        for (Object valor : valores) {
+                            status.add(Status.valueOf(valor.toString()));
+                        }
+                    } else {
+                        status.add(Status.valueOf(f.getValor().toString()));
                     }
                     query.setParameter("status", status);
                     countQuery.setParameter("status", status);
