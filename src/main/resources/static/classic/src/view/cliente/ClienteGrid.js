@@ -1,6 +1,6 @@
-Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
+Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
     extend: 'Ext.grid.Panel',
-    xtype: 'grid-cliente',
+    xtype: 'clienteGrid',
 
     requires: [
         'Ext.grid.column.Action',

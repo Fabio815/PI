@@ -15,7 +15,7 @@ Ext.define('ProjSistemaOs.view.main.Main', {
 
         'ProjSistemaOs.view.main.MainController',
         'ProjSistemaOs.view.main.MainModel',
-		'ProjSistemaOs.view.cliente.ClientesGrid',
+		'ProjSistemaOs.view.cliente.ClienteGrid',
         'ProjSistemaOs.view.estoque.EstoqueGrid'
     ],
 
