@@ -108,5 +108,8 @@ Ext.define('ProjSistemaOs.view.main.Main', {
     },	{
         title: 'Usuários',
         iconCls: 'fa-cog',
+        items: [{
+                  xtype: 'usuario-grid'
+        }]
     }]
 });
