@@ -144,7 +144,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
         handler: 'recarregarGrid'
-    }, '-', {
+    }, '->', {
         xtype: "button",
         iconCls: "fas fa-ban",
         tooltip: "Limpar Pesquisa",
