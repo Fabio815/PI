@@ -71,14 +71,10 @@ public class ClienteCostumizadoRepository {
                     break;
                 case "in":
                     List<Status> status = new ArrayList<>();
-                    if (f.getValor() instanceof List<?>) {
-                        List<?> valores = (List<?>) f.getValor();
+                    List<?> valores = (List<?>) f.getValor();
 
-                        for (Object valor : valores) {
-                            status.add(Status.valueOf(valor.toString()));
-                        }
-                    } else {
-                        status.add(Status.valueOf(f.getValor().toString()));
+                    for (Object valor : valores) {
+                        status.add(Status.valueOf(valor.toString()));
                     }
                     query.setParameter("status", status);
                     countQuery.setParameter("status", status);
