@@ -73,8 +73,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
         },
         listen: {
             component: {
-                'grid-cliente actioncolumn#status': {
+                'clienteGrid actioncolumn#status': {
                     trocarStatus: function (a, b, e, f, h, record, k) {
+                        console.log('entrou no evento');
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
                             url: 'http://localhost:8080/cliente/status',
@@ -265,7 +266,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
             handler: function(a, b, e, f, h, record, k) {
                 if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
                     this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
-                    //console.log('Entrou no if do evento');
                 } else {
                     record.set('_status', record.get('status'));
                 }
