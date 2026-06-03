@@ -73,7 +73,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
         },
         listen: {
             component: {
-                'grid-cliente actioncolumn#status': {
+                'clienteGrid actioncolumn#status': {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
