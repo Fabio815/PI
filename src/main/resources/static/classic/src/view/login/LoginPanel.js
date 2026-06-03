@@ -5,6 +5,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
     requires: [
         'ProjSistemaOs.view.main.Main',
         'ProjSistemaOs.util.MensagemUtil',
+        'ProjSistemaOs.util.Config'
     ],
 
     controller: {
@@ -13,7 +14,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                 me = this, vw = me.getView(),
                 form = vw.down('form').getForm().getValues();
             Ext.Ajax.request({
-                url: 'http://localhost:8080/usuarios/login',
+                url: sistemaOsLocal.apiUrl + '/usuarios/login',
                 method: 'POST',
                 jsonData: {
                     email: form.login,

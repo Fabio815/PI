@@ -3,7 +3,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
     alias: 'controller.cliente-controller',
 
 	requires: [
-		'ProjSistemaOs.util.MensagemUtil'
+		'ProjSistemaOs.util.MensagemUtil',
+		'ProjSistemaOs.util.Config'
 	],
 
 	fecharJanela: function() {
@@ -29,12 +30,11 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 		}
 
 		Ext.Ajax.request({
-			url: 'http://localhost:8080/cliente/cadastrar',
+			url: sistemaOsLocal.apiUrl + '/cliente/cadastrar',
 			method: 'POST',
 			jsonData: JSON.stringify(dados),
 			success: function (conn, response, options, eOpts) {
 				let r = Ext.JSON.decode(conn.responseText, true);
-				console.log(r);
 				if (r && r.resposta.sucesso) {
 					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o cliente.
 					Avisos.mensagemSucesso(r.resposta.mensagem);

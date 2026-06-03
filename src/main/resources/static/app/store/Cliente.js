@@ -2,6 +2,11 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     extend: 'Ext.data.Store',
     alias: 'store.cliente-listagem-store',
     model: 'ProjSistemaOs.model.Cliente',
+
+    required: [
+        'ProjSistemaOs.util.Config'
+    ],
+
     //Refazer esse store
     remoteFilter: true,
     autoLoad: true,
@@ -9,7 +14,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     proxy: {
         type: 'ajax',
-        url: 'http://localhost:8080/cliente/listar',
+        url: '/cliente/listar',
         reader: {
             type: 'json',
             rootProperty: 'clientes'
@@ -24,7 +29,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                 let valor = f.getValue();
                 if (f.getProperty() === "status") {
                     arrayFiltro.push ({
-                        propriedade: f.getOperator,
+                        propriedade: f.getOperator(),
                         operador: 'in',
                         valor: valor
                     });
@@ -36,13 +41,6 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                     valor: valor
                 });
             }
-            /*if (!arrayFiltro.some(v => v.propriedade === "checkcolumn")) {
-                arrayFiltro.push({
-                    propriedade: 'checkcolumn',
-                    operador: 'in',
-                    valor: "ATIVO"
-                })
-            }*/
             store.getProxy().setExtraParams({
                 filtros: Ext.encode(arrayFiltro)
             });

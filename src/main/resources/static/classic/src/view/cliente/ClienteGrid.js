@@ -12,7 +12,8 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
         'ProjSistemaOs.store.Cliente',
         'ProjSistemaOs.view.cliente.ClienteWindow',
         'ProjSistemaOs.util.MensagemUtil',
-        'ProjSistemaOs.util.ClienteUtil'
+        'ProjSistemaOs.util.ClienteUtil',
+        'ProjSistemaOs.util.Config'
     ],
 
     controller: {
@@ -41,7 +42,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
             var dadosFormato = ProjSistemaOs.util.ClienteUtil.converteEstrutura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/cliente/atualizar/' + record.get('id'),
+                    url: sistemaOsLocal.apiUrl + '/cliente/atualizar/' + record.get('id'),
                     method: 'PUT',
                     jsonData: dadosFormato,
                     success: function (response) {
@@ -77,7 +78,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: 'http://localhost:8080/cliente/status',
+                            url: sistemaOsLocal.apiUrl + '/cliente/status',
                             method: 'POST',
                             jsonData: record.data,
                             callback: function (success, response, options){
@@ -99,31 +100,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                 }
             }
         }
-        /*mudarStatus: function (checkColumn, rowIndex, checked, record) {
-            console.log(checked);
-            let me = this;
-            Ext.Ajax.request({
-                url: 'http://localhost:8080/cliente/status/' + record.get('id') + '/' + (checked ? 'ATIVO' : 'INATIVO'),
-                method: 'PUT',
-                success: function (response) {
-                    var r = Ext.decode(response.responseText, true);
-                    if (r && r.sucesso) {
-                        record.set('status', checked);
-                        record.commit();
-                        me.getView().getStore().reload();
-                    } else if (!r && !r.sucesso) {
-                        Avisos.mensagemAviso(r.mensagem);
-                        record.reject();
-                    } else {
-                        Avisos.contateAdm();
-                    }
-                },
-                failure: function(response) {
-                    record.reject();
-                    Avisos.mostrarServidorIndisponivel();
-                }
-            })
-        }*/
     },
 
     enableColumnHide: false,
