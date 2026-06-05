@@ -2,14 +2,16 @@
 Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'usuario-grid',
-    requìred: [
+    required: [
           'ProjSistemaOs.store.Usuario'
     ],
     controller:{
         adicionarUsuario: function (){
-            var me = this, vw = me.getViewModel(),
-                win = Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow');
-            win.show();//Mostrar a janela
+            Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-user-plus',
+            }).show();
         },
         configurarUsuario: function (){
             var me = this, vw = me.getViewModel(),
@@ -33,21 +35,6 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
 
         salvarUsuario: function () {
             Ext.Msg.alert('Salvar', 'Usuário atualizado.');
-        },
-
-        excluirUsuario: function () {
-            Ext.Msg.confirm(
-                'Confirmação',
-                'Deseja excluir este usuário?',
-                function (btn) {
-                    if (btn === 'yes') {
-                        Ext.Msg.alert(
-                            'Excluído',
-                            'Usuário removido.'
-                        );
-                    }
-                }
-            );
         }
     },
     title: 'Usuários',

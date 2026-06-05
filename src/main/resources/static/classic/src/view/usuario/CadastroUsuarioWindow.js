@@ -1,5 +1,5 @@
 Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     //alias: 'widget.cadastro-usuario',
     xtype: 'cadastrar-usuario',
     controller:{
@@ -36,11 +36,20 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     title: 'Cadastro Usuário',
     layout: 'fit',
     resizable: false,
-    modal: true,
     width: 650,
-    height: 500,
-    bodyPadding: 10,
-
+    bodyPadding: 15,
+    ui: 'light',
+    padding: 5,
+    shadow: true,
+    style: {
+        backgroundColor: "#ececec",
+        borderRadius: '5px'
+    },
+    header: {
+        style: {
+            backgroundColor: "#ececec"
+        }
+    },
     items: [{
         xtype: 'form',
         bodyPadding: 10,
@@ -50,7 +59,7 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
         },
 
         items: [{
-            xtype: 'fieldset',
+            xtype: 'container',
             title: 'Informações do Usuário',
             defaultType: 'textfield',
 
@@ -81,15 +90,19 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                 emptyText: 'senha',
                 name: 'senha'
             }]
-        }],
-
-        buttons: [{
-            text: 'Cadastrar',
-            disabled: true,
-            formBind: true,
-            itemId: 'cadastrarusuario',
-            dataIndex: 'cadastrarusuario',
-            handler: 'cadastrar'
         }]
+    }],
+    buttons: [{
+        text: 'Cancelar',
+        handler: function (btn) {
+            btn.up('cadastrar-usuario').destroy();
+        }
+    },{
+        text: 'Cadastrar',
+        disabled: true,
+        formBind: true,
+        itemId: 'cadastrarusuario',
+        dataIndex: 'cadastrarusuario',
+        handler: 'cadastrar'
     }]
 });
