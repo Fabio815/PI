@@ -52,57 +52,107 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     },
     items: [{
         xtype: 'form',
-        bodyPadding: 10,
-        defaultType: 'textfield',
+        layout: 'anchor',
         defaults: {
-            anchor: '100%'
+            anchor: '100%',
+            labelAlign: 'right',
+            margin: '5 0 0 0'
         },
 
         items: [{
             xtype: 'container',
-            title: 'Informações do Usuário',
-            defaultType: 'textfield',
-
+            layout: 'anchor',
+            defaults: {
+                anchor: '100%'
+            },
             items: [{
-                fieldLabel: 'Nome',
-                emptyText: 'nome',
-                name: 'nome'
+                xtype: 'fieldcontainer',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                defaults: {
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    blankText: 'O campo é obrigatório'
+                },
+
+                items: [{
+                    fieldLabel: 'Nome',
+                    name: 'nome',
+                    labelWidth: 50,
+                    flex: 1,
+                    margin: '0 10 0 0',
+                    emptyText: 'Digite o nome'
+                }, {
+                    fieldLabel: 'Sobrenome',
+                    name: 'sobrenome',
+                    labelWidth: 70,
+                    flex: 1,
+                    emptyText: 'Digite o sobrenome'
+                }]
             }, {
-                fieldLabel: 'Sobrenome',
-                emptyText: 'sobrenome',
-                name: 'sobrenome'
-            }, {
+                xtype: 'textfield',
                 fieldLabel: 'Email',
-                emptyText: 'email',
-                name: 'email'
-            }, {
-                fieldLabel: 'Telefone',
-                emptyText: 'telefone',
-                name: 'telefone'
-            },{
-                xtype: 'combobox',
-                fieldLabel: 'Perfil',
-                name: 'chave',
+                name: 'email',
+                vtype: 'email',
+                labelWidth: 50,
                 allowBlank: false,
-                store: ['administrador', 'funcionário']
+                labelAlign: 'right',
+                emptyText: 'Digite o email'
             }, {
+                xtype: 'fieldcontainer',
+                layout: 'hbox',
+                defaults: {
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    blankText: 'O campo é obrigatório'
+                },
+
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: 'Telefone',
+                    name: 'telefone',
+                    labelWidth: 50,
+                    flex: 1,
+                    margin: '0 10 0 0',
+                    emptyText: '(00) 00000-0000',
+                    maxLength: 15
+                }, {
+                    xtype: 'combobox',
+                    fieldLabel: 'Perfil',
+                    name: 'chave',
+                    labelWidth: 50,
+                    flex: 1,
+                    editable: false,
+                    queryMode: 'local',
+                    forceSelection: true,
+                    store: [
+                        'administrador',
+                        'funcionário'
+                    ]
+                }]
+            }, {
+                xtype: 'textfield',
                 fieldLabel: 'Senha',
-                emptyText: 'senha',
-                name: 'senha'
+                name: 'senha',
+                labelWidth: 50,
+                labelAlign: 'right',
+                inputType: 'password',
+                allowBlank: false,
+                emptyText: 'Digite a senha'
             }]
         }]
     }],
     buttons: [{
         text: 'Cancelar',
-        handler: function (btn) {
+        iconCls: 'fa fa-times',
+        handler: function(btn) {
             btn.up('cadastrar-usuario').destroy();
         }
-    },{
+    }, {
         text: 'Cadastrar',
+        iconCls: 'fa fa-check',
+        handler: 'cadastrar',
         disabled: true,
-        formBind: true,
-        itemId: 'cadastrarusuario',
-        dataIndex: 'cadastrarusuario',
-        handler: 'cadastrar'
+        formBind: true
     }]
 });
