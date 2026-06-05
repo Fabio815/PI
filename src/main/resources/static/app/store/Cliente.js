@@ -14,7 +14,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     proxy: {
         type: 'ajax',
-        url: '/cliente/listar',
+        url: ProjSistemaOs.util.Config.apiUrl + '/cliente/listar',
         reader: {
             type: 'json',
             rootProperty: 'clientes'

@@ -18,7 +18,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
 
     controller: {
         adicionarCliente: function(){
-            var me = this, vw = me.getViewModel(),
+            console.log(this);
+            var me = this, vw = me.getViewModel();
+            /*var me = this, vw = me.getViewModel(),
                 win = Ext.create('ProjSistemaOs.view.cliente.ClienteWindow');
 
             win.on('clienteSalvo', () => { //Aqui está escutando o envento que é disparadp quando salva o cliente.
@@ -26,7 +28,19 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                     me.getView().getStore().reload();
                 }
             });
-            win.show();
+            win.show();*/
+            Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-plus',
+                listeners: {
+                    'clienteSalvo': function(){
+                        if (vw && !vw.destroyed && !vw.isDestroying) {
+                            me.getView().getStore().reload();
+                        }
+                    }
+                }
+            }).show();
         },
         recarregarGrid: function () {
             var me = this, vw = me.getView();

@@ -1,6 +1,7 @@
 Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
-    extend: 'Ext.window.Window',
-    alias: 'widget.cadastro-cliente',
+    extend: 'Ext.panel.Panel',
+    // alias: 'widget.cadastro-cliente',
+	xtype: 'window-cadastro-cliente',
 	controller: 'cliente-controller',
 	requires: [
 		'ProjSistemaOs.view.cliente.ClienteController'
@@ -9,13 +10,28 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
     title: 'Cadastro Cliente',
     layout: 'fit',
     resizable: false,
-    modal: true,
     width: 650,
     bodyPadding: 15,
+	ui: 'light',
+	padding: 5,
+	shadow: true,
+	style: {
+		backgroundColor: "#ececec",
+		borderRadius: '5px'
+	},
+	header: {
+		style: {
+			backgroundColor: "#ececec"
+		}
+	},
 
     items: [{
         xtype: 'form',
         layout: 'anchor',
+		reference: 'formCliente',
+		listeners: {
+			validitychange: 'onValidaFormulario'
+		},
         defaults: {
             anchor: '100%',
             labelWidth: 100,
@@ -47,8 +63,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 				maxLengthText: 'O máximo de caracteres é de {0}'
             }]
         }, {
-			xtype: 'fieldset',
-			title: 'Endereço',
+			xtype: 'container',
 			defaultType: 'textfield',
 			layout: 'anchor',
 			defaults: {
@@ -94,18 +109,16 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 				height: 100,
 				emptyText: 'Informações adicionais'
 			}]
-        }],
-        
-        buttons: [{
-            text: 'Cancelar',
-			iconCls: 'fa fa-times',
-			handler: 'fecharJanela'
-        }, {
-            text: 'Salvar',
-			iconCls: 'fa fa-check',
-			handler: 'salvarCliente',
-			disabled: true,
-			formBind: true
         }]
-    }]
+    }],
+	buttons: [{
+		text: 'Cancelar',
+		iconCls: 'fa fa-times',
+		handler: 'fecharJanela'
+	}, {
+		text: 'Salvar',
+		reference: 'btnSalvar',
+		disabled: true,
+		handler: 'salvarCliente'
+	}]
 });

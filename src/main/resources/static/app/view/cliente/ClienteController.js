@@ -7,6 +7,10 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 		'ProjSistemaOs.util.Config'
 	],
 
+	onValidaFormulario: function (form, valid) {
+		this.lookup('btnSalvar').setDisabled(!valid);
+	},
+
 	fecharJanela: function() {
 		var me = this, vw = me.getView();
 		if (vw && !vw.destroyed && !vw.isDestroying) {
