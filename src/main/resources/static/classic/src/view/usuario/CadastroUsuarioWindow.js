@@ -1,6 +1,37 @@
 Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     extend: 'Ext.window.Window',
-    alias: 'widget.cadastro-usuario',
+    //alias: 'widget.cadastro-usuario',
+    xtype: 'cadastrar-usuario',
+    controller:{
+        cadastrar: function (){
+
+		var me = this, vw = me.getView(),
+		form = vw.down('form').getForm().getValues();
+        console.log(form);
+
+		Ext.Ajax.request({
+			url: 'http://localhost:8080/usuarios/cadastro',
+			method: 'POST',
+			jsonData: form,
+			success: function (conn, response, options, eOpts) {
+				let r = Ext.JSON.decode(conn.responseText, true);
+				console.log(r);
+				if (r && r.resposta.sucesso) {
+					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o usuario.
+					Avisos.mensagemSucesso(r.resposta.mensagem);
+					vw.close();
+				} else if (r) {
+					Avisos.mensagemAviso(r.resposta.mensagem);
+				} else {
+					Avisos.mostrarServidorIndisponivel();
+				}
+			},
+			failure: function (conn, response, options, eOpts) {
+				Avisos.mostrarServidorIndisponivel();
+			}
+		});
+        }
+    },
 
     title: 'Cadastro Usuário',
     layout: 'fit',
@@ -42,9 +73,9 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
             },{
                 xtype: 'combobox',
                 fieldLabel: 'Perfil',
-                name: 'perfil',
+                name: 'chave',
                 allowBlank: false,
-                store: ['Administrador', 'Funcionário']
+                store: ['administrador', 'funcionário']
             }, {
                 fieldLabel: 'Senha',
                 emptyText: 'senha',
@@ -55,7 +86,10 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
         buttons: [{
             text: 'Cadastrar',
             disabled: true,
-            formBind: true
+            formBind: true,
+            itemId: 'cadastrarusuario',
+            dataIndex: 'cadastrarusuario',
+            handler: 'cadastrar'
         }]
     }]
 });

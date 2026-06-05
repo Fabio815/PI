@@ -66,7 +66,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 	                fieldLabel: 'Rua',
 	                name: 'rua',
 	                flex: 2,
-	                emptyText: 'First',
+	                emptyText: 'rua',
 	            }, {
 					xtype: 'numberfield',
 	                fieldLabel: 'Número',
@@ -85,7 +85,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 				    fieldLabel: 'Logradouro',
 				    name: 'logradouro',
 				    flex: 1,
-				    emptyText: 'First',
+				    emptyText: 'logradouro',
 				}]
 			}, {
 				xtype: 'textareafield',
@@ -101,7 +101,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 			iconCls: 'fa fa-times',
 			handler: 'fecharJanela'
         }, {
-            text: 'Salvar',
+            text: 'Cadastrar',
 			iconCls: 'fa fa-check',
 			handler: 'salvarCliente',
 			disabled: true,

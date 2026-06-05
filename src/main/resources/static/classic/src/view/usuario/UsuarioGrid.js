@@ -1,4 +1,4 @@
-//criação do usuario e edição - formulario de cadastro
+//colocar no Grid -pasta(store) -> usuario, fazer a listagem
 Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'usuario-grid',

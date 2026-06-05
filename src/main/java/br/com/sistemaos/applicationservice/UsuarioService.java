@@ -33,6 +33,7 @@ public class UsuarioService {
                         usuario.getId(),
                         usuario.getNome(),
                         usuario.getEmail(),
+                        usuario.getChave(),
                         null,
                         new Resposta(true, "Login realizado com sucesso")
                 );
