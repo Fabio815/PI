@@ -5,15 +5,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class UsuarioDTO {
     private Long id;
     private String nome;
@@ -21,4 +19,12 @@ public class UsuarioDTO {
     private String senha;
     private String chave;
     private Resposta resposta;
+
+    public UsuarioDTO(Long id, String nome, String email, String senha, String chave) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.chave = chave;
+    }
 }

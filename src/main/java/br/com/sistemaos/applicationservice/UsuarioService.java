@@ -4,11 +4,16 @@ import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.dto.UsuarioDTO;
+import br.com.sistemaos.dto.UsuariosRespostaDTO;
 import br.com.sistemaos.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -41,6 +46,13 @@ public class UsuarioService {
         resposta = usuarioDto;
         resposta.setResposta(Resposta.sucesso("Cliente cadstrado com sucesso!"));
         return resposta;
+    }
+
+    public Map<String, List<UsuarioDTO>> listar() {
+        List<Usuario> listUsuarios = usuarioRepository.findAll();
+
+
+        return UsuariosRespostaDTO.converterUsuarios(listUsuarios);
     }
 
     public Optional<UsuarioDTO> login(String email, String senha) {

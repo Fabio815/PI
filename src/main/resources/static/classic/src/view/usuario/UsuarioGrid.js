@@ -2,8 +2,13 @@
 Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'usuario-grid',
-    required: [
-          'ProjSistemaOs.store.Usuario'
+    requires: [
+        'ProjSistemaOs.store.Usuario',
+        'Ext.grid.column.Check',
+        'Ext.grid.plugin.CellEditing',
+        'Ext.grid.filters.Filters',
+        'Ext.toolbar.Paging'
+
     ],
     controller:{
         adicionarUsuario: function (){
@@ -39,9 +44,10 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     },
     title: 'Usuários',
     layout: 'fit',
+    enableColumnHide: false,
 
     store: {
-            type: 'usuario-listagem-store'
+        type: 'usuario-listagem-store'
     },
 
     tbar: [{
@@ -54,11 +60,18 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         tooltip: 'Configurar',
         iconCls: 'fa fa-user-cog',
         handler: 'configurarUsuario'
-    }, '-',{
+    }, '-', {
         xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
         handler: 'recarregarGrid'
+    }, '->', {
+        xtype: 'button',
+        iconCls: 'fas fa-ban',
+        tooltip: 'Limpar Pesquisa',
+        listeners: {
+            click: 'limparPesquisa'
+        }
     }],
 
     columns: [{
@@ -75,18 +88,41 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         itemId: 'chave',
         dataIndex: 'chave',
         flex: 3,
-        filter: 'string'
+        sortable: false
     }, {
         text: 'Nome Completo',
         itemId: 'nome',
         dataIndex: 'nome',
         flex: 6,
-        filter: 'string'
+        filter: 'string',
+        editor: {
+            type: 'textfield',
+            allowBlank: false,
+            blankText: 'Este campo é obrigatório',
+        },
+        renderer: function (v, meta, record){
+            if (record.get('nome')) {
+                return '<i class="fa fa-user"></i> ' + record.get('nome');
+            }
+            return '';
+        }
     }, {
         text: 'Email',
         itemId: 'email',
         dataIndex: 'email',
-        flex: 8
+        flex: 8,
+        filter: 'string',
+        editor: {
+            type: 'textfield',
+            allowBlank: false,
+            blankText: 'Este campo é obrigatório',
+        },
+        renderer: function (v, meta, record){
+            if (record.get('email')) {
+                return '<i class="fa fa-envelope"></i> ' + record.get('email');
+            }
+            return '';
+        }
     },{
        xtype: 'checkcolumn',
        text: 'Ativo',
@@ -98,6 +134,11 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
            noText: 'Não',
            default: true
        }
-    }]
-
+    }],
+    plugins: {
+        gridfilters: true,
+        cellediting: {
+            clicksToEdit: 2
+        }
+    },
 });

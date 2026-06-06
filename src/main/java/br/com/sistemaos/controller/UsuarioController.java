@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,6 +23,11 @@ public class UsuarioController {
     @PostMapping("/cadastro")
     public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody UsuarioDTO usuario) {
         return ResponseEntity.ok(usuarioService.cadastrar(usuario));
+    }
+
+    @GetMapping("/listar")
+    public ResponseEntity<Map<String, List<UsuarioDTO>>> listar() {
+        return ResponseEntity.ok(usuarioService.listar());
     }
 
     @PostMapping("/login")

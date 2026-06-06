@@ -2,34 +2,37 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     extend: 'Ext.panel.Panel',
     //alias: 'widget.cadastro-usuario',
     xtype: 'cadastrar-usuario',
+
     controller:{
         cadastrar: function (){
+            var me = this, vw = me.getView(),
+            form = vw.down('form').getForm().getValues();
+            console.log(form);
 
-		var me = this, vw = me.getView(),
-		form = vw.down('form').getForm().getValues();
-        console.log(form);
-
-		Ext.Ajax.request({
-			url: 'http://localhost:8080/usuarios/cadastro',
-			method: 'POST',
-			jsonData: form,
-			success: function (conn, response, options, eOpts) {
-				let r = Ext.JSON.decode(conn.responseText, true);
-				console.log(r);
-				if (r && r.resposta.sucesso) {
-					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o usuario.
-					Avisos.mensagemSucesso(r.resposta.mensagem);
-					vw.close();
-				} else if (r) {
-					Avisos.mensagemAviso(r.resposta.mensagem);
-				} else {
-					Avisos.mostrarServidorIndisponivel();
-				}
-			},
-			failure: function (conn, response, options, eOpts) {
-				Avisos.mostrarServidorIndisponivel();
-			}
-		});
+            Ext.Ajax.request({
+                url: 'http://localhost:8080/usuarios/cadastro',
+                method: 'POST',
+                jsonData: form,
+                success: function (conn, response, options, eOpts) {
+                    let r = Ext.JSON.decode(conn.responseText, true);
+                    console.log(r);
+                    if (r && r.resposta.sucesso) {
+                        vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o usuario.
+                        Avisos.mensagemSucesso(r.resposta.mensagem);
+                        vw.close();
+                    } else if (r) {
+                        Avisos.mensagemAviso(r.resposta.mensagem);
+                    } else {
+                        Avisos.mostrarServidorIndisponivel();
+                    }
+                },
+                failure: function (conn, response, options, eOpts) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            });
+        },
+        onValidacaoUsuario: function (form, valid) {
+            this.lookup('btnSalvar').setDisabled(!valid);
         }
     },
 
@@ -58,7 +61,9 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
             labelAlign: 'right',
             margin: '5 0 0 0'
         },
-
+        listeners: {
+            validitychange: 'onValidacaoUsuario'
+        },
         items: [{
             xtype: 'container',
             layout: 'anchor',
@@ -131,14 +136,18 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     ]
                 }]
             }, {
-                xtype: 'textfield',
-                fieldLabel: 'Senha',
-                name: 'senha',
-                labelWidth: 50,
-                labelAlign: 'right',
-                inputType: 'password',
-                allowBlank: false,
-                emptyText: 'Digite a senha'
+                xtype: 'fieldcontainer',
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: 'Senha',
+                    name: 'senha',
+                    width: '300px',
+                    labelWidth: 50,
+                    labelAlign: 'right',
+                    inputType: 'password',
+                    allowBlank: false,
+                    emptyText: 'Digite a senha'
+                }]
             }]
         }]
     }],
@@ -152,7 +161,7 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
         text: 'Cadastrar',
         iconCls: 'fa fa-check',
         handler: 'cadastrar',
+        reference: 'btnSalvar',
         disabled: true,
-        formBind: true
     }]
 });
