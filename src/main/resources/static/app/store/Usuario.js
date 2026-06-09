@@ -15,11 +15,29 @@ Ext.define('ProjSistemaOs.store.Usuario', {
             rootProperty: 'usuarios'
         }
     },
-    /*listeners: {
+    listeners: {
         beforeLoad: function(store, operation){
+            var filtros = store.getFilters().items;
+            var arrayFiltro = [];
+            for (let f of filtros) {
+                let valor = f.getValue();
+                if (f.getProperty() === "status") {
+                    arrayFiltro.push ({
+                        propriedade: 'checkcolumn',
+                        operador: 'in',
+                        valor: valor ? "ATIVO" : "INATIVO"
+                    });
+                    continue;
+                }
+                arrayFiltro.push({
+                    propriedade: f.getProperty(),
+                    operador: f.getOperator(),
+                    valor: valor
+                });
+            }
             store.getProxy().setExtraParams({
                 filtros: Ext.encode(arrayFiltro)
             });
         }
-    }*/
+    }
 });

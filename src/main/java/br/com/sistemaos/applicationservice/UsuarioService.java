@@ -1,26 +1,28 @@
 package br.com.sistemaos.applicationservice;
 
 import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.dto.UsuarioDTO;
 import br.com.sistemaos.dto.UsuariosRespostaDTO;
+import br.com.sistemaos.repository.UsuarioCostumeizadoRepository;
 import br.com.sistemaos.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioCostumeizadoRepository usuarioCostumeizadoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UsuarioDTO cadastrar(UsuarioDTO usuarioDto) {
@@ -48,10 +50,13 @@ public class UsuarioService {
         return resposta;
     }
 
-    public Map<String, List<UsuarioDTO>> listar() {
-        List<Usuario> listUsuarios = usuarioRepository.findAll();
-
-
+    public Map<String, List<UsuarioDTO>> listar(String filtros) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Filtro> listaFiltros = new ArrayList<>();
+        if (filtros != null) {
+            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
+        }
+        List<Usuario> listUsuarios = usuarioCostumeizadoRepository.listagemUsuarios(listaFiltros);
         return UsuariosRespostaDTO.converterUsuarios(listUsuarios);
     }
 

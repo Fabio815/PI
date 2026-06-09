@@ -7,40 +7,42 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         'Ext.grid.column.Check',
         'Ext.grid.plugin.CellEditing',
         'Ext.grid.filters.Filters',
-        'Ext.toolbar.Paging'
-
+        'Ext.toolbar.Paging',
+        'ProjSistemaOs.view.usuario.ConfigurarUsuarioWindow',
+        'ProjSistemaOs.view.usuario.CadastroUsuarioWindow'
     ],
     controller:{
-        adicionarUsuario: function (){
-            Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
-                floating: true,
-                modal: true,
-                iconCls: 'fa fa-user-plus',
-            }).show();
-        },
-        configurarUsuario: function (){
+        adicionarUsuario: function(){
             var me = this, vw = me.getViewModel(),
-                win = Ext.create('ProjSistemaOs.view.usuario.ConfigurarUsuarioWindow');
+                win = Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
+                    floating: true,
+                    modal: true,
+                    iconCls: 'fa fa-user-plus',
+                });
+            win.on('usuariosalvo', () => {
+                console.log('entrou no evento');
+                if (vw && !vw.destroyed && !vw.isDestroying) {
+                    me.getView().getStore().reload();
+                }
+            });
             win.show();
         },
-        redefinirSenha: function () {
-            Ext.Msg.confirm(
-                'Confirmação',
-                'Deseja redefinir a senha deste usuário?',
-                function (btn) {
-                    if (btn === 'yes') {
-                        Ext.Msg.alert(
-                            'Sucesso',
-                            'A senha foi redefinida.'
-                        );
-                    }
-                }
-            );
-        },
+        configurarUsuario: function() {
 
-        salvarUsuario: function () {
-            Ext.Msg.alert('Salvar', 'Usuário atualizado.');
-        }
+        },
+        recarregarGridUsuarios: function() {
+            var me = this, vw = me.getViewModel();
+            if (vw && !vw.destroyed && !vw.isDestroying) {
+                me.getView().getStore().reload();
+            }
+        },
+        limparPesquisa: function (e, t, eOpts) {
+            let a = e.up('grid');
+            if (a) {
+                a.filters.clearFilters();
+                a.getStore().getSorters().removeAll();
+            }
+        },
     },
     title: 'Usuários',
     layout: 'fit',
@@ -64,7 +66,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
-        handler: 'recarregarGrid'
+        handler: 'recarregarGridUsuarios'
     }, '->', {
         xtype: 'button',
         iconCls: 'fas fa-ban',
@@ -123,17 +125,72 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
             }
             return '';
         }
+    }, {
+        text: 'Complemento',
+        itemId: 'complemento',
+        dataIndex: 'complemento',
+        flex: 2,
+        sortable: false,
+        editor: {
+            type: 'textfield'
+        }
     },{
-       xtype: 'checkcolumn',
-       text: 'Ativo',
-       dataIndex: 'status',
-       width: 80,
-       filter: {
-           type: 'boolean',
-           yesText: 'Sim',
-           noText: 'Não',
-           default: true
-       }
+        xtype: 'actioncolumn',
+        dataIndex: 'status',
+        itemId: 'status',
+        width: 75,
+        text: 'Ativo',
+        align: 'center',
+        editable: false,
+        items: [{
+            getClass: function (v, meta, record) {
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get('_status')) {
+                        case 'ATIVO':
+                            return 'far fa-square red';
+                        case 'INATIVO':
+                            return 'far fa-check-square green';
+                    }
+                } else {
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'far fa-check-square';
+                        case 'INATIVO':
+                            return 'far fa-square';
+                    }
+                }
+            },
+            getTip: function(v, meta, record) {
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get('_status')) {
+                        case 'ATIVO':
+                            return 'Realmente inativar?';
+                        case 'INATIVO':
+                            return 'Realmente ativar?';
+                    }
+                } else {
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'Inativar';
+                        case 'INATIVO':
+                            return 'Ativar';
+                    }
+                }
+            },
+            handler: function(a, b, e, f, h, record, k) {
+                if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
+                    this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
+                    //console.log('Entrou no if do evento');
+                } else {
+                    record.set('_status', record.get('status'));
+                }
+            }
+        }],
+        filter: {
+            type: 'list',
+            options: [['ATIVO', 'Sim'], ['INATIVO', 'Não']],
+            value: 'ATIVO'
+        }
     }],
     plugins: {
         gridfilters: true,

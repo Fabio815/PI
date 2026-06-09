@@ -8,6 +8,7 @@ Ext.define('ProjSistemaOs.model.Usuario', {
         { name: 'chave', type: 'string' },
         { name: 'nome', type: 'string' },
         { name: 'email', type: 'string' },
-        { name: 'ativo', type: 'boolean' }
+        { name: 'status', type: 'string' },
+        { name: '_status', type: 'string', default: undefined },
     ]
 });

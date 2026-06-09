@@ -1,5 +1,6 @@
 package br.com.sistemaos.domain.entity;
 
+import br.com.sistemaos.domain.model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,8 @@ public class Usuario {
 
     @Column(nullable = false)
     private String chave;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

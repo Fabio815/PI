@@ -2,7 +2,9 @@ package br.com.sistemaos.controller;
 
 import br.com.sistemaos.applicationservice.UsuarioService;
 import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.dto.FiltroDTO;
 import br.com.sistemaos.dto.UsuarioDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,8 +28,11 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<Map<String, List<UsuarioDTO>>> listar() {
-        return ResponseEntity.ok(usuarioService.listar());
+    public ResponseEntity<Map<String, List<UsuarioDTO>>> listar(
+            @RequestParam(value = "start") int start,
+            @RequestParam(value = "limit") int limit,
+            @RequestParam(value = "filtros") String filtros) {
+        return ResponseEntity.ok(usuarioService.listar(filtros));
     }
 
     @PostMapping("/login")

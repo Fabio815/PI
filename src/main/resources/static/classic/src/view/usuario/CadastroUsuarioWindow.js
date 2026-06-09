@@ -7,7 +7,6 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
         cadastrar: function (){
             var me = this, vw = me.getView(),
             form = vw.down('form').getForm().getValues();
-            console.log(form);
 
             Ext.Ajax.request({
                 url: 'http://localhost:8080/usuarios/cadastro',
@@ -15,19 +14,17 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                 jsonData: form,
                 success: function (conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
-                    console.log(r);
                     if (r && r.resposta.sucesso) {
-                        vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o usuario.
+                        vw.fireEvent('usuariosalvo');
                         Avisos.mensagemSucesso(r.resposta.mensagem);
                         vw.close();
-                    } else if (r) {
-                        Avisos.mensagemAviso(r.resposta.mensagem);
                     } else {
-                        Avisos.mostrarServidorIndisponivel();
+                        Avisos.mensagemAviso(r.resposta.mensagem);
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
-                    Avisos.mostrarServidorIndisponivel();
+                    let r = Ext.JSON.decode(conn.responseText, true);
+                    Avisos.mensagemAviso(r.mensagem);
                 }
             });
         },
