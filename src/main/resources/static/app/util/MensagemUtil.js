@@ -1,9 +1,9 @@
 Ext.define('ProjSistemaOs.util.MensagemUtil', {
     alternateClassName: 'Avisos',
     singleton: true, //É uma classe singleton, ou seja, não preciso ficar instanciando toda hora :)
-    requires: [
+    /*requires: [
         'Ext.window.Toast'
-    ],
+    ],*/
 
     mensagemSucesso: function(msg) {
         Ext.toast(msg, '<i class="fa fa-check"></i> Aviso', 't');

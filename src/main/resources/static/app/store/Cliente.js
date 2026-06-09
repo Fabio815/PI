@@ -3,8 +3,9 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     alias: 'store.cliente-listagem-store',
     model: 'ProjSistemaOs.model.Cliente',
 
-    required: [
-        'ProjSistemaOs.util.Config'
+    requires: [
+        'ProjSistemaOs.util.Config',
+        'ProjSistemaOs.util.MensagemUtil'
     ],
 
     //Refazer esse store
