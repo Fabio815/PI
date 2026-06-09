@@ -21,14 +21,7 @@ Ext.define('ProjSistemaOs.store.Usuario', {
             var arrayFiltro = [];
             for (let f of filtros) {
                 let valor = f.getValue();
-                if (f.getProperty() === "status") {
-                    arrayFiltro.push ({
-                        propriedade: 'checkcolumn',
-                        operador: 'in',
-                        valor: valor ? "ATIVO" : "INATIVO"
-                    });
-                    continue;
-                }
+                console.log(valor);
                 arrayFiltro.push({
                     propriedade: f.getProperty(),
                     operador: f.getOperator(),

@@ -65,13 +65,7 @@ public class UsuarioCostumeizadoRepository {
                     }
                     break;
                 case "in":
-                    List<Status> status = new ArrayList<>();
-                    List<?> valores = Collections.singletonList(f.getValor());
-
-                    for (Object valor : valores) {
-                        status.add(Status.valueOf(valor.toString()));
-                    }
-                    query.setParameter("status", status);
+                    query.setParameter("status", f.getValor());
                     break;
                 default:
                     break;
