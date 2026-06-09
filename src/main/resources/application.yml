@@ -18,3 +18,18 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 93fff04c5d8041
+    password: 39664621df924b
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  app:
+    base-url: http://localhost:8080
+

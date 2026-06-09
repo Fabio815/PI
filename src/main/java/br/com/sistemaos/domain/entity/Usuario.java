@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "usuarios")
@@ -23,4 +24,11 @@ public class Usuario {
 
     @Column(nullable = false)
     private String senha;
+
+    //recuperacao de senha
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry_date")
+    private LocalDateTime resetTokenExpiryDate;
 }

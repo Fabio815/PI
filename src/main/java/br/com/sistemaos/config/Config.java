@@ -1,4 +1,4 @@
-package br.com.sistemaos.config;
+/* package br.com.sistemaos.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,3 +12,4 @@ public class Config {
         return new BCryptPasswordEncoder();
     }
 }
+teste*/
