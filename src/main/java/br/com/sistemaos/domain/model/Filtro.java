@@ -6,5 +6,5 @@ import lombok.Data;
 public class Filtro {
     private String propriedade;
     private String operador;
-    private String valor;
+    private Object valor;
 }

@@ -22,7 +22,6 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                 scope: this,
                 success: function(conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
-                    console.log(r.resposta);
                     if (r && r.resposta.sucesso) {
                         viewport.removeAll();
                         //Basicamente aqui estou criando um Viewport que é um container especial que se ajusta automaticamente

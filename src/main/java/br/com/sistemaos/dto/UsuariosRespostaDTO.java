@@ -16,7 +16,7 @@ public class UsuariosRespostaDTO {
         List<UsuarioDTO> listUsuarioDTO = new ArrayList<>();
         Map<String, List<UsuarioDTO>> mapaUsuarios = new HashMap<String, List<UsuarioDTO>>();
         for (Usuario u : usuario) {
-            listUsuarioDTO.add(new UsuarioDTO(u.getId(), u.getNome(), u.getEmail(), u.getSenha(), u.getChave()));
+            listUsuarioDTO.add(new UsuarioDTO(u.getId(), u.getNome(), u.getEmail(), u.getChave(), u.getStatus()));
         }
 
         mapaUsuarios.put("usuarios", listUsuarioDTO);

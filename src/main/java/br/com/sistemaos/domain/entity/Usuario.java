@@ -30,7 +30,14 @@ public class Usuario {
     @Column(nullable = false)
     private String chave;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = Status.ATIVO;
+        }
+    }
 }

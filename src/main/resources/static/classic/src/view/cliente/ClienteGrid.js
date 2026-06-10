@@ -45,7 +45,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
                     jsonData: dadosFormato,
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
-                        console.log(r);
                         if (r && r.resposta.sucesso) {
                             record.commit();
                             Avisos.mensagemSucesso(r.resposta.mensagem);
@@ -64,7 +63,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClientesGrid', {
             }
         },
         onStatusChange: function (checkColumn, rowIndex, checked, record) {
-            console.log(checked);
             let me = this;
             Ext.Ajax.request({
                 url: 'http://localhost:8080/cliente/status/' + record.get('id') + '/' + (checked ? 'ATIVO' : 'INATIVO'),

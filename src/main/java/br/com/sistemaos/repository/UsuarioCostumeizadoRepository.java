@@ -42,7 +42,7 @@ public class UsuarioCostumeizadoRepository {
                     temporarioSQL = " and ";
                     break;
                 case "in":
-                    sql.append(temporarioSQL).append(" u.status = :status ");
+                    sql.append(temporarioSQL).append(" u.status in :status ");
                     temporarioSQL = " and ";
                     break;
                 default:
@@ -65,7 +65,14 @@ public class UsuarioCostumeizadoRepository {
                     }
                     break;
                 case "in":
-                    query.setParameter("status", f.getValor());
+                    List<Status> status = new ArrayList<>();
+                    List<?> valores = (List<?>) f.getValor();
+
+                    for (Object valor : valores) {
+                        status.add(Status.valueOf(valor.toString()));
+                    }
+                    query.setParameter("status", status);
+                    //query.setParameter("status", f.getValor());
                     break;
                 default:
                     break;

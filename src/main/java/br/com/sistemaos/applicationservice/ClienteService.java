@@ -72,6 +72,7 @@ public class ClienteService {
     public Map<String, Object> buscarTodos(int start, int limit, String filtros) {
         ObjectMapper mapper = new ObjectMapper();
         List<Filtro> listaFiltros = new ArrayList<>();
+        log.info("Filtros clientes" + filtros);
         if (filtros != null) {
             listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
@@ -79,7 +80,7 @@ public class ClienteService {
         String valorFiltro = null;
         byte tipoFiltro = 0;
 
-        for (Filtro filtro : listaFiltros) {
+        /*for (Filtro filtro : listaFiltros) {
             switch (filtro.getOperador()) {
                 case "like":
                     valorFiltro = filtro.getValor();
@@ -96,7 +97,7 @@ public class ClienteService {
                 default:
                     break;
             }
-        }
+        }*/
 
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);

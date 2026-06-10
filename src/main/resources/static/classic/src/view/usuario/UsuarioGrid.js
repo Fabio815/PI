@@ -43,6 +43,15 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                 a.getStore().getSorters().removeAll();
             }
         },
+        listen: {
+            component: {
+                'usuario-grid actioncolumn#status': {
+                    trocarStatus: function () {
+                        console.log('clicado no status');
+                    }
+                }
+            }
+        }
     },
     title: 'Usuários',
     layout: 'fit',
@@ -126,15 +135,6 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
             return '';
         }
     }, {
-        text: 'Complemento',
-        itemId: 'complemento',
-        dataIndex: 'complemento',
-        flex: 2,
-        sortable: false,
-        editor: {
-            type: 'textfield'
-        }
-    },{
         xtype: 'actioncolumn',
         dataIndex: 'status',
         itemId: 'status',
@@ -180,7 +180,6 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
             handler: function(a, b, e, f, h, record, k) {
                 if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
                     this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
-                    //console.log('Entrou no if do evento');
                 } else {
                     record.set('_status', record.get('status'));
                 }
