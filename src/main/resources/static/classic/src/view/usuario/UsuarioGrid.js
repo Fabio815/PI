@@ -9,9 +9,10 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         'Ext.grid.filters.Filters',
         'Ext.toolbar.Paging',
         'ProjSistemaOs.view.usuario.ConfigurarUsuarioWindow',
-        'ProjSistemaOs.view.usuario.CadastroUsuarioWindow'
+        'ProjSistemaOs.view.usuario.CadastroUsuarioWindow',
+        'ProjSistemaOs.util.MensagemUtil'
     ],
-    controller:{
+    controller: {
         adicionarUsuario: function(){
             var me = this, vw = me.getViewModel(),
                 win = Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
@@ -20,7 +21,6 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                     iconCls: 'fa fa-user-plus',
                 });
             win.on('usuariosalvo', () => {
-                console.log('entrou no evento');
                 if (vw && !vw.destroyed && !vw.isDestroying) {
                     me.getView().getStore().reload();
                 }
@@ -43,11 +43,44 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                 a.getStore().getSorters().removeAll();
             }
         },
+        editarUsuario: function(edit, context) {
+            var me = this, vw = me.getViewModel(),
+                oldValue = edit.context.originalValue,
+                newValue = edit.context.value;
+            if (oldValue !== newValue) {
+                Ext.Ajax.request({
+                    url: 'http://localhost:8080/usuarios/atualizar',
+                    method: 'PUT',
+                    jsonData: context.record.getData(),
+                    sucesso: function (response) {
+                        console.log(response);
+                        context.record.commit();
+                    },
+                    failure: function (response) {
+                        console.log(response);
+                        context.record.reject();
+                    }
+                })
+            }
+        },
         listen: {
             component: {
                 'usuario-grid actioncolumn#status': {
-                    trocarStatus: function () {
-                        console.log('clicado no status');
+                    trocarStatus: function (a, b, e, f, h, record, k) {
+                        var me = this, vw = me.getView();
+                        Ext.Ajax.request({
+                            url: 'http://localhost:8080/usuarios/status/atualizar',
+                            method: 'POST',
+                            jsonData: record.data,
+                            callback: function (success, response, options) {
+                                var r = Ext.JSON.decode(options.responseText);
+                                if (r.sucesso) {
+                                    a.getStore().reload();
+                                } else {
+                                    Avisos.contateAdm();
+                                }
+                            }
+                        })
                     }
                 }
             }
@@ -194,7 +227,10 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     plugins: {
         gridfilters: true,
         cellediting: {
-            clicksToEdit: 2
+            clicksToEdit: 2,
+            listeners: {
+                edit: 'editarUsuario'
+            }
         }
     },
 });

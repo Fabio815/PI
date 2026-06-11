@@ -3,6 +3,7 @@ package br.com.sistemaos.applicationservice;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.ClienteRespostaDTO;
 import br.com.sistemaos.dto.UsuarioDTO;
 import br.com.sistemaos.dto.UsuariosRespostaDTO;
@@ -82,5 +83,19 @@ public class UsuarioService {
         }
 
         return Optional.empty();
+    }
+
+    public Resposta atualizarStats(UsuarioDTO usuario) {
+        Resposta resposta = new Resposta();
+        if (usuario.getId() == null) {
+            resposta.setSucesso(false);
+            resposta.setMensagem("Contate o administrador");
+            return resposta;
+        }
+        Status status = usuario.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
+        usuarioRepository.updateStatus(status, usuario.getId());
+        resposta.setSucesso(true);
+        resposta.setMensagem("Usuario atualizado com sucesso");
+        return resposta;
     }
 }

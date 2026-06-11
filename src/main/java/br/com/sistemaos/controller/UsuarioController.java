@@ -52,4 +52,14 @@ public class UsuarioController {
                 .ok()
                 .body(resposta);
     }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<UsuarioDTO> atualizar(@RequestBody UsuarioDTO usuario) {
+        return null;
+    }
+
+    @PostMapping("/status/atualizar")
+    public ResponseEntity<Resposta> atualizarStatus(@RequestBody UsuarioDTO usuario) {
+        return ResponseEntity.ok(usuarioService.atualizarStats(usuario));
+    }
 }
