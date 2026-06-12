@@ -54,8 +54,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<UsuarioDTO> atualizar(@RequestBody UsuarioDTO usuario) {
-        return null;
+    public ResponseEntity<Resposta> atualizarUsuario(@RequestBody UsuarioDTO usuario) {
+        return ResponseEntity.ok(usuarioService.atualizarUsuario(usuario));
     }
 
     @PostMapping("/status/atualizar")

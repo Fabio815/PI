@@ -98,4 +98,16 @@ public class UsuarioService {
         resposta.setMensagem("Usuario atualizado com sucesso");
         return resposta;
     }
+
+    public Resposta atualizarUsuario(UsuarioDTO usuario) {
+        if (usuario.getId() == null) {
+            return new Resposta(false, "Falha ao atualizar usuario");
+        }
+        Resposta resposta = new Resposta();
+        usuarioRepository.updateUsuario(usuario.getEmail(), usuario.getNome(), usuario.getId());
+
+        resposta.setSucesso(true);
+        resposta.setMensagem("Usuario atualizado com sucesso");
+        return resposta;
+    }
 }

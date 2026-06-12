@@ -21,4 +21,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Modifying
     @Query("update Usuario as u set u.status=:status where u.id=:id")
     void updateStatus(@Param("status") Status status, @Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query ("update Usuario as u set u.email=:email, u.nome=:nome where id=:id")
+    void updateUsuario(@Param("email") String email, @Param("nome") String nome, @Param("id") Long id);
 }

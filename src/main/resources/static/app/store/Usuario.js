@@ -21,7 +21,6 @@ Ext.define('ProjSistemaOs.store.Usuario', {
             var arrayFiltro = [];
             for (let f of filtros) {
                 let valor = f.getValue();
-                console.log(valor);
                 arrayFiltro.push({
                     propriedade: f.getProperty(),
                     operador: f.getOperator(),

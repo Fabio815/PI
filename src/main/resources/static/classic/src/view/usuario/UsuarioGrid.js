@@ -52,13 +52,19 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                     url: 'http://localhost:8080/usuarios/atualizar',
                     method: 'PUT',
                     jsonData: context.record.getData(),
-                    sucesso: function (response) {
-                        console.log(response);
-                        context.record.commit();
+                    success: function (response) {
+                        var r = Ext.JSON.decode(response.responseText, true);
+                        if (r && r.sucesso) {
+                            context.record.commit();
+                            Avisos.mensagemSucesso(r.mensagem);
+                        } else {
+                            context.record.reject();
+                            Avisos.contateAdm();
+                        }
                     },
                     failure: function (response) {
-                        console.log(response);
                         context.record.reject();
+                        Avisos.mostrarServidorIndisponivel();
                     }
                 })
             }
@@ -101,7 +107,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         handler: 'adicionarUsuario'
     },'-', {
         xtype: 'button',
-        tooltip: 'Configurar',
+        tooltip: 'Mudar senha',
         iconCls: 'fa fa-user-cog',
         handler: 'configurarUsuario'
     }, '-', {
