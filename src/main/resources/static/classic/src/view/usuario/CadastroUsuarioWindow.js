@@ -1,7 +1,7 @@
 Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     extend: 'Ext.panel.Panel',
-    //alias: 'widget.cadastro-usuario',
-    xtype: 'cadastrar-usuario',
+    alias: 'widget.cadastrar-usuario',
+    //xtype: 'cadastrar-usuario',
 
     controller:{
         cadastrar: function (){
@@ -9,7 +9,7 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
             form = vw.down('form').getForm().getValues();
 
             Ext.Ajax.request({
-                url: 'http://localhost:8080/usuarios/cadastro',
+                url: '/usuarios/cadastro',
                 method: 'POST',
                 jsonData: form,
                 success: function (conn, response, options, eOpts) {

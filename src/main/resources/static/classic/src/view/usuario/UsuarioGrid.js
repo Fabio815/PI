@@ -15,7 +15,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
     controller: {
         adicionarUsuario: function(){
             var me = this, vw = me.getViewModel(),
-                win = Ext.create('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
+                win = Ext.widget('cadastrar-usuario', {
                     floating: true,
                     modal: true,
                     iconCls: 'fa fa-user-plus',
@@ -49,7 +49,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                 newValue = edit.context.value;
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: 'http://localhost:8080/usuarios/atualizar',
+                    url: '/usuarios/atualizar',
                     method: 'PUT',
                     jsonData: context.record.getData(),
                     success: function (response) {
@@ -75,7 +75,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         var me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: 'http://localhost:8080/usuarios/status/atualizar',
+                            url: '/usuarios/status/atualizar',
                             method: 'POST',
                             jsonData: record.data,
                             callback: function (success, response, options) {
