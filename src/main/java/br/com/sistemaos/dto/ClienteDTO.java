@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class ClienteDTO {
-
     private Long id;
     @NotNull(message = "O nome do cliente não pode ser vazio")
     @Size(min = 1, max = 50, message = "Nome maior que 50 caracteres")

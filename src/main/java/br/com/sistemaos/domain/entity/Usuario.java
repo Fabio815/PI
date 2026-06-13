@@ -1,7 +1,9 @@
 package br.com.sistemaos.domain.entity;
 
+import br.com.sistemaos.domain.model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +34,18 @@ public class Usuario {
 
     @Column(name = "reset_token_expiry_date")
     private LocalDateTime resetTokenExpiryDate;
+
+    @Column(nullable = false)
+    private String chave;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = Status.ATIVO;
+        }
+    }
 }

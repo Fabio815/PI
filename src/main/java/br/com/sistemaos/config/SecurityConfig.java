@@ -13,15 +13,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable( )) // Desabilita CSRF (comum em APIs REST)
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/usuarios/**").permitAll() // Libera o cadastro e login
-                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().permitAll()
                 );
 
-        return http.build( );
+        return http.build();
     }
 
     @Bean

@@ -21,14 +21,14 @@ public class AuthController {
         return ResponseEntity.ok("E-mail de recuperação enviado!");
     }
 
-    @PostMapping("/resetar-senha")
+    /*@PostMapping("/resetar-senha")
     public ResponseEntity<String> resetar(@RequestParam String token, @RequestParam String novaSenha) {
         if (usuarioService.resetarSenha(token, novaSenha)) {
             return ResponseEntity.ok("Senha alterada!");
         }
         return ResponseEntity.badRequest().body("Token inválido ou expirado.");
     }
-    /*@GetMapping("/resetar-senha")
+    @GetMapping("/resetar-senha")
     public ResponseEntity<String> validarTokenETrocarSenha(
             @RequestParam String token,
             @RequestParam(required = false, defaultValue = "novasenha") String novaSenha) {
