@@ -10,7 +10,13 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         'Ext.toolbar.Paging',
         'ProjSistemaOs.view.usuario.ConfigurarUsuarioWindow',
         'ProjSistemaOs.view.usuario.CadastroUsuarioWindow',
-        'ProjSistemaOs.util.MensagemUtil'
+        'ProjSistemaOs.util.MensagemUtil',
+        'Ext.form.Panel',
+        'Ext.form.FieldSet',
+        'Ext.form.FieldContainer',
+        'Ext.form.field.Text',
+        'Ext.form.field.ComboBox',
+        'Ext.container.Container'
     ],
     controller: {
         adicionarUsuario: function(){

@@ -3,7 +3,13 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
     alias: 'widget.cadastro-cliente',
 	controller: 'cliente-controller',
 	requires: [
-		'ProjSistemaOs.view.cliente.ClienteController'
+		'ProjSistemaOs.view.cliente.ClienteController',
+		'Ext.form.Panel',
+		'Ext.form.FieldSet',
+		'Ext.form.FieldContainer',
+		'Ext.form.field.Text',
+		'Ext.form.field.ComboBox',
+		'Ext.container.Container'
 	],
 
     title: 'Cadastro Cliente',
@@ -42,9 +48,35 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 				blankText : 'O campo é obrigatório',
                 name: 'telefone',
                 emptyText: '(00) 00000-0000',
+				maskRe: /[0-9]/,
 				//enforceMaxLength: true,
 				maxLength: 15,
-				maxLengthText: 'O máximo de caracteres é de {0}'
+				maxLengthText: 'O máximo de caracteres é de {0}',
+				listeners: {
+					change: function(field, value) {
+						value = value.replace(/\D/g, '');
+
+						if (value.length > 11) {
+							value = value.substring(0, 11);
+						}
+
+						if (value.length > 10) {
+							value = value.replace(
+								/^(\d{2})(\d{5})(\d{4}).*/,
+								'($1) $2-$3'
+							);
+						} else {
+							value = value.replace(
+								/^(\d{2})(\d{4})(\d{0,4}).*/,
+								'($1) $2-$3'
+							);
+						}
+
+						field.suspendEvents();
+						field.setValue(value);
+						field.resumeEvents();
+					}
+				}
             }]
         }, {
 			xtype: 'fieldset',

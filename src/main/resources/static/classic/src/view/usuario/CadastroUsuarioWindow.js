@@ -116,8 +116,34 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     labelWidth: 50,
                     flex: 1,
                     margin: '0 10 0 0',
+                    maskRe: /[0-9]/,
                     emptyText: '(00) 00000-0000',
-                    maxLength: 15
+                    maxLength: 15,
+                    listeners: {
+                        change: function(field, value) {
+                            value = value.replace(/\D/g, '');
+
+                            if (value.length > 11) {
+                                value = value.substring(0, 11);
+                            }
+
+                            if (value.length > 10) {
+                                value = value.replace(
+                                    /^(\d{2})(\d{5})(\d{4}).*/,
+                                    '($1) $2-$3'
+                                );
+                            } else {
+                                value = value.replace(
+                                    /^(\d{2})(\d{4})(\d{0,4}).*/,
+                                    '($1) $2-$3'
+                                );
+                            }
+
+                            field.suspendEvents();
+                            field.setValue(value);
+                            field.resumeEvents();
+                        }
+                    }
                 }, {
                     xtype: 'combobox',
                     fieldLabel: 'Perfil',
