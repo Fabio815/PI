@@ -1,20 +1,30 @@
 Ext.define('ProjSistemaOs.util.MensagemUtil', {
     alternateClassName: 'Avisos',
-    singleton: true, //É uma classe singleton, ou seja, não preciso ficar instanciando toda hora :)
+    singleton: true,
+
     /*requires: [
-        'Ext.window.Toast'
+        'Ext.window.MessageBox'
     ],*/
 
     mensagemSucesso: function(msg) {
-        Ext.toast(msg, '<i class="fa fa-check"></i> Aviso', 't');
+        Ext.Msg.alert('Sucesso', msg);
     },
+
     mensagemAviso: function(msg) {
-        Ext.toast(msg, '<i class="fa fa-bell"></i> Aviso', 't');
+        Ext.Msg.alert('Aviso', msg);
     },
+
     mostrarServidorIndisponivel: function() {
-        Ext.toast('Servidor indisponível', '<i class="fa fa-bell"></i> Aviso', 't');
+        Ext.Msg.alert(
+            'Erro',
+            'Servidor indisponível. Tente novamente mais tarde.'
+        );
     },
-    contateAdm: function () {
-        Ext.toast('Contate o adminstrador', '<i class="fa fa-check"></i> Aviso', 't');
+
+    contateAdm: function() {
+        Ext.Msg.alert(
+            'Aviso',
+            'Contate o administrador do sistema.'
+        );
     }
 });

@@ -63,7 +63,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                         var r = Ext.JSON.decode(response.responseText, true);
                         if (r && r.sucesso) {
                             context.record.commit();
-                            Avisos.mensagemSucesso(r.mensagem);
+                            //Avisos.mensagemSucesso(r.mensagem);
                         } else {
                             context.record.reject();
                             Avisos.contateAdm();

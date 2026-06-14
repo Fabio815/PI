@@ -24,7 +24,7 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     let r = Ext.JSON.decode(conn.responseText, true);
                     if (r && r.resposta.sucesso) {
                         vw.fireEvent('usuariosalvo');
-                        Avisos.mensagemSucesso(r.resposta.mensagem);
+                        //Avisos.mensagemSucesso(r.resposta.mensagem);
                         vw.close();
                     } else {
                         Avisos.mensagemAviso(r.resposta.mensagem);

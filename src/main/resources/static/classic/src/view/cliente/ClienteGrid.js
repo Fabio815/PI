@@ -61,10 +61,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                     jsonData: dadosFormato,
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
-                        console.log(r);
                         if (r && r.resposta.sucesso) {
                             record.commit();
-                            Avisos.mensagemSucesso(r.resposta.mensagem);
+                            //Avisos.mensagemSucesso(r.resposta.mensagem);
                         } else if (!r && !r.resposta.sucesso) {
                             record.reject();
                             Avisos.mensagemAviso(r.resposta.mensagem);

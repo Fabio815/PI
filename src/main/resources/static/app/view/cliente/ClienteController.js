@@ -41,7 +41,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 				let r = Ext.JSON.decode(conn.responseText, true);
 				if (r && r.resposta.sucesso) {
 					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o cliente.
-					Avisos.mensagemSucesso(r.resposta.mensagem);
+					//Avisos.mensagemSucesso(r.resposta.mensagem);
 					vw.close();
 				} else if (r) {
 					Avisos.mensagemAviso(r.resposta.mensagem);
