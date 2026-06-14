@@ -4,7 +4,6 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     model: 'ProjSistemaOs.model.Cliente',
 
     requires: [
-        'ProjSistemaOs.util.Config',
         'ProjSistemaOs.util.MensagemUtil'
     ],
 
@@ -15,7 +14,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
     proxy: {
         type: 'ajax',
-        url: ProjSistemaOs.util.Config.apiUrl + '/cliente/listar',
+        url: window.location.origin + '/cliente/listar',
         reader: {
             type: 'json',
             rootProperty: 'clientes'

@@ -118,7 +118,6 @@ public class UsuarioService {
         resposta.setMensagem("Usuario atualizado com sucesso");
         return resposta;
     }
-}
     //Recuperacao de senha
 
     public void solicitarRecuperacao(String email) {

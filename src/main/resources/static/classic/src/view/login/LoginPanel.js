@@ -30,9 +30,11 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                         Ext.create('Ext.container.Viewport', {
                             layout: 'fit',
                             items: [{
-                                xtype: 'app-main'
+                                xtype: 'app-main',
+                                perfil: r.chave
                             }]
                         });
+                        //localStorage.setItem('perfil', r.chave);
                     } else if (r && !r.resposta.sucesso) {
                         Avisos.mensagemAviso(r.resposta.mensagem);
                     } else {
@@ -43,6 +45,28 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                     Avisos.mostrarServidorIndisponivel();
                 }
             })
+        },
+        recuperarSenha: function() {
+            var me = this, vw = me.getView();
+            form = vw.down('form').getForm().getValues();
+            Ext.Ajax.request({
+                url: sistemaOsLocal.apiUrl + '/auth/recuperar',
+                method: 'POST',
+                jsonData: {
+                    email: form.login,
+                },
+                scope: this,
+                success: function (conn, response, options, eOpts) {
+                    console.log(conn);
+                },
+                failure: function(response) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            })
+        },
+        onValidacaoUsuario: function (form, valid) {
+            this.lookup('enviarSenha').setDisabled(!valid);
+            this.lookup('recuperar').setDisabled(!valid);
         }
     },
 
@@ -56,9 +80,12 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
         frame: true,
         bodyPadding: '20 5 5 5',
         defaultType: 'textfield',
-
+        listeners: {
+            validitychange: 'onValidacaoUsuario',
+        },
         items: [{
             allowBlank: false,
+            itemId: 'login',
             fieldLabel: 'Login',
             name: 'login',
             emptyText: 'Nome do usuário',
@@ -67,7 +94,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
             blankText: 'Este campo é obrigatório',
             //labelWidth: 50,
         }, {
-            allowBlank: false,
+            //allowBlank: false,
             fieldLabel: 'Senha',
             name: 'senha',
             emptyText: 'Senha',
@@ -81,8 +108,15 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
             labelWidth: 50
         },
         buttons: [{
+            text: 'Recuperar senha',
+            handler: 'recuperarSenha',
+            reference: 'recuperar',
+            disabled: true
+        },'->',{
             text: 'Enviar',
-            handler: 'enviar'
+            handler: 'enviar',
+            reference: 'enviarSenha',
+            disabled: true,
         }]
     }]
 });

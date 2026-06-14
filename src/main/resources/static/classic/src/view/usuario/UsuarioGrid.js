@@ -16,7 +16,8 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         'Ext.form.FieldContainer',
         'Ext.form.field.Text',
         'Ext.form.field.ComboBox',
-        'Ext.container.Container'
+        'Ext.container.Container',
+        'ProjSistemaOs.util.Config'
     ],
     controller: {
         adicionarUsuario: function(){
@@ -55,7 +56,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                 newValue = edit.context.value;
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: '/usuarios/atualizar',
+                    url: sistemaOsLocal.apiUrl + '/usuarios/atualizar',
                     method: 'PUT',
                     jsonData: context.record.getData(),
                     success: function (response) {
@@ -81,7 +82,7 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         var me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: '/usuarios/status/atualizar',
+                            url: sistemaOsLocal.apiUrl + '/usuarios/status/atualizar',
                             method: 'POST',
                             jsonData: record.data,
                             callback: function (success, response, options) {

@@ -14,6 +14,6 @@ Ext.application({
     ],
 
     // The name of the initial view to create.
-    mainView: 'ProjSistemaOs.view.main.Main'
-    //mainView: 'ProjSistemaOs.view.login.LoginPanel'
+    //mainView: 'ProjSistemaOs.view.main.Main'
+    mainView: 'ProjSistemaOs.view.login.LoginPanel'
 });

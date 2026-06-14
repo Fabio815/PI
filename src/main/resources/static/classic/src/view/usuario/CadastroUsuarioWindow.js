@@ -2,14 +2,22 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.cadastrar-usuario',
     //xtype: 'cadastrar-usuario',
-
+    requires: [
+        'ProjSistemaOs.util.Config',
+        'Ext.form.Panel',
+        'Ext.form.FieldSet',
+        'Ext.form.FieldContainer',
+        'Ext.form.field.Text',
+        'Ext.form.field.ComboBox',
+        'Ext.container.Container'
+    ],
     controller:{
         cadastrar: function (){
             var me = this, vw = me.getView(),
             form = vw.down('form').getForm().getValues();
 
             Ext.Ajax.request({
-                url: '/usuarios/cadastro',
+                url: sistemaOsLocal.apiUrl + '/usuarios/cadastro',
                 method: 'POST',
                 jsonData: form,
                 success: function (conn, response, options, eOpts) {
@@ -76,7 +84,6 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     allowBlank: false,
                     blankText: 'O campo é obrigatório'
                 },
-
                 items: [{
                     fieldLabel: 'Nome',
                     name: 'nome',

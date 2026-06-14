@@ -9,7 +9,7 @@ Ext.define('ProjSistemaOs.store.Usuario', {
 
     proxy: {
         type: 'ajax',
-        url: 'http://localhost:8080/usuarios/listar',
+        url: window.location.origin + '/usuarios/listar',
         reader: {
             type: 'json',
             rootProperty: 'usuarios'

@@ -16,10 +16,16 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar")
+    public ResponseEntity<String> recuperar(@RequestBody Map<String, String> email) {
+        usuarioService.solicitarRecuperacao(email.get("email"));
+        return ResponseEntity.ok("E-mail de recuperação enviado!");
+    }
+
+    /*@PostMapping("/recuperar")
     public ResponseEntity<String> recuperar(@RequestParam String email) {
         usuarioService.solicitarRecuperacao(email);
         return ResponseEntity.ok("E-mail de recuperação enviado!");
-    }
+    }*/
 
     /*@PostMapping("/resetar-senha")
     public ResponseEntity<String> resetar(@RequestParam String token, @RequestParam String novaSenha) {
