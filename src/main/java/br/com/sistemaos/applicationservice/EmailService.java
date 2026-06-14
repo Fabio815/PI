@@ -13,10 +13,15 @@ public class EmailService {
     }
 
     public void sendEmail(String to, String subject, String text) {
+        System.out.println("Enviando email para: " + to);
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
+
+
+        System.out.println("Email enviado");
     }
 }

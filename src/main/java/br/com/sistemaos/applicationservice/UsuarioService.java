@@ -129,12 +129,15 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
 
             // Monta o link e envia o e-mail
-            String link = baseUrl + "/auth/resetar-senha?token=" + token;
+            //String link = baseUrl + "/auth/resetar-senha?token=" + token;
+            //String link = baseUrl + "/auth/resetar-senha?token=" + token;
+            String link = baseUrl + "/#redefinir-senha?token=" + token;
             emailService.sendEmail(
                     usuario.getEmail(),
                     "Recuperação de Senha - Sistema OS",
                     "Olá " + usuario.getNome() + ",\n\nPara redefinir sua senha, clique no link abaixo:\n" + link
             );
+            log.info(link);
         });
     }
 
