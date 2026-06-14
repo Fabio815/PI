@@ -83,6 +83,14 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
         buttons: [{
             text: 'Enviar',
             handler: 'enviar'
+        }, {
+            text: 'Recuperar Senha', //Botão recuperar senha adicionado para fazer o teste de tela
+            handler: function() {
+                Ext.create(
+                    'ProjSistemaOs.view.usuario.RedefinirSenhaWindow'
+                ).show();
+            }
+        }]
         }]
     }]
 });
