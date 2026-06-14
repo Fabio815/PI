@@ -118,8 +118,8 @@ public class UsuarioService {
         resposta.setMensagem("Usuario atualizado com sucesso");
         return resposta;
     }
-}
-    //Recuperacao de senha
+
+//Recuperacao de senha
 
     public void solicitarRecuperacao(String email) {
         usuarioRepository.findByEmail(email).ifPresent(usuario -> {
@@ -150,5 +150,7 @@ public class UsuarioService {
                     usuarioRepository.save(usuario);
                     return true;
                 }).orElse(false);
+
     }
 }
+
