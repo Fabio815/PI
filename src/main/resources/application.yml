@@ -31,5 +31,5 @@ spring:
             enable: true
 
   app:
-    base-url: http://localhost:8080
+    base-url: https://trimness-unlocked-skintight.ngrok-free.dev
 

@@ -20,7 +20,9 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
-
+        System.out.println("ASSUNTO: " + subject);
+        System.out.println("DESTINO: " + to);
+        System.out.println("CORPO:\n" + text);
 
         System.out.println("Email enviado");
     }

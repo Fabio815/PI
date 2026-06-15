@@ -23,7 +23,7 @@ public class ClienteDTO {
     @Size(min = 1, max = 50, message = "Nome maior que 50 caracteres")
     private String nome;
     @NotNull(message = "O telefone não pode ser vazio")
-    @Size(min = 1, max = 14, message = "Telefone maior que 14 caracteres")
+    @Size(min = 1, max = 15, message = "Telefone maior que 14 caracteres")
     private String telefone;
     private Status status;
     private EnderecoDTO endereco;
