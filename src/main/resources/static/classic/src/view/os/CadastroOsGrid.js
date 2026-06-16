@@ -11,6 +11,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         handler: 'adicionarCliente'
     }, '-', {
         xtype: 'button',
+        tooltip: 'Vizualizar',
+        iconCls: 'fa fa-eye',
+        handler: 'recarregarGrid'
+    }, '-', {
+        xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
         handler: 'recarregarGrid'
@@ -23,12 +28,28 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         }
     }],
     columns: [{
-        text: 'Id'
+        text: 'Id',
+        flex: 1
     }, {
-        text: 'Data de criação'
+        text: 'Data de criação',
+        flex: 2
     }, {
-        text: 'Nome cliente'
+        text: 'Nome cliente',
+        flex: 4
     }, {
-        text: 'Status'
+        text: 'Telefone',
+        flex: 2
+    }, {
+        text: 'Preço',
+        flex: 1
+    }, {
+        text: 'Status',
+        flex: 3
+    }, {
+        text: 'Data de finalização',
+        flex: 2
+    }, {
+        text: 'Ativo',
+        flex: 1
     }]
 });
