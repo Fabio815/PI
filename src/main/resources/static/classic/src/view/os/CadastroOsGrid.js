@@ -2,13 +2,29 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'cadastro-os-grid',
 
+    requires: [
+        'ProjSistemaOs.view.os.CadastroOsWindow'
+    ],
+
+    controller: {
+        adicionarOs: function () {
+            var me = this, vw = me.getViewModel();
+
+            Ext.create('ProjSistemaOs.view.os.CadastroOsWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-thin fa-plus',
+            }).show();
+        }
+    },
+
     title: 'Clientes',
     layout: 'fit',
     tbar: [{
         xtype: 'button',
         tooltip: 'Adicionar',
         iconCls: 'fa fa-plus',
-        handler: 'adicionarCliente'
+        handler: 'adicionarOs'
     }, '-', {
         xtype: 'button',
         tooltip: 'Vizualizar',
@@ -43,7 +59,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         text: 'Preço',
         flex: 1
     }, {
-        text: 'Status',
+        text: 'Situação',
         flex: 3
     }, {
         text: 'Data de finalização',
