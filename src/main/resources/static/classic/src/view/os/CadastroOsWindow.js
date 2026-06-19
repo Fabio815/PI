@@ -19,4 +19,15 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             backgroundColor: "#ececec"
         }
     },
+
+    buttons: [{
+        text: 'Cancelar',
+        iconCls: 'fa fa-times',
+        handler: function (btn) {
+            btn.up('cadastro-os-panel').destroy();
+        },
+    }, {
+        text: 'Cadastar',
+        iconCls: 'fa fa-check',
+    }]
 });
