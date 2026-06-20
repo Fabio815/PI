@@ -18,7 +18,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
 
     controller: {
         adicionarCliente: function(){
-            console.log(this);
             var me = this, vw = me.getViewModel();
             /*var me = this, vw = me.getViewModel(),
                 win = Ext.create('ProjSistemaOs.view.cliente.ClienteWindow');

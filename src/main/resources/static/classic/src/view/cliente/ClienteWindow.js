@@ -150,6 +150,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 		text: 'Salvar',
 		reference: 'btnSalvar',
 		disabled: true,
-		handler: 'salvarCliente'
+		handler: 'salvarCliente',
+		iconCls: 'fa fa-check'
 	}]
 });

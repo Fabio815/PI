@@ -2,8 +2,25 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     extend: 'Ext.form.Panel',
     xtype: 'cadastro-os-panel',
 
+    requires: [
+        'ProjSistemaOs.view.cliente.ClienteWindow'
+    ],
+
+    controller: {
+        adicionarCliente: function(){
+            Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-plus',
+            }).show();
+        },
+    },
+
     title: 'Cadastro Os',
-    layout: 'fit',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
     resizable: false,
     width: 800,
     bodyPadding: 15,
@@ -25,39 +42,44 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     },
 
     items: [{
-        defaults: {
-            border: false,
-            flex: 1,
-            layout: 'anchor',
-            padding: 5,
-        },
-
+        xtype: 'container',
         layout: 'hbox',
         items: [{
-            items: [{
-                xtype: 'textfield',
-                fieldLabel: 'First Name',
-                anchor: '-5',
-                name: 'first'
-            }, {
-                xtype: 'textfield',
-                fieldLabel: 'First Name',
-                anchor: '-5',
-                name: 'first'
-            }]
+            xtype: 'combobox',
+            fieldLabel: 'Telefone',
+            name: 'telefone',
+            flex: 3,
+            margin: '0 10 0 0'
         }, {
-            items: [{
-                xtype: 'textfield',
-                fieldLabel: 'Last Name',
-                anchor: '100%',
-                name: 'last'
-            }, {
-                xtype: 'textfield',
-                fieldLabel: 'Email',
-                anchor: '100%',
-                name: 'email',
-                vtype: 'email'
-            }]
+            xtype: 'textfield',
+            fieldLabel: 'Nome',
+            name: 'nome',
+            flex: 5
+        }, {
+            xtype: 'button',
+            iconCls: 'fa fa-user-plus',
+            tooltip: 'Adicionar cliente',
+            margin: '29 0 0 10',
+            ui: 'default-toolbar',
+            handler: 'adicionarCliente'
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'hbox',
+        margin: '10 0 0 0',
+        items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Modelo/Marca',
+            flex: 3,
+            margin: '0 10 0 0'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Cor',
+            flex: 2
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'Mão de obra',
+            margin: '0 0 0 10'
         }]
     }],
 
@@ -69,6 +91,6 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         },
     }, {
         text: 'Cadastar',
-        iconCls: 'fa fa-check',
+        iconCls: 'fa fa-check'
     }]
 });
