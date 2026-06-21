@@ -2,7 +2,7 @@ Ext.define('ProjSistemaOs.view.paginaInicial.PaginaSistemaOs', {
     extend: 'Ext.form.Panel',
     xtype: 'pagina-inicial-panel',
 
-    title: 'Batata',
+    title: 'Bem vindo ao Sistema',
     layout: {
         type: 'vbox',
         pack: 'center',

@@ -181,6 +181,10 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
             return '';
         }
     }, {
+        text: 'Telefone',
+        itemId: 'telefone',
+        flex: 4
+    }, {
         xtype: 'actioncolumn',
         dataIndex: 'status',
         itemId: 'status',

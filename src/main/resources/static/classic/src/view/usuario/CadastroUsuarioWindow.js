@@ -92,21 +92,16 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     margin: '0 10 0 0',
                     emptyText: 'Digite o nome'
                 }, {
-                    fieldLabel: 'Sobrenome',
-                    name: 'sobrenome',
-                    labelWidth: 70,
-                    flex: 1,
-                    emptyText: 'Digite o sobrenome'
+                    xtype: 'textfield',
+                    fieldLabel: 'Email',
+                    name: 'email',
+                    vtype: 'email',
+                    labelWidth: 50,
+                    allowBlank: false,
+                    labelAlign: 'right',
+                    emptyText: 'Digite o email',
+                    flex: 1
                 }]
-            }, {
-                xtype: 'textfield',
-                fieldLabel: 'Email',
-                name: 'email',
-                vtype: 'email',
-                labelWidth: 50,
-                allowBlank: false,
-                labelAlign: 'right',
-                emptyText: 'Digite o email'
             }, {
                 xtype: 'fieldcontainer',
                 layout: 'hbox',

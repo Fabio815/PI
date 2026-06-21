@@ -86,9 +86,15 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         padding: 10,
         reference: 'gridPecas',
         title: 'Peças',
-        height: 200,
+        height: 250,
         ui: 'light',
         shadow: true,
+        tbar: [{
+            xtype: 'button',
+            tooltip: 'Adicionar peça',
+            iconCls: 'fa fa-plus',
+            handler: 'adicionarPeca'
+        }],
         store: {
             fields: [
                 'id',
@@ -135,6 +141,14 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     }, {
         xtype: 'textarea',
         fieldLabel: 'Observações',
+    }, {
+        xtype: 'container',
+        layout: 'hbox',
+        items: [{
+            xtype: 'numberfield',
+            fieldLabel: 'Orçamento',
+            width: 150
+        }]
     }],
 
     buttons: [{

@@ -9,14 +9,14 @@ Ext.define('ProjSistemaOs.view.main.Main', {
     extend: 'Ext.tab.Panel',
     xtype: 'app-main',
 
-    initComponent: function() {
+    /*initComponent: function() {
         console.log(this.perfil);
         if (this.perfil !== 'administrador') {
             this.items.pop(); // ou hide/remove da aba
         }
 
         this.callParent();
-    },
+    },*/
 
     requires: [
         'Ext.plugin.Viewport',
