@@ -94,8 +94,9 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
     items: [{
         xtype: 'form',
         width: 350,
-        height: 210,
+        height: 250,
         title: 'Login',
+        iconCls: 'fa fa-key',
         frame: true,
         bodyPadding: '20 5 5 5',
         defaultType: 'textfield',
@@ -115,12 +116,22 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
         }, {
             //allowBlank: false,
             fieldLabel: 'Senha',
+            itemId: 'senhaId',
             name: 'senha',
             emptyText: 'Senha',
             inputType: 'password',
             labelAlign: 'right',
             blankText: 'Este campo é obrigatório',
             //labelWidth: 50,
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Mostrar senha',
+            listeners: {
+                change: function(cb, checked) {
+                    var campoSenha = cb.up('form').down('#senhaId');
+                    campoSenha.inputEl.dom.type = checked ? 'text' : 'password';
+                }
+            }
         }],
         defaults: {
             anchor: '100%',
