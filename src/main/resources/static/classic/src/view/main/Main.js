@@ -12,7 +12,7 @@ Ext.define('ProjSistemaOs.view.main.Main', {
     /*initComponent: function() {
         console.log(this.perfil);
         if (this.perfil !== 'administrador') {
-            this.items.pop(); // ou hide/remove da aba
+            this.items.pop();
         }
 
         this.callParent();
