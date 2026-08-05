@@ -82,60 +82,40 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             margin: '0 0 0 10'
         }]
     }, {
-        xtype: 'grid',
-        padding: 10,
-        reference: 'gridPecas',
-        title: 'Peças',
-        height: 250,
-        ui: 'light',
-        shadow: true,
-        tbar: [{
-            xtype: 'button',
-            tooltip: 'Adicionar peça',
-            iconCls: 'fa fa-plus',
-            handler: 'adicionarPeca'
-        }],
-        store: {
-            fields: [
-                'id',
-                'descricao',
-                'quantidade',
-                'valorUnitario'
-            ],
-            data: [
-                { id: 1, descricao: 'Corrente', quantidade: 1, valorUnitario: 250.00 },
-                { id: 2, descricao: 'Pneu', quantidade: 2, valorUnitario: 89.90 },
-                { id: 3, descricao: 'Aro 29', quantidade: 1, valorUnitario: 45.00 },
-                { id: 4, descricao: 'Marcha', quantidade: 1, valorUnitario: 30.00 }
-            ]
+        xtype: 'panel',
+        title: '',
+        margin: '10 0 0 0',
+        floating: false,
+        modal: true,
+        width: '80%',
+        padding: 5,
+        style: {
+            backgroundColor: '#efefef'
         },
-
-        columns: [{
-            text: 'Código',
-            dataIndex: 'id',
-            flex: 1,
-        }, {
-            text: 'Peça',
-            dataIndex: 'descricao',
-            flex: 5
-        }, {
-            text: 'Qtd',
-            dataIndex: 'quantidade',
-            flex: 1
-        }, {
-            text: 'Valor unitário',
-            dataIndex: 'valorUnitario',
-            flex: 2
-        }, {
-            xtype: 'actioncolumn',
-            width: 80,
-            text: 'Remover',
+        layout: 'fit',
+        items: [{
+            ui: 'light',
+            xtype: 'form',
+            iconCls: 'fa fa-cog',
+            title: 'Adicionar peças',
+            scrollable: 'y',
+            bodyPadding: '15',
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
             items: [{
-                iconCls: 'fa fa-times',
-                tooltip: 'Remover',
-                handler: function (grid, rowIndex) {
-                    grid.getStore().removeAt(rowIndex);
-                }
+                xtype: 'grid',
+                title: 'Peças',
+                ui: 'light',
+                border: !0,
+                columnLines: !0,
+                scrollable: 'y',
+                minHeight: 150,
+                disableSelection: !0,
+                enableColumnHide: !1,
+                enableColumnMove: !1,
+                enableColumnResize: !1,
             }]
         }]
     }, {

@@ -112,7 +112,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 	                fieldLabel: 'Rua',
 	                name: 'rua',
 	                flex: 2,
-	                emptyText: 'First',
+	                emptyText: 'Rua',
 	            }, {
 					xtype: 'numberfield',
 	                fieldLabel: 'Número',
@@ -131,7 +131,7 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteWindow', {
 				    fieldLabel: 'Logradouro',
 				    name: 'logradouro',
 				    flex: 1,
-				    emptyText: 'First',
+				    emptyText: 'Logradouro',
 				}]
 			}, {
 				xtype: 'textareafield',
