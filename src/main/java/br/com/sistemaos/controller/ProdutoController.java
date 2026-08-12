@@ -23,7 +23,7 @@ public class ProdutoController {
 
 
     @ResponseBody
-    @RequestMapping(path = "/adicionar/", method = RequestMethod.POST)
+    @RequestMapping(path = "/adicionar", method = RequestMethod.POST)
     public ResponseEntity<ProdutoDTO> adicionarProduto(@RequestBody SalvarProdutoDTO salvarProdutoDTO) {
         Produto produto = produtoService.criarProduto(salvarProdutoDTO);
         return ResponseEntity.created(URI.create("/produto/" + produto.getId())).body(ProdutoDTO.criar(produto));
