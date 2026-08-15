@@ -2,6 +2,7 @@ package br.com.sistemaos.applicationservice;
 
 import br.com.sistemaos.domain.entity.Produto;
 import br.com.sistemaos.exception.ProdutoDuplicadoException;
+import br.com.sistemaos.exception.ProdutoNaoEncontradoExpection;
 import br.com.sistemaos.repository.ProdutoRepository;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.SalvarProdutoDTO;
@@ -35,8 +36,26 @@ public class ProdutoService {
 
     public List<Produto> listarProdutos() {
         List<Produto> listaProdutos = null;
-        listaProdutos = produtoRepository.findByStatus(Status.INATIVO);
+        listaProdutos = produtoRepository.findByStatus(Status.ATIVO);
         return listaProdutos;
+    }
+
+    public Produto carregarProdutoPorId (Long id) {
+        return produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontradoExpection(id));
+    }
+
+    @Transactional
+    public Produto atualizarProduto(Long id, SalvarProdutoDTO salvarProdutoDTO) {
+        if (existsProdutoComNome(salvarProdutoDTO.getNome(), id)) {
+            throw new ProdutoDuplicadoException(salvarProdutoDTO.getNome());
+        }
+        Produto produto = carregarProdutoPorId(id);
+        produto.setNome(salvarProdutoDTO.getNome());
+        produto.setPreco(salvarProdutoDTO.getPreco());
+        produto.setQuantidade(salvarProdutoDTO.getQuantidade());
+        produto.setStatus(salvarProdutoDTO.getStatus());
+
+        return produto;
     }
 
     public boolean existsProdutoComNome(String nome, Long idExluido) {

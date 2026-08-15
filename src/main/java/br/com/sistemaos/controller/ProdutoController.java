@@ -5,6 +5,7 @@ import br.com.sistemaos.domain.entity.Produto;
 import br.com.sistemaos.dto.ProdutoDTO;
 import br.com.sistemaos.dto.SalvarProdutoDTO;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class ProdutoController {
         return ResponseEntity.created(URI.create("/produto/" + produto.getId())).body(ProdutoDTO.criar(produto));
     }
 
+    @GetMapping("/carregar/{id}")
+    public ResponseEntity<ProdutoDTO> carregarProduto(@PathVariable("id") Long id) {
+        Produto produto = produtoService.carregarProdutoPorId(id);
+        return ResponseEntity.ok(ProdutoDTO.criar(produto));
+    }
+
     @GetMapping("/listar")
     public ResponseEntity<List<ProdutoDTO>> listarProdutos() {
         List<Produto> produtos = produtoService.listarProdutos();
@@ -38,5 +45,14 @@ public class ProdutoController {
             listaProdutoDto.add(ProdutoDTO.criar(p));
         }
         return ResponseEntity.ok(listaProdutoDto);
+    }
+
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<ProdutoDTO> atualizarProduto(
+        @PathVariable("id") Long id,
+        @RequestBody @Valid SalvarProdutoDTO salvarProdutoDTO
+    ) {
+        Produto produto = produtoService.atualizarProduto(id, salvarProdutoDTO);
+        return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
 }
