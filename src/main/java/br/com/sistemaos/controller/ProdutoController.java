@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import br.com.sistemaos.applicationservice.ProdutoService;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/produto" )
@@ -21,11 +23,20 @@ public class ProdutoController {
 
     private final ProdutoService produtoService;
 
-
-    @ResponseBody
-    @RequestMapping(path = "/adicionar", method = RequestMethod.POST)
+    @PostMapping("/adicionar")
     public ResponseEntity<ProdutoDTO> adicionarProduto(@RequestBody SalvarProdutoDTO salvarProdutoDTO) {
         Produto produto = produtoService.criarProduto(salvarProdutoDTO);
         return ResponseEntity.created(URI.create("/produto/" + produto.getId())).body(ProdutoDTO.criar(produto));
+    }
+
+    @GetMapping("/listar")
+    public ResponseEntity<List<ProdutoDTO>> listarProdutos() {
+        List<Produto> produtos = produtoService.listarProdutos();
+        List<ProdutoDTO> listaProdutoDto = new ArrayList<>();
+
+        for (Produto p : produtos) {
+            listaProdutoDto.add(ProdutoDTO.criar(p));
+        }
+        return ResponseEntity.ok(listaProdutoDto);
     }
 }
