@@ -2,11 +2,15 @@ package br.com.sistemaos.controller;
 
 import br.com.sistemaos.applicationservice.ProdutoService;
 import br.com.sistemaos.domain.entity.Produto;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.ProdutoDTO;
 import br.com.sistemaos.dto.SalvarProdutoDTO;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,14 +41,16 @@ public class ProdutoController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<ProdutoDTO>> listarProdutos() {
-        List<Produto> produtos = produtoService.listarProdutos();
-        List<ProdutoDTO> listaProdutoDto = new ArrayList<>();
+    public ResponseEntity<Page<ProdutoDTO>> listarProdutos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) Status status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "25") int size) {
 
-        for (Produto p : produtos) {
-            listaProdutoDto.add(ProdutoDTO.criar(p));
-        }
-        return ResponseEntity.ok(listaProdutoDto);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Produto> produtos = produtoService.listarProdutos(nome, status, pageable);
+        Page<ProdutoDTO> produtosDTO = produtos.map(ProdutoDTO::criar);
+        return ResponseEntity.ok(produtosDTO);
     }
 
     @PutMapping("/atualizar/{id}")
@@ -55,4 +61,10 @@ public class ProdutoController {
         Produto produto = produtoService.atualizarProduto(id, salvarProdutoDTO);
         return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
+
+    /*@PutMapping("atualizar/status/{id}")
+    public ResponseEntity atualizarStatus(@PathParam("id") Long id) {
+        produtoService.atualizarStatus();
+        return ResponseEntity.noContent().build();
+    }*/
 }

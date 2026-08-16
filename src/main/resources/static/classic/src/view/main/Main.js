@@ -108,12 +108,14 @@ Ext.define('ProjSistemaOs.view.main.Main', {
     }, {
         title: 'Estoque',
         iconCls: 'fa-box',
+        layout: 'fit',
         items: [{
             xtype: 'estoqueGrid'
         }]
     },	{
         title: 'Usuários',
         iconCls: 'fa-cog',
+        layout: 'fit',
         items: [{
               xtype: 'usuario-grid'
         }],

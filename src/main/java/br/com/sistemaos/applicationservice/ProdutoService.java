@@ -8,6 +8,8 @@ import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.dto.SalvarProdutoDTO;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,10 +36,8 @@ public class ProdutoService {
         return produto;
     }
 
-    public List<Produto> listarProdutos() {
-        List<Produto> listaProdutos = null;
-        listaProdutos = produtoRepository.findByStatus(Status.ATIVO);
-        return listaProdutos;
+    public Page<Produto> listarProdutos(String nome, Status status, Pageable pageable) {
+        return produtoRepository.listarProdutos(nome, status, pageable);
     }
 
     public Produto carregarProdutoPorId (Long id) {

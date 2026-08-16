@@ -6,8 +6,10 @@ Ext.define('ProjSistemaOs.model.Estoque', {
     fields: [
         { name: 'id', type: 'int' },
         { name: 'nome', type: 'string' },
-        { name: 'qtd', type: 'int' },
-        { name: 'valor_unitario', type: 'number' },
-        { name: 'statusPeca', type: 'boolean' },
+        { name: 'quantidade', type: 'int' },
+        { name: 'preco', type: 'number' },
+        { name: 'status', type: 'boolean' },
+        { name: '_status', type: 'string', default: undefined },
+        {name: 'status', type: 'string'}
     ]
 });
