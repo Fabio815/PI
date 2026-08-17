@@ -26,6 +26,69 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                 a.filters.clearFilters();
                 a.getStore().getSorters().removeAll();
             }
+        },
+        adicionarProduto: function () {
+            var me = this;
+            var grid = me.getView();
+
+            Ext.create('ProjSistemaOs.view.estoque.EstoqueWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-plus',
+
+                listeners: {
+                    pecasalva: function () {
+                        console.log('Produto salvo! Recarregando grid...');
+
+                        grid.getStore().reload();
+                    }
+                }
+            }).show();
+        },
+        atualizarProduto: function (edit, context) {
+            var record = context.record,
+                oldValue = context.originalValue,
+                newValue = context.value;
+
+            if (oldValue === newValue) {
+                return;
+            }
+            var dados = {
+                nome: record.get('nome'),
+                quantidade: Number(record.get('quantidade')),
+                preco: Number(record.get('preco')),
+                status: record.get('status')
+            };
+            Ext.Ajax.request({
+                url: sistemaOsLocal.apiUrl + '/produto/atualizar/' + record.get('id'),
+                method: 'PUT',
+                jsonData: dados,
+                success: function (response) {
+                    var produto = Ext.decode(response.responseText, true);
+                    if (produto) {
+                        record.set(produto);
+                        record.commit();
+                    } else {
+                        record.reject();
+
+                        Ext.Msg.alert(
+                            'Erro',
+                            'Não foi possível atualizar a peça.'
+                        );
+                    }
+                },
+                failure: function (response) {
+                    console.error('Erro ao atualizar:', response.responseText);
+
+                    // Volta o valor antigo na grid
+                    record.reject();
+
+                    Ext.Msg.alert(
+                        'Erro',
+                        'Não foi possível atualizar a peça.'
+                    );
+                }
+            });
         }
     },
 
@@ -77,9 +140,11 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
         dataIndex: 'quantidade',
         flex: 1,
         editor: {
-            type: 'textfield',
+            xtype: 'numberfield',
             allowBlank: false,
-            blankText: 'Este campo é obrigatório',
+            minValue: 0,
+            allowDecimals: false,
+            blankText: 'Este campo é obrigatório'
         }
     }, {
         text: 'Preço',
@@ -96,9 +161,12 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
         },
         sortable: true,
         editor: {
-            type: 'textfield',
+            xtype: 'numberfield',
             allowBlank: false,
-            blankText: 'Este campo é obrigatório',
+            minValue: 0,
+            decimalPrecision: 2,
+            decimalSeparator: ',',
+            blankText: 'Este campo é obrigatório'
         }
     }, {
         xtype: 'actioncolumn',
@@ -146,7 +214,6 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
             handler: function(a, b, e, f, h, record, k) {
                 if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
                     this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
-                    //console.log('Entrou no if do evento');
                 } else {
                     record.set('_status', record.get('status'));
                 }

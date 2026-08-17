@@ -250,4 +250,21 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
             }
         }
     },
+    bbar: {
+        xtype: 'pagingtoolbar',
+        pageSize: 10,
+        displayInfo: true,
+        beforePageText: 'Página',
+        afterPageText: 'de {0}',
+        displayMsg: 'Peças {0} - {1} de {2}',
+        emptyMsg: 'Não existe usuário cadastrados',
+        bind: {
+            store: '{usuario-listagem-store}'
+        },
+        listeners: { //Para esconder o botão de reload...
+            afterrender: function(toolbar) {
+                toolbar.down('#refresh').hide();//Buscando pelo itemId
+            }
+        }
+    }
 });

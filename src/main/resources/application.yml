@@ -8,38 +8,38 @@ spring:
     name: sistemaos
 
   datasource:
-    # Configuração MySQL
-    # url: jdbc:mysql://localhost:3306/bike_facil
-    # username: root
-    # password: root
+     #Configuração MySQL
+     url: jdbc:mysql://localhost:3306/bike_facil
+     username: root
+     password: root
 
     # Configuração H2
-    url: jdbc:h2:mem:bike_facil
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    #url: jdbc:h2:mem:bike_facil
+    #driver-class-name: org.h2.Driver
+    #username: sa
+    #password:
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  #h2:
+   # console:
+    #  enabled: true
+     # path: /h2-console
 
   jpa:
     # Dialect do MySQL
-    # database-platform: org.hibernate.dialect.MySQLDialect
+     database-platform: org.hibernate.dialect.MySQLDialect
 
     # Dialect do H2
-    database-platform: org.hibernate.dialect.H2Dialect
+   # database-platform: org.hibernate.dialect.H2Dialect
 
-    hibernate:
-      ddl-auto: update
+    #hibernate:
+      #ddl-auto: update
 
-    show-sql: false
+    #show-sql: false
 
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
+    #properties:
+     # hibernate:
+      #  show_sql: true
+       # format_sql: true
 
   mail:
     host: sandbox.smtp.mailtrap.io
