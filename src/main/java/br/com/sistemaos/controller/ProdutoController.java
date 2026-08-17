@@ -2,7 +2,9 @@ package br.com.sistemaos.controller;
 
 import br.com.sistemaos.applicationservice.ProdutoService;
 import br.com.sistemaos.domain.entity.Produto;
+import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.dto.ClienteDTO;
 import br.com.sistemaos.dto.ProdutoDTO;
 import br.com.sistemaos.dto.SalvarProdutoDTO;
 import jakarta.validation.Valid;
@@ -62,9 +64,8 @@ public class ProdutoController {
         return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
 
-    /*@PutMapping("atualizar/status/{id}")
-    public ResponseEntity atualizarStatus(@PathParam("id") Long id) {
-        produtoService.atualizarStatus();
-        return ResponseEntity.noContent().build();
-    }*/
+    @RequestMapping(path = "/status", method = RequestMethod.POST)
+    public ResponseEntity<Resposta> atualizarStatus(@RequestBody ProdutoDTO produto) {
+        return ResponseEntity.ok().body(produtoService.atualizarStatus(produto));
+    }
 }

@@ -28,11 +28,14 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<Map<String, List<UsuarioDTO>>> listar(
-            @RequestParam(value = "start") int start,
-            @RequestParam(value = "limit") int limit,
-            @RequestParam(value = "filtros") String filtros) {
-        return ResponseEntity.ok(usuarioService.listar(filtros));
+    public ResponseEntity<Map<String, Object>> listar(
+            @RequestParam(value = "start", defaultValue = "0") int start,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "filtros", required = false) String filtros) {
+
+        return ResponseEntity.ok(
+                usuarioService.listar(filtros, start, limit)
+        );
     }
 
     @PostMapping("/login")

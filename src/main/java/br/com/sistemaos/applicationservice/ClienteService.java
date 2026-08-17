@@ -138,7 +138,7 @@ public class ClienteService {
         }
         return null;
     }
-
+    @Transactional
     public Resposta atualizarStatus(ClienteDTO cliente) {
         Resposta resposta;
         if (cliente == null) {

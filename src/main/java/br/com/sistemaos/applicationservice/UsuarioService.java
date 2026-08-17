@@ -59,14 +59,55 @@ public class UsuarioService {
         return resposta;
     }
 
-    public Map<String, List<UsuarioDTO>> listar(String filtros) {
+    public Map<String, Object> listar(
+            String filtros,
+            int start,
+            int limit) {
+
         ObjectMapper mapper = new ObjectMapper();
+
         List<Filtro> listaFiltros = new ArrayList<>();
-        if (filtros != null) {
-            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
+
+        if (filtros != null && !filtros.isBlank()) {
+            listaFiltros = mapper.readValue(
+                    filtros,
+                    new TypeReference<List<Filtro>>() {}
+            );
         }
-        List<Usuario> listUsuarios = usuarioCostumeizadoRepository.listagemUsuarios(listaFiltros);
-        return UsuariosRespostaDTO.converterUsuarios(listUsuarios);
+
+        List<Usuario> usuarios =
+                usuarioCostumeizadoRepository.listagemUsuarios(
+                        listaFiltros,
+                        start,
+                        limit
+                );
+
+        long total =
+                usuarioCostumeizadoRepository.contarUsuarios(
+                        listaFiltros
+                );
+
+        List<UsuarioDTO> usuariosDTO = new ArrayList<>();
+
+        for (Usuario u : usuarios) {
+
+            usuariosDTO.add(
+                    new UsuarioDTO(
+                            u.getId(),
+                            u.getNome(),
+                            u.getEmail(),
+                            u.getChave(),
+                            u.getStatus()
+                    )
+            );
+        }
+
+        Map<String, Object> resposta = new HashMap<>();
+
+        resposta.put("usuarios", usuariosDTO);
+        resposta.put("total", total);
+
+        return resposta;
     }
 
     public Optional<UsuarioDTO> login(String email, String senha) {

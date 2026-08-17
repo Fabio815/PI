@@ -1,6 +1,9 @@
 package br.com.sistemaos.applicationservice;
 
 import br.com.sistemaos.domain.entity.Produto;
+import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.dto.ClienteDTO;
+import br.com.sistemaos.dto.ProdutoDTO;
 import br.com.sistemaos.exception.ProdutoDuplicadoException;
 import br.com.sistemaos.exception.ProdutoNaoEncontradoExpection;
 import br.com.sistemaos.repository.ProdutoRepository;
@@ -69,4 +72,18 @@ public class ProdutoService {
         }
         return true;
     }
+
+    @Transactional
+    public Resposta atualizarStatus(ProdutoDTO produto) {
+        Resposta resposta;
+        if (produto == null) {
+            resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
+            return resposta;
+        }
+        Status status = produto.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
+        produtoRepository.udpateStatus(status, produto.getId());
+        resposta = Resposta.sucesso("Produto atualizado com sucesso!");
+        return resposta;
+    }
+
 }
