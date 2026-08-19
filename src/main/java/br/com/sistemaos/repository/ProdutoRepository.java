@@ -22,9 +22,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     SELECT p
     FROM Produto p
     WHERE (:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
-      AND (:status IS NULL OR p.status = :status)
+      AND (:status IS NULL OR p.status in :status)
     """)
-    Page<Produto> listarProdutos(@Param("nome") String nome, @Param("status") Status status, Pageable pageable);
+    Page<Produto> listarProdutos(@Param("nome") String nome, @Param("status") List<Status> status, Pageable pageable);
 
     @Modifying
     @Query("update Produto as c set c.status=:status where c.id=:id")

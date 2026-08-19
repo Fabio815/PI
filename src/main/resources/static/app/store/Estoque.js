@@ -21,5 +21,23 @@ Ext.define('ProjSistemaOs.store.Estoque', {
             rootProperty: 'content',
             totalProperty: 'totalElements'
         }
+    },
+    listeners: {
+        beforeLoad: function(store) {
+            var filtros = store.getFilters().items;
+            var params = {};
+            for (let f of filtros) {
+                let propriedade = f.getProperty();
+                let valor = f.getValue();
+                if (propriedade === 'nome') {
+                    params.nome = valor;
+                }
+                if (propriedade === 'status') {
+                    params.status = valor;
+                }
+            }
+            store.getProxy().setExtraParams(params);
+            console.log(params);
+        }
     }
 });

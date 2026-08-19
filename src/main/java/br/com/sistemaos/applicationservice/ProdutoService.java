@@ -39,7 +39,7 @@ public class ProdutoService {
         return produto;
     }
 
-    public Page<Produto> listarProdutos(String nome, Status status, Pageable pageable) {
+    public Page<Produto> listarProdutos(String nome, List<Status> status, Pageable pageable) {
         return produtoRepository.listarProdutos(nome, status, pageable);
     }
 

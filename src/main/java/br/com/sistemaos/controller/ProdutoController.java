@@ -45,12 +45,12 @@ public class ProdutoController {
     @GetMapping("/listar")
     public ResponseEntity<Page<ProdutoDTO>> listarProdutos(
             @RequestParam(required = false) String nome,
-            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) List<Status> status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "25") int size) {
-
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Produto> produtos = produtoService.listarProdutos(nome, status, pageable);
+        Page<Produto> produtos =
+                produtoService.listarProdutos(nome, status, pageable);
         Page<ProdutoDTO> produtosDTO = produtos.map(ProdutoDTO::criar);
         return ResponseEntity.ok(produtosDTO);
     }
