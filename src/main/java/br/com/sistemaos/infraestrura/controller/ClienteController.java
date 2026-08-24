@@ -4,7 +4,9 @@ import br.com.sistemaos.domain.applicationservice.ClienteService;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.ClienteRespostaDTO;
+import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +16,18 @@ import java.util.Map;
 
 //Ultima modificação 23/03/26
 @RestController
-@RequestMapping("/cliente") //Teste do banco de dados
+@RequestMapping("/cliente")//Teste do banco de dados
+@AllArgsConstructor
 @Slf4j
 public class ClienteController {
-
     private final ClienteService clienteService;
-
-    public ClienteController(ClienteService clienteService) {
+    /*public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
-    }
+    }*/
 
-    //@PostMapping
-    @ResponseBody
-    @RequestMapping(path = "/cadastrar", method = RequestMethod.POST)
-    //Cadastro do cliente
-    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody @Valid ClienteDTO cliente) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.adicionarCliente(cliente));
+    @PostMapping("/cadastrar")
+    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody @Valid SalvarClienteDTO cliente) {
+
     }
 
     //@GetMapping
