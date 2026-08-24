@@ -1,0 +1,29 @@
+package br.com.sistemaos.domain.applicationservice;
+
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EmailService {
+    private final JavaMailSender mailSender;
+
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    public void sendEmail(String to, String subject, String text) {
+        System.out.println("Enviando email para: " + to);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
+        System.out.println("ASSUNTO: " + subject);
+        System.out.println("DESTINO: " + to);
+        System.out.println("CORPO:\n" + text);
+
+        System.out.println("Email enviado");
+    }
+}
