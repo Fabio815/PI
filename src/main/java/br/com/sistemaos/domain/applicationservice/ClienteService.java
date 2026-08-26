@@ -3,6 +3,7 @@ package br.com.sistemaos.domain.applicationservice;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.entity.Produto;
+import br.com.sistemaos.domain.exception.ClienteNaoEncontradoException;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Resposta;
@@ -44,7 +45,6 @@ public class ClienteService {
                 .complemento(clienteDTO.getEndereco().getComplemento())
                 .logradouro(clienteDTO.getEndereco().getLogradouro())
                 .numero(clienteDTO.getEndereco().getNumero())
-                .numero(clienteDTO.getEndereco().getNumero())
                 .rua(clienteDTO.getEndereco().getRua())
                 .build();
 
@@ -54,7 +54,6 @@ public class ClienteService {
                 .endereco(endereco)
                 .status(Status.ATIVO)
                 .build();
-
         clienteRepository.save(cliente);
         return cliente;
     }
@@ -62,7 +61,6 @@ public class ClienteService {
     public List<Cliente> listarClientes(Long id, String nome, List<String> status, Pageable pageable) {
         List<Cliente> listaClientes = new ArrayList<>();
         Page<Cliente> clientes = clienteRepository.listarClientes(nome, converterParaStatus(status), id, pageable);
-
         if (!clientes.isEmpty()) {
             for (Cliente cl : clientes) {
                 listaClientes.add(cl);
@@ -71,56 +69,22 @@ public class ClienteService {
         return listaClientes;
     }
 
-    public ClienteRespostaDTO atualizarClienteId(ClienteDTO cliente, Long id) {
-        Optional<Cliente> clienteOp = clienteRepository.findById(id);
-        if (clienteOp.isPresent()) {
-            Cliente clienteExistente = clienteOp.get();
-            Endereco endereco = null;
+    @Transactional
+    public Cliente atualizarCliente(Long id, SalvarClienteDTO salvarClienteDTO) {
+        Cliente cliente = carregarCliente(id);
 
-            if (cliente.getEndereco() != null) {
-                if (cliente.getEndereco().getId() == null) {
-                    endereco = Endereco.builder()
-                            .rua(cliente.getEndereco().getRua())
-                            .numero(cliente.getEndereco().getNumero())
-                            .logradouro(cliente.getEndereco().getLogradouro())
-                            .complemento(cliente.getEndereco().getComplemento())
-                            .cliente(clienteExistente)
-                            .build();
-                    endereco = enderecoRepository.save(endereco);
-                } else {
-                    enderecoRepository.updateEndereco(
-                            cliente.getEndereco().getComplemento(),
-                            cliente.getEndereco().getLogradouro(),
-                            cliente.getEndereco().getNumero(),
-                            cliente.getEndereco().getRua(),
-                            cliente.getEndereco().getId());
+        Endereco endereco = Endereco.builder()
+                .rua(salvarClienteDTO.getEndereco().getRua())
+                .numero(salvarClienteDTO.getEndereco().getNumero())
+                .logradouro(salvarClienteDTO.getEndereco().getLogradouro())
+                .complemento(salvarClienteDTO.getEndereco().getComplemento())
+                .build();
 
-                    endereco = Endereco.builder()
-                            .id(cliente.getEndereco().getId())
-                            .rua(cliente.getEndereco().getRua())
-                            .numero(cliente.getEndereco().getNumero())
-                            .logradouro(cliente.getEndereco().getLogradouro())
-                            .complemento(cliente.getEndereco().getComplemento())
-                            .cliente(clienteExistente)
-                            .build();
-                }
-            }
+        cliente.setNome(salvarClienteDTO.getNome());
+        cliente.setTelefone(salvarClienteDTO.getTelefone());
+        cliente.setEndereco(endereco);
 
-            // updateCliente só precisa atualizar nome e telefone agora
-            clienteRepository.updateCliente(cliente.getNome(), cliente.getTelefone(), id);
-
-            Cliente cl = Cliente.builder()
-                    .id(id)
-                    .nome(cliente.getNome())
-                    .telefone(cliente.getTelefone())
-                    .endereco(endereco)
-                    .build();
-
-            ClienteRespostaDTO reposta = ClienteRespostaDTO.criar(cl);
-            reposta.setResposta(Resposta.sucesso("Cliente atualizado com sucesso!"));
-            return reposta;
-        }
-        return null;
+        return cliente;
     }
 
     @Transactional
@@ -134,6 +98,14 @@ public class ClienteService {
         clienteRepository.udpateStatus(status, cliente.getId());
         resposta = Resposta.sucesso("Cliente atualizado com sucesso!");
         return resposta;
+    }
+
+    public Cliente carregarCliente(Long id) {
+        Optional<Cliente> op = clienteRepository.findById(id);
+        if (op.isEmpty()) {
+            throw new ClienteNaoEncontradoException(id);
+        }
+        return op.get();
     }
 
     private List<Status> converterParaStatus(List<String> status) {

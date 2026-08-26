@@ -50,22 +50,16 @@ public class ClienteController {
         return ResponseEntity.ok(clientes.stream().map(c -> ClienteDTO.criar(c)).toList());
     }
 
-
-    @RequestMapping(path = "/atualizar/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<ClienteRespostaDTO> atualizar(@RequestBody ClienteDTO cliente, @PathVariable Long id) {
-        return ResponseEntity.ok().body(clienteService.atualizarClienteId(cliente, id));
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<ClienteDTO> atualizar(@PathVariable("id") Long id, @RequestBody SalvarClienteDTO salvarClienteDTO) {
+        Cliente cliente = clienteService.atualizarCliente(id, salvarClienteDTO);
+        return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
-    /*@RequestMapping(path = "/status/{id}/{status}", method = RequestMethod.PUT)
-    public ResponseEntity<Resposta> atualizarStatus(@PathVariable Long id, @PathVariable String status) {
-        return ResponseEntity.ok().body(clienteService.atualizarStatus(status, id));
-    }*/
     @RequestMapping(path = "/status", method = RequestMethod.POST)
     public ResponseEntity<Resposta> atualizarStatus(@RequestBody ClienteDTO cliente) {
         return ResponseEntity.ok().body(clienteService.atualizarStatus(cliente));
     }
-
-
 
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {
