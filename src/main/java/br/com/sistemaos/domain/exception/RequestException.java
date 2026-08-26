@@ -1,13 +1,14 @@
 package br.com.sistemaos.domain.exception;
 
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class RequestException extends RuntimeException {
-    private final String errorCode;
+    private final String codigoErro;
 
-    public RequestException(String message, String errorCode) {
-        super(message);
-        this.errorCode = errorCode;
+    public RequestException(String mensagem, String codigoErro) {
+        super(mensagem);
+        this.codigoErro = codigoErro;
     }
 }

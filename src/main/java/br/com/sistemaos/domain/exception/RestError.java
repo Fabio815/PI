@@ -3,12 +3,14 @@ package br.com.sistemaos.domain.exception;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class RestError {
-    private final String codigo;
-    private final String mensagem;
-    private final int statusRequisicao;
+    private final String codigoErro;
+    private final String mensagemErro;
+    private final List<String> descricaoErro;
+    private final int status;
     private final String caminho;
-    private final boolean status;
 }

@@ -20,7 +20,7 @@ public class ClienteDTO {
     private EnderecoDTO endereco;
     //private List<Os> ordensServico;
 
-    public ClienteDTO criar(Cliente cliente) {
+    public static ClienteDTO criar(Cliente cliente) {
         EnderecoDTO enderecoDTO = EnderecoDTO.builder()
                 .id(cliente.getEndereco().getId())
                 .rua(cliente.getEndereco().getRua())

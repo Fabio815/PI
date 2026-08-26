@@ -28,7 +28,6 @@ public class Endereco {
     @Column(name = "complemento", length = 200)
     private String complemento;
 
-    @OneToOne
-    @JoinColumn(name = "id_cliente")
+    @OneToOne(mappedBy = "endereco")
     private Cliente cliente;
 }

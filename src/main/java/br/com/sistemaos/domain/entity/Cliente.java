@@ -28,10 +28,9 @@ public class Cliente {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ToString.Exclude
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id", unique = true)
     private Endereco endereco;
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Os> ordensServico;
+    /*@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Os> ordensServico;*/
 }

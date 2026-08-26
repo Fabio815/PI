@@ -1,6 +1,7 @@
 package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.ClienteService;
+import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.ClienteRespostaDTO;
@@ -8,10 +9,14 @@ import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 //Ultima modificação 23/03/26
@@ -26,16 +31,23 @@ public class ClienteController {
     }*/
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ClienteRespostaDTO> cadastrar(@RequestBody @Valid SalvarClienteDTO cliente) {
-
+    public ResponseEntity<ClienteDTO> cadastrar(@RequestBody @Valid SalvarClienteDTO clienteDTO) {
+        Cliente cliente = clienteService.adicionarCliente(clienteDTO);
+        return ResponseEntity.created(URI.create("/projeto/" + cliente.getId())).body(ClienteDTO.criar(cliente));
     }
 
     //@GetMapping
-    @RequestMapping(path = "/listar", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> listar(@RequestParam(value = "start") int start,
-            @RequestParam(value = "limit") int limit,
-            @RequestParam(value = "filtros") String filtros) {
-        return ResponseEntity.ok(clienteService.buscarTodos(start, limit, filtros));
+    @GetMapping("/listar")
+    public ResponseEntity<List<ClienteDTO>> listar(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "status", required = false) List<String> status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int size)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Cliente> clientes = clienteService.listarClientes(id, nome, status, pageable);
+        return ResponseEntity.ok(clientes.stream().map(c -> ClienteDTO.criar(c)).toList());
     }
 
 

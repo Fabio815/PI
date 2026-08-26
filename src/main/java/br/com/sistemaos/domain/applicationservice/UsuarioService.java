@@ -67,10 +67,7 @@ public class UsuarioService {
         List<Filtro> listaFiltros = new ArrayList<>();
 
         if (filtros != null && !filtros.isBlank()) {
-            listaFiltros = mapper.readValue(
-                    filtros,
-                    new TypeReference<List<Filtro>>() {}
-            );
+            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
         }
 
         List<Usuario> usuarios =
