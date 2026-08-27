@@ -24,7 +24,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 		var dados = {
 			nome: form.nome,
 			telefone: form.telefone,
-			status: "ATIVO",
 			endereco: {
 				rua: form.rua,
 				numero: form.numero,
@@ -39,14 +38,9 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteController', {
 			jsonData: JSON.stringify(dados),
 			success: function (conn, response, options, eOpts) {
 				let r = Ext.JSON.decode(conn.responseText, true);
-				if (r && r.resposta.sucesso) {
+				if (r) {
 					vw.fireEvent('clientesalvo'); //Dispara o evento quando salva o cliente.
-					//Avisos.mensagemSucesso(r.resposta.mensagem);
 					vw.close();
-				} else if (r) {
-					Avisos.mensagemAviso(r.resposta.mensagem);
-				} else {
-					Avisos.mostrarServidorIndisponivel();
 				}
 			},
 			failure: function (conn, response, options, eOpts) {

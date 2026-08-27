@@ -56,9 +56,10 @@ public class ClienteController {
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
-    @RequestMapping(path = "/status", method = RequestMethod.POST)
-    public ResponseEntity<Resposta> atualizarStatus(@RequestBody ClienteDTO cliente) {
-        return ResponseEntity.ok().body(clienteService.atualizarStatus(cliente));
+    @PostMapping("/status/{id}")
+    public ResponseEntity<ClienteDTO> deletar(@PathVariable("id") Long id, @RequestBody SalvarClienteDTO salvarClienteDTO) {
+        Cliente cliente = clienteService.statusCliente(id, salvarClienteDTO);
+        return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
     @GetMapping("/teste")

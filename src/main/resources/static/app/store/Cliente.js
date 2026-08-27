@@ -15,13 +15,12 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     proxy: {
         type: 'ajax',
         url: window.location.origin + '/cliente/listar',
+        method: 'GET',
         reader: {
-            type: 'json',
-            rootProperty: 'clientes'
-
+            type: 'json'
         }
     },
-    listeners: {
+   /* listeners: {
         beforeLoad: function(store, operation){
             var filtros = store.getFilters().items;
             var arrayFiltro = [];
@@ -46,5 +45,5 @@ Ext.define('ProjSistemaOs.store.Cliente', {
                 filtros: Ext.encode(arrayFiltro)
             });
         }
-    }
+    }*/
 });

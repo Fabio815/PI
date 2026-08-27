@@ -60,8 +60,15 @@ public class ClienteService {
 
     public List<Cliente> listarClientes(Long id, String nome, List<String> status, Pageable pageable) {
         List<Cliente> listaClientes = new ArrayList<>();
-        Page<Cliente> clientes = clienteRepository.listarClientes(nome, converterParaStatus(status), id, pageable);
-        if (!clientes.isEmpty()) {
+        if (!Objects.isNull(id) || !Objects.isNull(nome) || !Objects.isNull(status)) {
+            Page<Cliente> clientes = clienteRepository.listarClientes(nome, converterParaStatusList(status), id, pageable);
+            if (!clientes.isEmpty()) {
+                for (Cliente cl : clientes) {
+                    listaClientes.add(cl);
+                }
+            }
+        } else {
+            Page<Cliente> clientes = clienteRepository.findAllNotInativo(pageable);
             for (Cliente cl : clientes) {
                 listaClientes.add(cl);
             }
@@ -82,22 +89,10 @@ public class ClienteService {
 
         cliente.setNome(salvarClienteDTO.getNome());
         cliente.setTelefone(salvarClienteDTO.getTelefone());
+        cliente.setStatus(Status.valueOf(salvarClienteDTO.getStatus()));
         cliente.setEndereco(endereco);
 
         return cliente;
-    }
-
-    @Transactional
-    public Resposta atualizarStatus(ClienteDTO cliente) {
-        Resposta resposta;
-        if (cliente == null) {
-            resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
-            return resposta;
-        }
-        Status status = cliente.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
-        clienteRepository.udpateStatus(status, cliente.getId());
-        resposta = Resposta.sucesso("Cliente atualizado com sucesso!");
-        return resposta;
     }
 
     public Cliente carregarCliente(Long id) {
@@ -108,7 +103,15 @@ public class ClienteService {
         return op.get();
     }
 
-    private List<Status> converterParaStatus(List<String> status) {
+    @Transactional
+    public Cliente statusCliente(Long id, SalvarClienteDTO salvarClienteDTO) {
+        Cliente cliente = carregarCliente(id);
+        cliente.setStatus(Status.valueOf(salvarClienteDTO.getStatus()));
+
+        return cliente;
+    }
+
+    private List<Status> converterParaStatusList(List<String> status) {
         if (status == null) {
             return null;
         }
