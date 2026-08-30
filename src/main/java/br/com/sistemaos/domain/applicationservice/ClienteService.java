@@ -85,10 +85,9 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente atualizarStatus(Long id, SalvarClienteDTO salvarClienteDTO) {
+    public Cliente atualizarStatus(Long id) {
         Cliente cliente = carregarCliente(id);
-        Status status = trocarStatus(cliente);
-        cliente.setStatus(status);
+        cliente.setStatus(trocarStatus(cliente));
 
         return cliente;
     }

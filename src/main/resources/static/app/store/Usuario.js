@@ -10,26 +10,38 @@ Ext.define('ProjSistemaOs.store.Usuario', {
     proxy: {
         type: 'ajax',
         url: window.location.origin + '/usuarios/listar',
+        method: 'GET',
         reader: {
             type: 'json',
-            rootProperty: 'usuarios'
+            rootProperty: 'content',
+            totalProperty: 'totalElements'
         }
     },
     listeners: {
-        beforeLoad: function(store, operation){
+        beforeLoad: function(store) {
             var filtros = store.getFilters().items;
-            var arrayFiltro = [];
+            var params = {};
             for (let f of filtros) {
+                let propriedade = f.getProperty();
                 let valor = f.getValue();
-                arrayFiltro.push({
-                    propriedade: f.getProperty(),
-                    operador: f.getOperator(),
-                    valor: valor
-                });
+                switch (propriedade) {
+                    case 'id':
+                        params.id = valor;
+                        break;
+                    case 'nome':
+                        params.nome = valor;
+                        break
+                    case 'status':
+                        params.status = valor;
+                        break;
+                    case 'email':
+                        params.email = valor;
+                        break;
+                    default:
+                        break;
+                }
             }
-            store.getProxy().setExtraParams({
-                filtros: Ext.encode(arrayFiltro)
-            });
+            store.getProxy().setExtraParams(params);
         }
     }
 });

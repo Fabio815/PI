@@ -55,8 +55,8 @@ public class ClienteController {
 
     @PutMapping("/status/{id}")
     public ResponseEntity<ClienteDTO> deletar(
-            @PathVariable("id") Long id, @RequestBody @Valid SalvarClienteDTO salvarClienteDTO) {
-        Cliente cliente = clienteService.atualizarStatus(id, salvarClienteDTO);
+            @PathVariable("id") Long id) {
+        Cliente cliente = clienteService.atualizarStatus(id);
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 

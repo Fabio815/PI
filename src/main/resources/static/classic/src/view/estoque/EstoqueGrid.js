@@ -96,17 +96,17 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: sistemaOsLocal.apiUrl + '/produto/status' + record.get('id'),
-                            method: 'POST',
+                            url: sistemaOsLocal.apiUrl + '/produto/status/' + record.get('id'),
+                            method: 'PUT',
                             jsonData: record.data,
                             callback: function (success, response, options){
                                 if (vw && !vw.destroyed && !vw.isDestroying) {
                                     let r = Ext.decode(options.responseText, true);
                                     if (r) {
-                                        if (r && r.sucesso) {
+                                        if (r) {
                                             a.getStore().reload();
                                         } else {
-                                            Avisos.mensagemAviso(r.mensagem);
+                                            Avisos.mensagemAviso("Contate o administrador!");
                                         }
                                     } else {
                                         Avisos.mostrarServidorIndisponivel();

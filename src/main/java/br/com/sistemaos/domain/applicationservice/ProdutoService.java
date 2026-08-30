@@ -1,10 +1,6 @@
 package br.com.sistemaos.domain.applicationservice;
 
-import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Produto;
-import br.com.sistemaos.domain.model.Resposta;
-import br.com.sistemaos.infraestrura.dto.ClienteDTO;
-import br.com.sistemaos.infraestrura.dto.ProdutoDTO;
 import br.com.sistemaos.domain.exception.ProdutoDuplicadoException;
 import br.com.sistemaos.domain.exception.ProdutoNaoEncontradoExpection;
 import br.com.sistemaos.domain.repository.ProdutoRepository;
@@ -62,10 +58,9 @@ public class ProdutoService {
     }
 
     @Transactional
-    public Produto atualizarStatus(Long id, SalvarProdutoDTO salvarProdutoDTO) {
+    public Produto atualizarStatus(Long id) {
         Produto produto = carregarProdutoPorId(id);
-        Status status = trocarStatus(produto);
-        produto.setStatus(status);
+        produto.setStatus(trocarStatus(produto));
         return produto;
     }
 
@@ -82,7 +77,7 @@ public class ProdutoService {
     }
 
     private Status trocarStatus(Produto produto) {
-        if (produto.getStatus() == Status.ATIVO) {
+        if (produto.getStatus().equals(Status.ATIVO)) {
             return Status.INATIVO;
         } else {
             return  Status.ATIVO;

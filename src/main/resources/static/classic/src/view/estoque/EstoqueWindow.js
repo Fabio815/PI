@@ -129,7 +129,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
                     blankText : 'O campo é obrigatório',
                     name: 'quantidade',
                     flex: 1,
-                    emptyText: 'Rua',
+                    emptyText: 'Quantidade',
                 }, {
                     xtype: 'numberfield',
                     fieldLabel: 'Preço',
@@ -137,7 +137,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
                     blankText : 'O campo é obrigatório',
                     name: 'preco',
                     flex: 1,
-                    emptyText: 'Ex 1221',
+                    emptyText: 'R$',
                 }]
             }]
         }]

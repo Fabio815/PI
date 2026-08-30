@@ -2,7 +2,6 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.ProdutoService;
 import br.com.sistemaos.domain.entity.Produto;
-import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.infraestrura.dto.ProdutoDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarProdutoDTO;
@@ -53,8 +52,8 @@ public class ProdutoController {
 
     @PutMapping(path = "/status/{id}")
     public ResponseEntity<ProdutoDTO> atualizarStatus(
-            @PathVariable("id") Long id, @RequestBody @Valid SalvarProdutoDTO salvarProdutoDTO) {
-        Produto produto = produtoService.atualizarStatus(id, salvarProdutoDTO);
+            @PathVariable("id") Long id) {
+        Produto produto = produtoService.atualizarStatus(id);
         return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
 }

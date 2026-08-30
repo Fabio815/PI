@@ -17,22 +17,20 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
             form = vw.down('form').getForm().getValues();
 
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/usuarios/cadastro',
+                url: sistemaOsLocal.apiUrl + '/usuarios/adicionar',
                 method: 'POST',
                 jsonData: form,
                 success: function (conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
-                    if (r && r.resposta.sucesso) {
+                    if (r) {
                         vw.fireEvent('usuariosalvo');
-                        //Avisos.mensagemSucesso(r.resposta.mensagem);
                         vw.close();
                     } else {
-                        Avisos.mensagemAviso(r.resposta.mensagem);
+                        Avisos.mensagemAviso("Contate o adminstrador");
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
-                    let r = Ext.JSON.decode(conn.responseText, true);
-                    Avisos.mensagemAviso(r.mensagem);
+                    Avisos.mostrarServidorIndisponivel();
                 }
             });
         },
@@ -156,8 +154,8 @@ Ext.define('ProjSistemaOs.view.usuario.CadastroUsuarioWindow', {
                     queryMode: 'local',
                     forceSelection: true,
                     store: [
-                        'administrador',
-                        'funcionário'
+                        'ADM',
+                        'FUNCIONARIO'
                     ]
                 }]
             }, {

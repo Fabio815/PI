@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios" )
@@ -66,8 +66,8 @@ public class UsuarioController {
 
     @PutMapping("/atualizar/status/{id}")
     public ResponseEntity<UsuarioDTO> atualizarStatus(
-            @PathVariable("id") Long id, @RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
-        Usuario usuario = usuarioService.atualizarStatus(id, salvarUsuarioDTO);
+            @PathVariable("id") Long id) {
+        Usuario usuario = usuarioService.atualizarStatus(id);
         return ResponseEntity.ok(UsuarioDTO.criar(usuario));
     }
 }

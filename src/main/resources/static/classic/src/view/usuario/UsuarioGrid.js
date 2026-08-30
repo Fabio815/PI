@@ -82,12 +82,12 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         var me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: sistemaOsLocal.apiUrl + '/usuarios/status/atualizar',
-                            method: 'POST',
+                            url: sistemaOsLocal.apiUrl + '/usuarios/atualizar/status/' + record.get("id"),
+                            method: 'PUT',
                             jsonData: record.data,
                             callback: function (success, response, options) {
                                 var r = Ext.JSON.decode(options.responseText);
-                                if (r.sucesso) {
+                                if (r) {
                                     a.getStore().reload();
                                 } else {
                                     Avisos.contateAdm();

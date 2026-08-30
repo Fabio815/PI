@@ -3,12 +3,9 @@ package br.com.sistemaos.domain.applicationservice;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
-import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
-import br.com.sistemaos.domain.repository.UsuarioCostumeizadoRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
-import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +23,6 @@ import java.util.*;
 @Slf4j
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
-    private final UsuarioCostumeizadoRepository usuarioCostumeizadoRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -105,12 +101,12 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Usuario atualizarStatus(Long id, SalvarUsuarioDTO salvarUsuarioDTO) {
+    public Usuario atualizarStatus(Long id) {
         Usuario usuario = carregarUsuario(id);
-        usuario.setStatus(salvarUsuarioDTO.getStatus());
-
+        usuario.setStatus(trocarStatus(usuario));
         return usuario;
     }
+
 
     //Recuperacao de senha
 
@@ -164,6 +160,14 @@ public class UsuarioService {
             return status.stream().map(s -> Status.valueOf(s)).toList();
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new ConverteStatusException(status.toString());
+        }
+    }
+
+    private Status trocarStatus(Usuario usuario) {
+        if (usuario.getStatus() == Status.ATIVO) {
+            return Status.INATIVO;
+        } else {
+            return  Status.ATIVO;
         }
     }
 }
