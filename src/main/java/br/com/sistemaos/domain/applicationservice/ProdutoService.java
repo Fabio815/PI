@@ -1,7 +1,9 @@
 package br.com.sistemaos.domain.applicationservice;
 
+import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Produto;
 import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.ProdutoDTO;
 import br.com.sistemaos.domain.exception.ProdutoDuplicadoException;
 import br.com.sistemaos.domain.exception.ProdutoNaoEncontradoExpection;
@@ -23,7 +25,7 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
 
     @Transactional
-    public Produto criarProduto(SalvarProdutoDTO salvarProdutoDTO) {
+    public Produto adicionarProduto(SalvarProdutoDTO salvarProdutoDTO) {
         if (existsProdutoComNome(salvarProdutoDTO.getNome(), null)) {
             throw new ProdutoDuplicadoException(salvarProdutoDTO.getNome());
         }
@@ -60,8 +62,11 @@ public class ProdutoService {
     }
 
     @Transactional
-    public Resposta atualizarStatus(ProdutoDTO produto) {
-        return null;
+    public Produto atualizarStatus(Long id, SalvarProdutoDTO salvarProdutoDTO) {
+        Produto produto = carregarProdutoPorId(id);
+        Status status = trocarStatus(produto);
+        produto.setStatus(status);
+        return produto;
     }
 
     private boolean existsProdutoComNome(String nome, Long idExluido) {
@@ -74,5 +79,13 @@ public class ProdutoService {
             return false;
         }
         return true;
+    }
+
+    private Status trocarStatus(Produto produto) {
+        if (produto.getStatus() == Status.ATIVO) {
+            return Status.INATIVO;
+        } else {
+            return  Status.ATIVO;
+        }
     }
 }

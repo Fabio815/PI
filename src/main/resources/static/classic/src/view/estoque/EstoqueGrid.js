@@ -96,7 +96,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: sistemaOsLocal.apiUrl + '/produto/status',
+                            url: sistemaOsLocal.apiUrl + '/produto/status' + record.get('id'),
                             method: 'POST',
                             jsonData: record.data,
                             callback: function (success, response, options){
@@ -178,6 +178,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
         text: 'Preço',
         dataIndex: 'preco',
         flex: 2,
+        align: 'right',
         renderer: function(value) {
             if (Ext.isNumber(value)) {
                 return new Intl.NumberFormat('pt-BR', {

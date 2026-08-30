@@ -25,8 +25,8 @@ public class ProdutoController {
     private final ProdutoService produtoService;
 
     @PostMapping("/adicionar")
-    public ResponseEntity<ProdutoDTO> adicionarProduto(@RequestBody SalvarProdutoDTO salvarProdutoDTO) {
-        Produto produto = produtoService.criarProduto(salvarProdutoDTO);
+    public ResponseEntity<ProdutoDTO> adicionarProduto(@RequestBody @Valid SalvarProdutoDTO salvarProdutoDTO) {
+        Produto produto = produtoService.adicionarProduto(salvarProdutoDTO);
         return ResponseEntity.created(URI.create("/produto/" + produto.getId())).body(ProdutoDTO.criar(produto));
     }
 
@@ -34,9 +34,9 @@ public class ProdutoController {
     public ResponseEntity<Page<ProdutoDTO>> listarProdutos(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) List<Status> status,
-            @RequestParam(defaultValue = "1") int start,
+            @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit) {
-        Pageable pageable = PageRequest.of(start - 1, limit);
+        Pageable pageable = PageRequest.of(start, limit);
         Page<Produto> produtos = produtoService.listarProdutos(nome, status, pageable);
         Page<ProdutoDTO> produtosDTO = produtos.map(ProdutoDTO::criar);
         return ResponseEntity.ok(produtosDTO);
@@ -51,8 +51,10 @@ public class ProdutoController {
         return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
 
-    @RequestMapping(path = "/status", method = RequestMethod.POST)
-    public ResponseEntity<Resposta> atualizarStatus(@RequestBody ProdutoDTO produto) {
-        return ResponseEntity.ok().body(produtoService.atualizarStatus(produto));
+    @PutMapping(path = "/status/{id}")
+    public ResponseEntity<ProdutoDTO> atualizarStatus(
+            @PathVariable("id") Long id, @RequestBody @Valid SalvarProdutoDTO salvarProdutoDTO) {
+        Produto produto = produtoService.atualizarStatus(id, salvarProdutoDTO);
+        return ResponseEntity.ok(ProdutoDTO.criar(produto));
     }
 }

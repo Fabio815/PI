@@ -16,7 +16,7 @@
     "requires": [
         "font-awesome"
     ],
-
+    "locale": "pt_BR",
     /**
      * The relative path to the application's markup file (html, jsp, asp, etc.).
      */

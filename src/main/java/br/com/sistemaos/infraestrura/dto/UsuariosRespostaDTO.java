@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class UsuariosRespostaDTO {
 
-    public static Map<String, List<UsuarioDTO>> converterUsuarios(List<Usuario> usuario) {
+    /*public static Map<String, List<UsuarioDTO>> converterUsuarios(List<Usuario> usuario) {
         if (usuario == null) {
             return null;
         }
@@ -21,5 +21,5 @@ public class UsuariosRespostaDTO {
 
         mapaUsuarios.put("usuarios", listUsuarioDTO);
         return mapaUsuarios;
-    }
+    }*/
 }

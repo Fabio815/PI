@@ -4,9 +4,11 @@ import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.Filtro;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import br.com.sistemaos.domain.repository.UsuarioCostumeizadoRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -32,32 +34,21 @@ public class UsuarioService {
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl; // Pega a URL do application.yml mas não esta reconhecendo
 
-    public UsuarioDTO cadastrar(UsuarioDTO usuarioDto) {
-        UsuarioDTO resposta = new UsuarioDTO();
-
-        if (usuarioDto == null) {
-            log.info("O usuário não pode ser nulo");
-            resposta.setResposta(Resposta.falha("O usuário não pode ser nulo"));
-            return null;
-        }
-        usuarioDto.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
-
+    @Transactional
+    public Usuario adicionarUsuario(SalvarUsuarioDTO salvarUsuarioDTO) {
         Usuario usuario = Usuario.builder()
-                .nome(usuarioDto.getNome())
-                .email(usuarioDto.getEmail())
-                .chave(usuarioDto.getChave())
-                .senha(usuarioDto.getSenha())
+                .nome(salvarUsuarioDTO.getNome())
+                .email(salvarUsuarioDTO.getEmail())
+                .senha(salvarUsuarioDTO.getSenha())
+                .status(Status.ATIVO)
+                .chave(salvarUsuarioDTO.getChave())
                 .build();
 
-
         usuarioRepository.save(usuario);
-
-        resposta = usuarioDto;
-        resposta.setResposta(Resposta.sucesso("Cliente cadstrado com sucesso!"));
-        return resposta;
+        return usuario;
     }
 
-    public Map<String, Object> listar(
+    /*public Map<String, Object> listar(
             String filtros,
             int start,
             int limit) {
@@ -127,7 +118,7 @@ public class UsuarioService {
         }
 
         return Optional.empty();
-    }
+    }*/
 
     public Resposta atualizarStats(UsuarioDTO usuario) {
         Resposta resposta = new Resposta();

@@ -1,12 +1,16 @@
 package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.UsuarioService;
+import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,12 +21,13 @@ import java.util.Optional;
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
-    @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody UsuarioDTO usuario) {
-        return ResponseEntity.ok(usuarioService.cadastrar(usuario));
+    @PostMapping("/adicionar")
+    public ResponseEntity<UsuarioDTO> adicionar(@RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
+        Usuario usuario = usuarioService.adicionarUsuario(salvarUsuarioDTO);
+        return ResponseEntity.created(URI.create("/usuario/" + usuario.getId())).body(UsuarioDTO.criar(usuario));
     }
 
-    @GetMapping("/listar")
+    /*@GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listar(
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "limit", defaultValue = "10") int limit,
@@ -49,7 +54,7 @@ public class UsuarioController {
         return ResponseEntity
                 .ok()
                 .body(resposta);
-    }
+    }*/
 
     @PutMapping("/atualizar")
     public ResponseEntity<Resposta> atualizarUsuario(@RequestBody UsuarioDTO usuario) {

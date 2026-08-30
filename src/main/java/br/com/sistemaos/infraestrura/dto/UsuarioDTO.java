@@ -1,40 +1,31 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.model.Resposta;
+import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.domain.model.Perfil;
 import br.com.sistemaos.domain.model.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
 public class UsuarioDTO {
     private Long id;
     private String nome;
     private String email;
-    private String senha;   
-    private String chave;
+    private String senha;
+    private Perfil chave;
     private Status status;
-    private Resposta resposta;
 
-    public UsuarioDTO(Long id, String nome, String email, String chave, Status status) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.chave = chave;
-        this.status = status;
-    }
-
-    public UsuarioDTO(Long id, String nome, String email, String chave, Status o, Resposta loginRealizadoComSucesso) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.chave = chave;
-        this.resposta = loginRealizadoComSucesso;
+    public static UsuarioDTO criar(Usuario usuario) {
+        return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                null,
+                usuario.getChave(),
+                usuario.getStatus()
+        );
     }
 }

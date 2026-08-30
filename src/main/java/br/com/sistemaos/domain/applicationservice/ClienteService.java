@@ -93,9 +93,9 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente statusCliente(Long id, SalvarClienteDTO salvarClienteDTO) {
+    public Cliente atualizarStatus(Long id, SalvarClienteDTO salvarClienteDTO) {
         Cliente cliente = carregarCliente(id);
-        Status status = ClienteDTO.trocarStatus(cliente);
+        Status status = trocarStatus(cliente);
         cliente.setStatus(status);
 
         return cliente;
@@ -109,6 +109,14 @@ public class ClienteService {
             return status.stream().map(s -> Status.valueOf(s)).toList();
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new ConverteStatusException(status.toString());
+        }
+    }
+
+    private Status trocarStatus(Cliente cliente) {
+        if (cliente.getStatus() == Status.ATIVO) {
+            return Status.INATIVO;
+        } else {
+            return  Status.ATIVO;
         }
     }
 }

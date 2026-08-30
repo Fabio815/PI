@@ -1,5 +1,6 @@
 package br.com.sistemaos.domain.entity;
 
+import br.com.sistemaos.domain.model.Perfil;
 import br.com.sistemaos.domain.model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,16 +18,24 @@ import java.time.LocalDateTime;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "nome", nullable = false, length = 50)
     private String nome;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, length = 80)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "senha", nullable = false)
     private String senha;
+
+    @Column(name = "chave", nullable = false)
+    private Perfil chave;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     //recuperacao de senha
     @Column(name = "reset_token")
@@ -34,18 +43,4 @@ public class Usuario {
 
     @Column(name = "reset_token_expiry_date")
     private LocalDateTime resetTokenExpiryDate;
-
-    @Column(nullable = false)
-    private String chave;
-
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
-    @PrePersist
-    public void prePersist() {
-        if (status == null) {
-            status = Status.ATIVO;
-        }
-    }
 }

@@ -36,12 +36,4 @@ public class ClienteDTO {
                 enderecoDTO
         );
     }
-
-    public static Status trocarStatus(Cliente cliente) {
-        if (cliente.getStatus() == Status.ATIVO) {
-            return Status.INATIVO;
-        } else {
-            return  Status.ATIVO;
-        }
-    }
 }

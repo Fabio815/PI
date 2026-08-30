@@ -2,22 +2,18 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.infraestrura.dto.ClienteDTO;
-import br.com.sistemaos.infraestrura.dto.ClienteRespostaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 //Ultima modificação 23/03/26
 @RestController
@@ -42,23 +38,25 @@ public class ClienteController {
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "status", required = false) List<String> status,
-            @RequestParam(defaultValue = "1") int start,
+            @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit)
     {
-        Pageable pageable = PageRequest.of(start - 1, limit);
+        Pageable pageable = PageRequest.of(start, limit);
         List<Cliente> clientes = clienteService.listarClientes(id, nome, status, pageable);
         return ResponseEntity.ok(clientes.stream().map(c -> ClienteDTO.criar(c)).toList());
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<ClienteDTO> atualizar(@PathVariable("id") Long id, @RequestBody SalvarClienteDTO salvarClienteDTO) {
+    public ResponseEntity<ClienteDTO> atualizar(
+            @PathVariable("id") Long id, @RequestBody @Valid SalvarClienteDTO salvarClienteDTO) {
         Cliente cliente = clienteService.atualizarCliente(id, salvarClienteDTO);
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
     @PutMapping("/status/{id}")
-    public ResponseEntity<ClienteDTO> deletar(@PathVariable("id") Long id, @RequestBody SalvarClienteDTO salvarClienteDTO) {
-        Cliente cliente = clienteService.statusCliente(id, salvarClienteDTO);
+    public ResponseEntity<ClienteDTO> deletar(
+            @PathVariable("id") Long id, @RequestBody @Valid SalvarClienteDTO salvarClienteDTO) {
+        Cliente cliente = clienteService.atualizarStatus(id, salvarClienteDTO);
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
