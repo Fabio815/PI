@@ -19,15 +19,6 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
     controller: {
         adicionarCliente: function(){
             var me = this, vw = me.getViewModel();
-            /*var me = this, vw = me.getViewModel(),
-                win = Ext.create('ProjSistemaOs.view.cliente.ClienteWindow');
-
-            win.on('clienteSalvo', () => { //Aqui está escutando o envento que é disparadp quando salva o cliente.
-                if (vw && !vw.destroyed && !vw.isDestroying) {
-                    me.getView().getStore().reload();
-                }
-            });
-            win.show();*/
             Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
                 floating: true,
                 modal: true,
@@ -52,20 +43,26 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
             var record = context.record,
                 oldValue = context.originalValue,
                 newValue = context.value;
-            var dadosFormato = ProjSistemaOs.util.ClienteUtil.converteEstrutura(record.getData(), record.data.status ? 'ATIVO' : 'INATIVO');
             if (oldValue !== newValue) {
+                const dados = {
+                    nome: record.nome,
+                    telefone: record.telefone,
+                    status: record.status,
+                    endereco: {
+                        rua: record.rua,
+                        numero: record.numero,
+                        logradouro: record.logradouro,
+                        complemento: record.complemento,
+                    }
+                }
                 Ext.Ajax.request({
                     url: sistemaOsLocal.apiUrl + '/cliente/atualizar/' + record.get('id'),
                     method: 'PUT',
-                    jsonData: dadosFormato,
+                    jsonData: dados,
                     success: function (response) {
                         var r = Ext.decode(response.responseText, true);
-                        if (r && r.resposta.sucesso) {
+                        if (r) {
                             record.commit();
-                            //Avisos.mensagemSucesso(r.resposta.mensagem);
-                        } else if (!r && !r.resposta.sucesso) {
-                            record.reject();
-                            Avisos.mensagemAviso(r.resposta.mensagem);
                         } else {
                             Avisos.contateAdm();
                         }
@@ -90,14 +87,14 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: sistemaOsLocal.apiUrl + '/cliente/status',
-                            method: 'POST',
+                            url: sistemaOsLocal.apiUrl + '/cliente/status/' + record.get('id'),
+                            method: 'PUT',
                             jsonData: record.data,
                             callback: function (success, response, options){
                                 if (vw && !vw.destroyed && !vw.isDestroying) {
                                     let r = Ext.decode(options.responseText, true);
                                     if (r) {
-                                        if (r && r.sucesso) {
+                                        if (r) {
                                             a.getStore().reload();
                                         } else {
                                             Avisos.mensagemAviso(r.mensagem);
@@ -281,13 +278,10 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
         beforePageText: 'Página',
         afterPageText: 'de {0}',
         displayMsg: 'Clientes {0} - {1} de {2}',
-        emptyMsg: 'Não existe clientes cadastrados',
-        bind: {
-            store: '{clientes}'
-        },
-        listeners: { //Para esconder o botão de reload...
+        emptyMsg: 'Não existem clientes cadastrados',
+        listeners: {
             afterrender: function(toolbar) {
-                toolbar.down('#refresh').hide();//Buscando pelo itemId
+                toolbar.down('#refresh').hide();
             }
         }
     }

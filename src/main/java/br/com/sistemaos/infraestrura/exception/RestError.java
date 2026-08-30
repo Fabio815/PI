@@ -1,4 +1,4 @@
-package br.com.sistemaos.domain.exception;
+package br.com.sistemaos.infraestrura.exception;
 
 import lombok.Builder;
 import lombok.Data;

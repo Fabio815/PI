@@ -30,19 +30,13 @@ public class ProdutoController {
         return ResponseEntity.created(URI.create("/produto/" + produto.getId())).body(ProdutoDTO.criar(produto));
     }
 
-    @GetMapping("/carregar/{id}")
-    public ResponseEntity<ProdutoDTO> carregarProduto(@PathVariable("id") Long id) {
-        Produto produto = produtoService.carregarProdutoPorId(id);
-        return ResponseEntity.ok(ProdutoDTO.criar(produto));
-    }
-
     @GetMapping("/listar")
     public ResponseEntity<Page<ProdutoDTO>> listarProdutos(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) List<Status> status,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "25") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+            @RequestParam(defaultValue = "1") int start,
+            @RequestParam(defaultValue = "25") int limit) {
+        Pageable pageable = PageRequest.of(start - 1, limit);
         Page<Produto> produtos = produtoService.listarProdutos(nome, status, pageable);
         Page<ProdutoDTO> produtosDTO = produtos.map(ProdutoDTO::criar);
         return ResponseEntity.ok(produtosDTO);

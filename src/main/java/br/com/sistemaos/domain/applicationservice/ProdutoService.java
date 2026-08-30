@@ -55,12 +55,16 @@ public class ProdutoService {
         produto.setNome(salvarProdutoDTO.getNome());
         produto.setPreco(salvarProdutoDTO.getPreco());
         produto.setQuantidade(salvarProdutoDTO.getQuantidade());
-        produto.setStatus(salvarProdutoDTO.getStatus());
 
         return produto;
     }
 
-    public boolean existsProdutoComNome(String nome, Long idExluido) {
+    @Transactional
+    public Resposta atualizarStatus(ProdutoDTO produto) {
+        return null;
+    }
+
+    private boolean existsProdutoComNome(String nome, Long idExluido) {
         Optional<Produto> op = produtoRepository.findByNome(nome);
         if (op.isEmpty()) {
             return false;
@@ -71,18 +75,4 @@ public class ProdutoService {
         }
         return true;
     }
-
-    @Transactional
-    public Resposta atualizarStatus(ProdutoDTO produto) {
-        Resposta resposta;
-        if (produto == null) {
-            resposta = Resposta.falha("Erro ao tentar atualizar os dados!");
-            return resposta;
-        }
-        Status status = produto.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
-        produtoRepository.udpateStatus(status, produto.getId());
-        resposta = Resposta.sucesso("Produto atualizado com sucesso!");
-        return resposta;
-    }
-
 }

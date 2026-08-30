@@ -42,10 +42,10 @@ public class ClienteController {
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "status", required = false) List<String> status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "25") int size)
+            @RequestParam(defaultValue = "1") int start,
+            @RequestParam(defaultValue = "25") int limit)
     {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(start - 1, limit);
         List<Cliente> clientes = clienteService.listarClientes(id, nome, status, pageable);
         return ResponseEntity.ok(clientes.stream().map(c -> ClienteDTO.criar(c)).toList());
     }
@@ -56,7 +56,7 @@ public class ClienteController {
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
-    @PostMapping("/status/{id}")
+    @PutMapping("/status/{id}")
     public ResponseEntity<ClienteDTO> deletar(@PathVariable("id") Long id, @RequestBody SalvarClienteDTO salvarClienteDTO) {
         Cliente cliente = clienteService.statusCliente(id, salvarClienteDTO);
         return ResponseEntity.ok(ClienteDTO.criar(cliente));

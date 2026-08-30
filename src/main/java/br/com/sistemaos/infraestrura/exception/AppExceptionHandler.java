@@ -1,4 +1,4 @@
-package br.com.sistemaos.domain.exception;
+package br.com.sistemaos.infraestrura.exception;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
 
