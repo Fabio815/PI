@@ -5,19 +5,20 @@ import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.exception.ClienteNaoEncontradoException;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.model.Status;
-import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service // Classe Server - dados no banco
 @RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros

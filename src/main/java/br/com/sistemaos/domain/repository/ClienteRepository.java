@@ -1,14 +1,11 @@
 package br.com.sistemaos.domain.repository;
 
 import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.entity.Produto;
 import br.com.sistemaos.domain.model.Status;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,18 +15,6 @@ import java.util.List;
 @Repository //Ele vai armazenar o crud
 
 public interface ClienteRepository extends JpaRepository <Cliente, Long>, JpaSpecificationExecutor<Cliente> {
-    @Transactional
-    @Modifying
-    @Query("update Cliente as c set c.nome=:nome, c.telefone=:telefone where c.id=:id")
-    void updateCliente(@Param("nome") String nome,
-                       @Param("telefone") String telefone,
-                       @Param("id") Long id);
-
-    @Transactional
-    @Modifying
-    @Query("update Cliente as c set c.status=:status where c.id=:id")
-    void udpateStatus(@Param("status") Status status, Long id);
-
     @Query("""
     select c
     from Cliente c

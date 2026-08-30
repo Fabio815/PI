@@ -1,9 +1,5 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.entity.Endereco;
-import br.com.sistemaos.domain.model.Status;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

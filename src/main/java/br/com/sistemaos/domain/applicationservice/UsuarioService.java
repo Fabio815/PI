@@ -5,6 +5,7 @@ import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
+import br.com.sistemaos.infraestrura.dto.AtualizarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -89,13 +90,12 @@ public class UsuarioService {
     }*/
 
     @Transactional
-    public Usuario atualizarUsuario(Long id, SalvarUsuarioDTO salvarUsuarioDTO) {
+    public Usuario atualizarUsuario(Long id, AtualizarUsuarioDTO atualizarUsuarioDTO) {
         Usuario usuario = carregarUsuario(id);
 
-        usuario.setNome(salvarUsuarioDTO.getNome());
-        usuario.setEmail(salvarUsuarioDTO.getEmail());
-        usuario.setSenha(salvarUsuarioDTO.getSenha());
-        usuario.setChave(salvarUsuarioDTO.getChave());
+        usuario.setNome(atualizarUsuarioDTO.getNome());
+        usuario.setEmail(atualizarUsuarioDTO.getEmail());
+        usuario.setChave(atualizarUsuarioDTO.getChave());
 
         return usuario;
     }

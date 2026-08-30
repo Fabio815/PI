@@ -45,14 +45,14 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
                 newValue = context.value;
             if (oldValue !== newValue) {
                 const dados = {
-                    nome: record.nome,
-                    telefone: record.telefone,
-                    status: record.status,
+                    nome: record.get("nome"),
+                    telefone: record.get("telefone"),
+                    status: record.get("status"),
                     endereco: {
-                        rua: record.rua,
-                        numero: record.numero,
-                        logradouro: record.logradouro,
-                        complemento: record.complemento,
+                        rua: record.get("rua"),
+                        numero: record.get("numero"),
+                        logradouro: record.get("logradouro"),
+                        complemento: record.get("complemento"),
                     }
                 }
                 Ext.Ajax.request({

@@ -3,8 +3,10 @@ package br.com.sistemaos.infraestrura.dto;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.Perfil;
 import br.com.sistemaos.domain.model.Status;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

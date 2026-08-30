@@ -1,8 +1,9 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.entity.Cliente;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

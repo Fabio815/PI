@@ -1,8 +1,5 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.entity.Cliente;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 

@@ -56,14 +56,13 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
                 newValue = edit.context.value;
             if (oldValue !== newValue) {
                 Ext.Ajax.request({
-                    url: sistemaOsLocal.apiUrl + '/usuarios/atualizar',
+                    url: sistemaOsLocal.apiUrl + '/usuarios/atualizar/' + context.record.get("id"),
                     method: 'PUT',
                     jsonData: context.record.getData(),
                     success: function (response) {
                         var r = Ext.JSON.decode(response.responseText, true);
-                        if (r && r.sucesso) {
+                        if (r) {
                             context.record.commit();
-                            //Avisos.mensagemSucesso(r.mensagem);
                         } else {
                             context.record.reject();
                             Avisos.contateAdm();

@@ -2,6 +2,7 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.UsuarioService;
 import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.infraestrura.dto.AtualizarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.validation.Valid;
@@ -59,8 +60,8 @@ public class UsuarioController {
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<UsuarioDTO> atualizarUsuario(
-            @PathVariable("id") Long id, @RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
-        Usuario usuario = usuarioService.atualizarUsuario(id, salvarUsuarioDTO);
+            @PathVariable("id") Long id, @RequestBody @Valid AtualizarUsuarioDTO atualizarUsuarioDTO) {
+        Usuario usuario = usuarioService.atualizarUsuario(id, atualizarUsuarioDTO);
         return ResponseEntity.ok(UsuarioDTO.criar(usuario));
     }
 
