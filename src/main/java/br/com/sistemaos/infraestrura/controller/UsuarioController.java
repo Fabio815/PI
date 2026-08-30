@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios" )
@@ -28,16 +29,17 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<UsuarioDTO>> listar(
+    public ResponseEntity<Map<String, Object>> listar(
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "limit", defaultValue = "10") int limit,
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "status", required = false) List<String> status,
             @RequestParam(value = "email", required = false) String email) {
-        Pageable pageable = PageRequest.of(start, limit);
-        List<Usuario> usuarios = usuarioService.listarUsuarios(id, nome, status, email, pageable);
-        return ResponseEntity.ok(usuarios.stream().map(c -> UsuarioDTO.criar(c)).toList());
+        int page = start / limit;
+        Pageable pageable = PageRequest.of(page, limit);
+        Map<String, Object> usuarios = usuarioService.listarUsuarios(id, nome, status, email, pageable);
+        return ResponseEntity.ok(usuarios);
     }
 
     /*@PostMapping("/login")

@@ -30,6 +30,6 @@ public class ItemOrcamento {
     private Orcamento orcamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_produto")
-    private Produto produto;
+    @JoinColumn(name = "id_peca")
+    private Peca peca;
 }

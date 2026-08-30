@@ -60,7 +60,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                 status: record.get('status')
             };
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/produto/atualizar/' + record.get('id'),
+                url: sistemaOsLocal.apiUrl + '/peca/atualizar/' + record.get('id'),
                 method: 'PUT',
                 jsonData: dados,
                 success: function (response) {
@@ -96,7 +96,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
                         Ext.Ajax.request({
-                            url: sistemaOsLocal.apiUrl + '/produto/status/' + record.get('id'),
+                            url: sistemaOsLocal.apiUrl + '/peca/status/' + record.get('id'),
                             method: 'PUT',
                             jsonData: record.data,
                             callback: function (success, response, options){

@@ -31,6 +31,7 @@ public class Usuario {
     private String senha;
 
     @Column(name = "chave", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Perfil chave;
 
     @Column(name = "status", nullable = false)

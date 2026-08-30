@@ -1,12 +1,15 @@
 package br.com.sistemaos.domain.applicationservice;
 
+import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.AtualizarUsuarioDTO;
+import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
+import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,24 +47,19 @@ public class UsuarioService {
         return usuario;
     }
 
-    public List<Usuario> listarUsuarios(Long id, String nome, List<String> status, String email, Pageable pageable) {
-        List<Usuario> listaUsuario = new ArrayList<>();
-        if (!Objects.isNull(id) || !Objects.isNull(nome) || !Objects.isNull(status) || !Objects.isNull(email)) {
-            Page<Usuario> usuarios = usuarioRepository.listarUsuarios(nome, email, converterParaStatusList(status), id, pageable);
-            if (!usuarios.isEmpty()) {
-                for (Usuario us : usuarios) {
-                    listaUsuario.add(us);
-                }
-            }
+    public Map<String, Object> listarUsuarios(Long id, String nome, List<String> status, String email, Pageable pageable) {
+        Page<Usuario> listaUsuario;
+        if (!Objects.isNull(id) || !Objects.isNull(nome) || !Objects.isNull(status)) {
+            listaUsuario = usuarioRepository.listarUsuarios(nome, email, converterParaStatusList(status), id, pageable);
         } else {
-            Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
-            if (!usuarios.isEmpty()) {
-                for (Usuario us : usuarios) {
-                    listaUsuario.add(us);
-                }
-            }
+            listaUsuario = usuarioRepository.findAll(pageable);
         }
-        return listaUsuario;
+        List<UsuarioDTO> valor = listaUsuario.getContent().stream().map(UsuarioDTO::criar).toList();
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("listaUsuarios", valor);
+        resposta.put("total", listaUsuario.getTotalElements());
+        return resposta;
     }
 
     /*

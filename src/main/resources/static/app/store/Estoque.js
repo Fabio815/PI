@@ -11,15 +11,14 @@ Ext.define('ProjSistemaOs.store.Estoque', {
     proxy: {
         type: 'ajax',
 
-        url: window.location.origin + '/produto/listar',
-
+        url: window.location.origin + '/peca/listar',
         pageParam: 'page',
         limitParam: 'size',
 
         reader: {
             type: 'json',
-            rootProperty: 'content',
-            totalProperty: 'totalElements'
+            rootProperty: 'listaEstoque',
+            totalProperty: 'total'
         }
     },
     listeners: {

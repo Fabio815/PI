@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class Orcamento {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

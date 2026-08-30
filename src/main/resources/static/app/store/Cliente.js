@@ -18,8 +18,8 @@ Ext.define('ProjSistemaOs.store.Cliente', {
 
         reader: {
             type: 'json',
-            rootProperty: 'content',
-            totalProperty: 'totalElements'
+            rootProperty: 'listaClientes',
+            totalProperty: 'total'
         }
     },
     listeners: {

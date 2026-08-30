@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "produto")
+@Table(name = "peca")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Produto {
+public class Peca {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +33,6 @@ public class Produto {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "produto")
+    @OneToMany(mappedBy = "peca")
     private List<ItemOrcamento> itens;
 }

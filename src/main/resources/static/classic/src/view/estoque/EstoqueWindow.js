@@ -39,7 +39,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
             console.log('Enviando:', dados);
 
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/produto/adicionar',
+                url: sistemaOsLocal.apiUrl + '/peca/adicionar',
                 method: 'POST',
 
                 jsonData: dados,

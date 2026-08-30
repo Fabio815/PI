@@ -4,7 +4,7 @@ import br.com.sistemaos.domain.model.Status;
 import lombok.Data;
 
 @Data
-public class SalvarProdutoDTO {
+public class SalvarPecaDTO {
     private String nome;
     private int quantidade;
     private Double preco;

@@ -6,6 +6,7 @@ import br.com.sistemaos.domain.exception.ClienteNaoEncontradoException;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.ClienteRepository;
+import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service // Classe Server - dados no banco
 @RequiredArgsConstructor // Lombok - cria um construtor com todos os parametros
@@ -48,22 +46,21 @@ public class ClienteService {
         return cliente;
     }
 
-    public List<Cliente> listarClientes(Long id, String nome, List<String> status, Pageable pageable) {
-        List<Cliente> listaClientes = new ArrayList<>();
+    public Map<String, Object> listarClientes(Long id, String nome, List<String> status, Pageable pageable) {
+        Page<Cliente> listaClientes;
         if (!Objects.isNull(id) || !Objects.isNull(nome) || !Objects.isNull(status)) {
-            Page<Cliente> clientes = clienteRepository.listarClientes(nome, converterParaStatusList(status), id, pageable);
-            if (!clientes.isEmpty()) {
-                for (Cliente cl : clientes) {
-                    listaClientes.add(cl);
-                }
-            }
+            listaClientes = clienteRepository.listarClientes(nome, converterParaStatusList(status), id, pageable);
         } else {
-            Page<Cliente> clientes = clienteRepository.findAll(pageable);
-            for (Cliente cl : clientes) {
-                listaClientes.add(cl);
-            }
+            listaClientes = clienteRepository.findAll(pageable);
         }
-        return listaClientes;
+        List<ClienteDTO> valor = listaClientes.getContent().stream()
+                .map(ClienteDTO::criar)
+                .toList();
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("listaClientes", valor);
+        resposta.put("total", listaClientes.getTotalElements());
+        return resposta;
     }
 
     @Transactional

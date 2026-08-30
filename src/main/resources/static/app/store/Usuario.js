@@ -13,8 +13,8 @@ Ext.define('ProjSistemaOs.store.Usuario', {
         method: 'GET',
         reader: {
             type: 'json',
-            rootProperty: 'content',
-            totalProperty: 'totalElements'
+            rootProperty: 'listaUsuarios',
+            totalProperty: 'total'
         }
     },
     listeners: {
