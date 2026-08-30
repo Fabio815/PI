@@ -1,25 +1,24 @@
 package br.com.sistemaos.domain.applicationservice;
 
 import br.com.sistemaos.domain.entity.Usuario;
-import br.com.sistemaos.domain.model.Filtro;
+import br.com.sistemaos.domain.exception.ConverteStatusException;
+import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
 import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.domain.model.Status;
-import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
-import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import br.com.sistemaos.domain.repository.UsuarioCostumeizadoRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
+import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
+import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -48,54 +47,27 @@ public class UsuarioService {
         return usuario;
     }
 
-    /*public Map<String, Object> listar(
-            String filtros,
-            int start,
-            int limit) {
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<Filtro> listaFiltros = new ArrayList<>();
-
-        if (filtros != null && !filtros.isBlank()) {
-            listaFiltros = mapper.readValue(filtros, new TypeReference<List<Filtro>>() {});
+    public List<Usuario> listarUsuarios(Long id, String nome, List<String> status, String email, Pageable pageable) {
+        List<Usuario> listaUsuario = new ArrayList<>();
+        if (!Objects.isNull(id) || !Objects.isNull(nome) || !Objects.isNull(status) || !Objects.isNull(email)) {
+            Page<Usuario> usuarios = usuarioRepository.listarUsuarios(nome, email, converterParaStatusList(status), id, pageable);
+            if (!usuarios.isEmpty()) {
+                for (Usuario us : usuarios) {
+                    listaUsuario.add(us);
+                }
+            }
+        } else {
+            Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
+            if (!usuarios.isEmpty()) {
+                for (Usuario us : usuarios) {
+                    listaUsuario.add(us);
+                }
+            }
         }
-
-        List<Usuario> usuarios =
-                usuarioCostumeizadoRepository.listagemUsuarios(
-                        listaFiltros,
-                        start,
-                        limit
-                );
-
-        long total =
-                usuarioCostumeizadoRepository.contarUsuarios(
-                        listaFiltros
-                );
-
-        List<UsuarioDTO> usuariosDTO = new ArrayList<>();
-
-        for (Usuario u : usuarios) {
-
-            usuariosDTO.add(
-                    new UsuarioDTO(
-                            u.getId(),
-                            u.getNome(),
-                            u.getEmail(),
-                            u.getChave(),
-                            u.getStatus()
-                    )
-            );
-        }
-
-        Map<String, Object> resposta = new HashMap<>();
-
-        resposta.put("usuarios", usuariosDTO);
-        resposta.put("total", total);
-
-        return resposta;
+        return listaUsuario;
     }
 
+    /*
     public Optional<UsuarioDTO> login(String email, String senha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
@@ -120,31 +92,26 @@ public class UsuarioService {
         return Optional.empty();
     }*/
 
-    public Resposta atualizarStats(UsuarioDTO usuario) {
-        Resposta resposta = new Resposta();
-        if (usuario.getId() == null) {
-            resposta.setSucesso(false);
-            resposta.setMensagem("Contate o administrador");
-            return resposta;
-        }
-        Status status = usuario.getStatus().equals(Status.ATIVO) ? Status.INATIVO : Status.ATIVO;
-        usuarioRepository.updateStatus(status, usuario.getId());
-        resposta.setSucesso(true);
-        resposta.setMensagem("Usuario atualizado com sucesso");
-        return resposta;
+    @Transactional
+    public Usuario atualizarUsuario(Long id, SalvarUsuarioDTO salvarUsuarioDTO) {
+        Usuario usuario = carregarUsuario(id);
+
+        usuario.setNome(salvarUsuarioDTO.getNome());
+        usuario.setEmail(salvarUsuarioDTO.getEmail());
+        usuario.setSenha(salvarUsuarioDTO.getSenha());
+        usuario.setChave(salvarUsuarioDTO.getChave());
+
+        return usuario;
     }
 
-    public Resposta atualizarUsuario(UsuarioDTO usuario) {
-        if (usuario.getId() == null) {
-            return new Resposta(false, "Falha ao atualizar usuario");
-        }
-        Resposta resposta = new Resposta();
-        usuarioRepository.updateUsuario(usuario.getEmail(), usuario.getNome(), usuario.getId());
+    @Transactional
+    public Usuario atualizarStatus(Long id, SalvarUsuarioDTO salvarUsuarioDTO) {
+        Usuario usuario = carregarUsuario(id);
+        usuario.setStatus(salvarUsuarioDTO.getStatus());
 
-        resposta.setSucesso(true);
-        resposta.setMensagem("Usuario atualizado com sucesso");
-        return resposta;
+        return usuario;
     }
+
     //Recuperacao de senha
 
     public void solicitarRecuperacao(String email) {
@@ -179,5 +146,24 @@ public class UsuarioService {
                     usuarioRepository.save(usuario);
                     return true;
                 }).orElse(false);
+    }
+
+    private Usuario carregarUsuario(Long id) {
+        Optional<Usuario> op = usuarioRepository.findById(id);
+        if (op.isEmpty()) {
+            throw new UsuarioNaoEncontradoException(id);
+        }
+        return op.get();
+    }
+
+    private List<Status> converterParaStatusList(List<String> status) {
+        if (status == null) {
+            return null;
+        }
+        try {
+            return status.stream().map(s -> Status.valueOf(s)).toList();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new ConverteStatusException(status.toString());
+        }
     }
 }

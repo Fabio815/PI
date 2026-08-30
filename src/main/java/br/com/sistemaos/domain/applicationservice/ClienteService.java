@@ -84,14 +84,6 @@ public class ClienteService {
         return cliente;
     }
 
-    public Cliente carregarCliente(Long id) {
-        Optional<Cliente> op = clienteRepository.findById(id);
-        if (op.isEmpty()) {
-            throw new ClienteNaoEncontradoException(id);
-        }
-        return op.get();
-    }
-
     @Transactional
     public Cliente atualizarStatus(Long id, SalvarClienteDTO salvarClienteDTO) {
         Cliente cliente = carregarCliente(id);
@@ -99,6 +91,14 @@ public class ClienteService {
         cliente.setStatus(status);
 
         return cliente;
+    }
+
+    private Cliente carregarCliente(Long id) {
+        Optional<Cliente> op = clienteRepository.findById(id);
+        if (op.isEmpty()) {
+            throw new ClienteNaoEncontradoException(id);
+        }
+        return op.get();
     }
 
     private List<Status> converterParaStatusList(List<String> status) {

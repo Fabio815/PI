@@ -2,18 +2,17 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.UsuarioService;
 import br.com.sistemaos.domain.entity.Usuario;
-import br.com.sistemaos.domain.model.Resposta;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/usuarios" )
@@ -27,18 +26,20 @@ public class UsuarioController {
         return ResponseEntity.created(URI.create("/usuario/" + usuario.getId())).body(UsuarioDTO.criar(usuario));
     }
 
-    /*@GetMapping("/listar")
-    public ResponseEntity<Map<String, Object>> listar(
+    @GetMapping("/listar")
+    public ResponseEntity<List<UsuarioDTO>> listar(
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "limit", defaultValue = "10") int limit,
-            @RequestParam(value = "filtros", required = false) String filtros) {
-
-        return ResponseEntity.ok(
-                usuarioService.listar(filtros, start, limit)
-        );
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "status", required = false) List<String> status,
+            @RequestParam(value = "email", required = false) String email) {
+        Pageable pageable = PageRequest.of(start, limit);
+        List<Usuario> usuarios = usuarioService.listarUsuarios(id, nome, status, email, pageable);
+        return ResponseEntity.ok(usuarios.stream().map(c -> UsuarioDTO.criar(c)).toList());
     }
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
 
         String email = credentials.get("email");
@@ -56,13 +57,17 @@ public class UsuarioController {
                 .body(resposta);
     }*/
 
-    @PutMapping("/atualizar")
-    public ResponseEntity<Resposta> atualizarUsuario(@RequestBody UsuarioDTO usuario) {
-        return ResponseEntity.ok(usuarioService.atualizarUsuario(usuario));
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(
+            @PathVariable("id") Long id, @RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
+        Usuario usuario = usuarioService.atualizarUsuario(id, salvarUsuarioDTO);
+        return ResponseEntity.ok(UsuarioDTO.criar(usuario));
     }
 
-    @PostMapping("/status/atualizar")
-    public ResponseEntity<Resposta> atualizarStatus(@RequestBody UsuarioDTO usuario) {
-        return ResponseEntity.ok(usuarioService.atualizarStats(usuario));
+    @PutMapping("/atualizar/status/{id}")
+    public ResponseEntity<UsuarioDTO> atualizarStatus(
+            @PathVariable("id") Long id, @RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
+        Usuario usuario = usuarioService.atualizarStatus(id, salvarUsuarioDTO);
+        return ResponseEntity.ok(UsuarioDTO.criar(usuario));
     }
 }
