@@ -30,6 +30,7 @@ public class Endereco {
     @Column(name = "complemento", length = 200)
     private String complemento;
 
+    //relacionamento
     @OneToOne(mappedBy = "endereco")
     private Cliente cliente;
 }

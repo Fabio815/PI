@@ -5,7 +5,7 @@ Ext.define('ProjSistemaOs.store.Usuario', {
 
     remoteFilter: true,
     autoLoad: true,
-    pageSize: 25,
+    pageSize: 15,
 
     proxy: {
         type: 'ajax',

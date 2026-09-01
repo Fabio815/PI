@@ -283,6 +283,26 @@ Ext.define('ProjSistemaOs.view.cliente.ClienteGrid', {
             afterrender: function(toolbar) {
                 toolbar.down('#refresh').hide();
             }
-        }
+        },
+        items: [{
+            xtype: 'label',
+            text: 'Itens por página:'
+        }, {
+            xtype: 'combobox',
+            width: 70,
+            editable: false,
+            queryMode: 'local',
+            store: [15, 30, 45, 60],
+            value: 15,
+            listeners: {
+                change: function (combo, newValue) {
+                    var grid = combo.up('grid'),
+                        store = grid.getStore();
+
+                    store.pageSize = newValue;
+                    store.loadPage(1);
+                }
+            }
+        }]
     }
 });

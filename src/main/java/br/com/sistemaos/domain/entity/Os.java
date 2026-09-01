@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class Os {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,10 +25,16 @@ public class Os {
     @Enumerated(EnumType.STRING)
     private StatusOs status;
 
+    //relacionamento
     @ManyToOne
-    @JoinColumn(name = "id_cliente")
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @OneToOne(mappedBy = "os", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "orcamento_id", unique = true)
     private Orcamento orcamento;
 }

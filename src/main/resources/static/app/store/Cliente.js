@@ -9,7 +9,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
     ],
     remoteFilter: true,
     autoLoad: true,
-    pageSize: 25,
+    pageSize: 15,
 
     proxy: {
         type: 'ajax',

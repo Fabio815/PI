@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -42,6 +43,10 @@ public class Usuario {
     @Column(name = "reset_token")
     private String resetToken;
 
+    //relacionamento
     @Column(name = "reset_token_expiry_date")
     private LocalDateTime resetTokenExpiryDate;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Os> ordensServico;
 }

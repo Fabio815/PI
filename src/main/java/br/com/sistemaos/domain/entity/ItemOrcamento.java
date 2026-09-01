@@ -25,11 +25,12 @@ public class ItemOrcamento {
     @Column(name = "valor_total")
     private Double valorTotal;
 
+    //relacionamento
     @ManyToOne
-    @JoinColumn(name = "id_orcamento")
+    @JoinColumn(name = "orcamento_id", unique = true)
     private Orcamento orcamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_peca")
+    @JoinColumn(name = "peca_id", unique = true)
     private Peca peca;
 }

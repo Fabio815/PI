@@ -275,9 +275,29 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
         bind: {
             store: '{estoque-listagem-store}'
         },
-        listeners: { //Para esconder o botão de reload...
+        items: [{
+            xtype: 'label',
+            text: 'Itens por página:'
+        }, {
+            xtype: 'combobox',
+            width: 70,
+            editable: false,
+            queryMode: 'local',
+            store: [15, 30, 45, 60],
+            value: 15,
+            listeners: {
+                change: function (combo, newValue) {
+                    var grid = combo.up('grid'),
+                        store = grid.getStore();
+
+                    store.pageSize = newValue;
+                    store.loadPage(1);
+                }
+            }
+        }],
+        listeners: {
             afterrender: function(toolbar) {
-                toolbar.down('#refresh').hide();//Buscando pelo itemId
+                toolbar.down('#refresh').hide();
             }
         }
     }

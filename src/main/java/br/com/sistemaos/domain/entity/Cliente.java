@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Builder
 @Table(name = "cliente")
@@ -29,9 +31,11 @@ public class Cliente {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    //relacionamento
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id", unique = true)
     private Endereco endereco;
-    /*@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Os> ordensServico;*/
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Os> ordemServico;
 }

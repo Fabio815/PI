@@ -6,14 +6,12 @@ Ext.define('ProjSistemaOs.store.Estoque', {
 
     remoteFilter: true,
     autoLoad: true,
-    pageSize: 25,
+    pageSize: 15,
 
     proxy: {
         type: 'ajax',
 
         url: window.location.origin + '/peca/listar',
-        pageParam: 'page',
-        limitParam: 'size',
 
         reader: {
             type: 'json',

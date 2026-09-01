@@ -26,10 +26,10 @@ public class Orcamento {
     @Column(name = "observacoes", length = 100)
     private String observacoes;
 
-    @OneToOne
-    @JoinColumn(name = "id_os")
+    //relacionamento
+    @OneToOne(mappedBy = "orcamento")
     private Os os;
 
-    @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemOrcamento> itens;
+    @OneToMany(mappedBy = "orcamento")
+    private List<ItemOrcamento> itemOrcamento;
 }

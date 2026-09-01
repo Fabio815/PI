@@ -256,6 +256,26 @@ Ext.define( 'ProjSistemaOs.view.usuario.UsuarioGrid', {
         bind: {
             store: '{usuario-listagem-store}'
         },
+        items: [{
+            xtype: 'label',
+            text: 'Itens por página:'
+        }, {
+            xtype: 'combobox',
+            width: 70,
+            editable: false,
+            queryMode: 'local',
+            store: [15, 30, 45, 60],
+            value: 15,
+            listeners: {
+                change: function (combo, newValue) {
+                    var grid = combo.up('grid'),
+                        store = grid.getStore();
+
+                    store.pageSize = newValue;
+                    store.loadPage(1);
+                }
+            }
+        }],
         listeners: { //Para esconder o botão de reload...
             afterrender: function(toolbar) {
                 toolbar.down('#refresh').hide();//Buscando pelo itemId
