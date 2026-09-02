@@ -4,6 +4,7 @@ import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Endereco;
 import br.com.sistemaos.domain.exception.ClienteNaoEncontradoException;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
+import br.com.sistemaos.domain.exception.NumeroTelefoneExistenteException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.infraestrura.dto.ClienteDTO;
@@ -29,6 +30,9 @@ public class ClienteService {
     //Essa marcação serve para que tudo seja feito, ou nada seja feito, caso dê ruim na transação ele cancela;
     @Transactional
     public Cliente adicionarCliente(SalvarClienteDTO clienteDTO) {
+        if (telefoneExiste(null, clienteDTO.getTelefone())) {
+            throw new NumeroTelefoneExistenteException(clienteDTO.getTelefone());
+        }
         Endereco endereco = Endereco.builder()
                 .complemento(clienteDTO.getEndereco().getComplemento())
                 .logradouro(clienteDTO.getEndereco().getLogradouro())
@@ -65,8 +69,10 @@ public class ClienteService {
 
     @Transactional
     public Cliente atualizarCliente(Long id, SalvarClienteDTO salvarClienteDTO) {
+        if (telefoneExiste(id, salvarClienteDTO.getTelefone())) {
+            throw new NumeroTelefoneExistenteException(salvarClienteDTO.getTelefone());
+        }
         Cliente cliente = carregarCliente(id);
-
         Endereco endereco = Endereco.builder()
                 .rua(salvarClienteDTO.getEndereco().getRua())
                 .numero(salvarClienteDTO.getEndereco().getNumero())
@@ -88,6 +94,17 @@ public class ClienteService {
         cliente.setStatus(trocarStatus(cliente));
 
         return cliente;
+    }
+
+    private boolean telefoneExiste(Long id, String telefone) {
+        Cliente cliente = clienteRepository.findByTelefone(telefone);
+        if (Objects.isNull(cliente)) {
+            return false;
+        }
+        if (cliente.getId().equals(id)) {
+            return false;
+        }
+        return true;
     }
 
     private Cliente carregarCliente(Long id) {

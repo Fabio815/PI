@@ -3,6 +3,7 @@ package br.com.sistemaos.domain.applicationservice;
 import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
+import br.com.sistemaos.domain.exception.EmailExistenteException;
 import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
@@ -35,6 +36,9 @@ public class UsuarioService {
 
     @Transactional
     public Usuario adicionarUsuario(SalvarUsuarioDTO salvarUsuarioDTO) {
+        if (emailExiste(null, salvarUsuarioDTO.getEmail())) {
+            throw new EmailExistenteException(salvarUsuarioDTO.getEmail());
+        }
         Usuario usuario = Usuario.builder()
                 .nome(salvarUsuarioDTO.getNome())
                 .email(salvarUsuarioDTO.getEmail())
@@ -89,6 +93,9 @@ public class UsuarioService {
 
     @Transactional
     public Usuario atualizarUsuario(Long id, AtualizarUsuarioDTO atualizarUsuarioDTO) {
+        if (emailExiste(id, atualizarUsuarioDTO.getEmail())) {
+            throw new EmailExistenteException(atualizarUsuarioDTO.getEmail());
+        }
         Usuario usuario = carregarUsuario(id);
 
         usuario.setNome(atualizarUsuarioDTO.getNome());
@@ -167,5 +174,17 @@ public class UsuarioService {
         } else {
             return  Status.ATIVO;
         }
+    }
+
+    private boolean emailExiste(Long id, String email) {
+        Optional<Usuario> op = usuarioRepository.findByEmail(email);
+        if (op.isEmpty()) {
+            return false;
+        }
+        Usuario usuario = op.get();
+        if (usuario.getId().equals(id)) {
+            return false;
+        }
+        return true;
     }
 }

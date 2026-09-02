@@ -32,6 +32,10 @@ public interface ClienteRepository extends JpaRepository <Cliente, Long>, JpaSpe
     @Query("select c from Cliente c where c.status=ATIVO")
     Page<Cliente> findAllNotInativo(Pageable pageable);
 
+    @Query("select c from Cliente c where c.telefone=:telefone")
+    Cliente findByTelefone(String telefone);
+
+
     //Isso é uma query, onde o Long id é parametro que será passado para buscar o cliente
     //@Query("from Cliente as c where c.id=:id")
     //Cliente buscarClientePorId(Long id);
