@@ -1,6 +1,5 @@
 package br.com.sistemaos.domain.applicationservice;
 
-import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.exception.ConverteStatusException;
 import br.com.sistemaos.domain.exception.EmailExistenteException;
@@ -8,7 +7,6 @@ import br.com.sistemaos.domain.exception.UsuarioNaoEncontradoException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.AtualizarUsuarioDTO;
-import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
 import jakarta.transaction.Transactional;
