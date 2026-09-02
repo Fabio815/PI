@@ -8,11 +8,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PecaDTO {
-    private Long id;
-    private String nome;
-    private int quantidade;
-    private Double preco;
-    private Status status;
+    private final Long id;
+    private final String nome;
+    private final int quantidade;
+    private final Double preco;
+    private final Status status;
 
     public static PecaDTO criar(Peca peca) {
         return new PecaDTO(

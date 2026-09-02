@@ -4,17 +4,15 @@ import br.com.sistemaos.domain.entity.Cliente;
 import br.com.sistemaos.domain.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class ClienteDTO {
-    private Long id;
-    private String nome;
-    private String telefone;
-    private Status status;
-    private EnderecoDTO endereco;
+    private final Long id;
+    private final String nome;
+    private final String telefone;
+    private final Status status;
+    private final EnderecoDTO endereco;
     //private List<Os> ordensServico;
 
     public static ClienteDTO criar(Cliente cliente) {

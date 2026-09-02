@@ -1,12 +1,14 @@
 package br.com.sistemaos.infraestrura.dto;
 
 import br.com.sistemaos.domain.model.Status;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SalvarPecaDTO {
-    private String nome;
-    private int quantidade;
-    private Double preco;
-    private Status status;
+    private final String nome;
+    private final int quantidade;
+    private final Double preco;
+    private final Status status;
 }

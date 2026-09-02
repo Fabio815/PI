@@ -6,19 +6,17 @@ import br.com.sistemaos.domain.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class UsuarioDTO {
-    private Long id;
-    private String nome;
-    private String email;
-    private String senha;
-    private Perfil chave;
-    private Status status;
+    private final Long id;
+    private final String nome;
+    private final String email;
+    private final String senha;
+    private final Perfil chave;
+    private final Status status;
 
     public static UsuarioDTO criar(Usuario usuario) {
         return new UsuarioDTO(
