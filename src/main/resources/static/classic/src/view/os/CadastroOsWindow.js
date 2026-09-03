@@ -105,61 +105,33 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 align: 'stretch'
             },
             items: [{
-                xtype: 'combobox',
-                /*listConfig: {
-                    itemTpl: [
-                        '<div style="font-size:11px; font-family:sans-serif; line-height:16px; padding-left:5px; border-left: 10px solid #f0f0f0;">',
-                        '<div style="font-size:12px; font-weight:bold; font-family:sans-serif;">{dsSubitem:htmlEncode}</div>',
-                        '<div>Unidade: {unidade:htmlEncode}</div>',
-                        '<div>Valor / Unidade: {valorUnidade:number("0,000.00##")}</div>',
-                        '</div>'
-                    ]
-                },*/
-                minChars: 0,
-                autoSelect: false,
-                autoSelectLast: false,
-                displayField: 'valorUnidade',
-                queryMode: 'remote',
-                queryParam: null,
-                pageSize: 30,
-                store: {
-                    fields: [{
-                            name: 'id',
-                            type: 'int'
-                        }, {
-                            name: 'nome',
-                            type: 'string'
-                        }
-                    ],
-                    proxy: {
-                        type: 'ajax',
-                        url: window.location.origin + '/peca/listar',
-                        reader: {
-                            type: 'json',
-                            rootProperty: 'listaEstoque',
-                            totalProperty: 'total'
-                        },
-                        extraParams: {
-
-                        }
-                    },
-                    pageSize: 30,
-                    autoLoad: !1,
-                    autoDestroy: !0
-                },
-                maxLength: 80
+                xtype: 'container',
+                layout: 'hbox',
+                margin: '0 0 10 0',
+                items: [{
+                    xtype: 'textfield',
+                    margin: '0 10 0 0',
+                    flex: 4
+                }, {
+                    xtype: 'numberfield',
+                    margin: '0 10 0 0',
+                    flex: 1
+                }, {
+                    xtype: 'button',
+                    iconCls: 'fa fa-plus'
+                }]
             }, {
                 xtype: 'grid',
                 title: 'Peças',
                 ui: 'light',
-                border: true,
-                columnLines: true,
+                border: !0,
+                columnLines: !0,
                 scrollable: 'y',
                 minHeight: 150,
-                disableSelection: true,
-                enableColumnHide: false,
-                enableColumnMove: false,
-                enableColumnResize: false,
+                disableSelection: !0,
+                enableColumnHide: !1,
+                enableColumnMove: !1,
+                enableColumnResize: !1,
             }]
         }]
     }, {
