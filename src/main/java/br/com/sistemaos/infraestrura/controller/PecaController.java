@@ -50,10 +50,16 @@ public class PecaController {
         return ResponseEntity.ok(PecaDTO.criar(peca));
     }
 
-    @PutMapping(path = "/status/{id}")
+    @PutMapping("/status/{id}")
     public ResponseEntity<PecaDTO> atualizarStatus(
             @PathVariable("id") Long id) {
         Peca peca = pecaService.atualizarStatus(id);
         return ResponseEntity.ok(PecaDTO.criar(peca));
+    }
+
+    @GetMapping("/listar/os")
+    public ResponseEntity<List<PecaDTO>> listarPecaOs(@RequestParam(required = false) String descricao) {
+        List<Peca> pecas = pecaService.listarPecasOs(descricao);
+        return ResponseEntity.ok(pecas.stream().map(PecaDTO::criar).toList());
     }
 }

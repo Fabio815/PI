@@ -53,6 +53,14 @@ public class PecaService {
         return resposta;
     }
 
+    public List<Peca> listarPecasOs(String descricao) {
+        List<Peca> pecas = pecaRepository.listaPecasByNome(descricao, Status.ATIVO);
+        if (Objects.isNull(pecas)) {
+            return new ArrayList<>();
+        }
+        return pecas;
+    }
+
     public Peca carregarProdutoPorId (Long id) {
         return pecaRepository.findById(id).orElseThrow(() -> new PecaNaoEncontradoExpection(id));
     }
