@@ -105,22 +105,6 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 align: 'stretch'
             },
             items: [{
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 10 0',
-                items: [{
-                    xtype: 'textfield',
-                    margin: '0 10 0 0',
-                    flex: 4
-                }, {
-                    xtype: 'numberfield',
-                    margin: '0 10 0 0',
-                    flex: 1
-                }, {
-                    xtype: 'button',
-                    iconCls: 'fa fa-plus'
-                }]
-            }, {
                 xtype: 'grid',
                 title: 'Peças',
                 ui: 'light',
