@@ -29,7 +29,6 @@ public class OsService {
     private final OsRepository osRepository;
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
-    private java.lang.Object LocalDate;
 
     @Transactional
     public Os adicionarOs(SalvarOsDTO salvarOsDTO) {

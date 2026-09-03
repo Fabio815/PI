@@ -5,22 +5,29 @@ import br.com.sistemaos.domain.entity.Orcamento;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.domain.model.StatusOs;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Persistable;
+import lombok.Getter;
 
 @AllArgsConstructor
 public class SalvarOsDTO {
+
     private final StatusOs status;
     private final Usuario usuario;
     private final Cliente cliente;
     private final Orcamento orcamento;
 
-    public Persistable<java.lang.Object> getCliente() {
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public Persistable<java.lang.Object> getUsuario() {
+    public Usuario getUsuario() {
+        return usuario;
     }
 
     public StatusOs getStatus() {
-        return null;
+        return status;
+    }
+
+    public Orcamento getOrcamento() {
+        return orcamento;
     }
 }
