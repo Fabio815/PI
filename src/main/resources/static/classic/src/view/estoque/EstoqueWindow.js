@@ -20,11 +20,9 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
                 vw.close();
             }
         },
-
         onValidaFormulario: function (form, valid) {
             this.lookup('btnSalvar').setDisabled(!valid);
         },
-
         salvarPeca: function () {
             var me = this,
                 vw = me.getView(),
@@ -35,23 +33,14 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
                 quantidade: form.quantidade,
                 preco: form.preco
             };
-
-            console.log('Enviando:', dados);
-
             Ext.Ajax.request({
                 url: sistemaOsLocal.apiUrl + '/peca/adicionar',
                 method: 'POST',
-
                 jsonData: dados,
-
                 success: function (conn) {
                     var r = Ext.JSON.decode(conn.responseText, true);
-
                     if (r) {
-                        // Avisa quem abriu a janela que o cadastro terminou
                         vw.fireEvent('pecasalva');
-
-                        // Fecha a janela
                         vw.close();
                     } else {
                         Ext.Msg.alert(
@@ -60,10 +49,7 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
                         );
                     }
                 },
-
                 failure: function (conn) {
-                    console.error('Erro:', conn.responseText);
-
                     Avisos.mostrarServidorIndisponivel();
                 }
             });
@@ -87,7 +73,6 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueWindow', {
             backgroundColor: "#ececec"
         }
     },
-
     items: [{
         xtype: 'form',
         layout: 'anchor',

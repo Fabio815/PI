@@ -28,5 +28,5 @@ public interface PecaRepository extends JpaRepository<Peca, Long> {
     where (:nome is null or LOWER(p.nome) like LOWER(CONCAT('%', :nome, '%')))
     and (:status is null or p.status in :status)
     """)
-    List<Peca> listaPecasByNome(@Param("nome") String nome, @Param("status") Status status);
+    Page<Peca> listaPecasByNome(@Param("nome") String nome, @Param("status") Status status, Pageable pageable);
 }

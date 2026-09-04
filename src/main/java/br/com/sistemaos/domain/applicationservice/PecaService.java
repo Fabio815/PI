@@ -9,6 +9,7 @@ import br.com.sistemaos.infraestrura.dto.PecaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarPecaDTO;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,22 +44,15 @@ public class PecaService {
         } else {
             listaPecas = pecaRepository.findAll(pageable);
         }
-        List<PecaDTO> valor = listaPecas.getContent().stream()
-                .map(PecaDTO::criar)
-                .toList();
-
-        Map<String, Object> resposta = new HashMap<>();
-        resposta.put("listaEstoque", valor);
-        resposta.put("total", listaPecas.getTotalElements());
-        return resposta;
+        return carregarObjetoPecas(listaPecas);
     }
 
-    public List<Peca> listarPecasOs(String descricao) {
-        List<Peca> pecas = pecaRepository.listaPecasByNome(descricao, Status.ATIVO);
+    public Map<String, Object> listarPecasOs(String descricao, Pageable pageable) {
+        Page<Peca> pecas = pecaRepository.listaPecasByNome(descricao, Status.ATIVO, pageable);
         if (Objects.isNull(pecas)) {
-            return new ArrayList<>();
+            return new HashMap<>();
         }
-        return pecas;
+        return carregarObjetoPecas(pecas);
     }
 
     public Peca carregarProdutoPorId (Long id) {
@@ -103,5 +97,15 @@ public class PecaService {
         } else {
             return  Status.ATIVO;
         }
+    }
+
+    @NonNull
+    private Map<String, Object> carregarObjetoPecas(Page<Peca> pecas) {
+        List<PecaDTO> listaPace = pecas.getContent().stream().map(PecaDTO::criar).toList();
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("listaEstoque", listaPace);
+        resposta.put("total", pecas.getTotalElements());
+
+        return resposta;
     }
 }

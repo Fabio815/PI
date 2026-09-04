@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,8 +59,13 @@ public class PecaController {
     }
 
     @GetMapping("/listar/os")
-    public ResponseEntity<List<PecaDTO>> listarPecaOs(@RequestParam(required = false) String descricao) {
-        List<Peca> pecas = pecaService.listarPecasOs(descricao);
-        return ResponseEntity.ok(pecas.stream().map(PecaDTO::criar).toList());
+    public ResponseEntity<Map<String, Object>> listarPecaOs(
+            @RequestParam(required = false) String descricao,
+            @RequestParam(defaultValue = "0") int start,
+            @RequestParam(defaultValue = "25") int limit
+            ) {
+        int page = start / limit;
+        Pageable pageable = PageRequest.of(page, limit);
+        return ResponseEntity.ok(pecaService.listarPecasOs(descricao, pageable));
     }
 }

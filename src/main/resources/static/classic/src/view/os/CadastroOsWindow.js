@@ -111,11 +111,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 items: [{
                     xtype: 'combobox',
                     margin: '0 10 0 0',
+                    flex: 4,
                     listConfig: {
                         itemTpl: [
                             '<div style="font-size:12px; font-family:sans-serif; line-height:16px; padding-left:5px; border-left: 10px solid #FF0000;">',
-                            '<div>Unidade: {nome:htmlEncode}</div>',
-                            '<div>Valor / Unidade: {preco:number("0,000.00##")}</div>',
+                            '<div>{nome:htmlEncode}</div>',
+                            '<div>Valor/Unidade: R${preco:number("0,000.00##")}</div>',
                             '</div>'
                         ]
                     },
@@ -125,6 +126,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     displayField: 'nome',
                     queryMode: 'remote',
                     queryParam: 'descricao',
+                    pageSize: 25,
                     store: {
                         fields: [{
                                 name: 'nome',
@@ -138,13 +140,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                             type: 'ajax',
                             url: window.location.origin + '/peca/listar/os',
                             reader: {
-                                type: 'json'
+                                type: 'json',
+                                rootProperty: 'listaEstoque',
+                                totalProperty: 'total'
                             }
                         },
-                        startParam: undefined,
-                        limitParam: undefined,
-                        pageParam: undefined,
-                        //pageSize: 30,
+                        pageSize: 25,
                         autoLoad: false,
                         autoDestroy: true
                     },
