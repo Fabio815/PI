@@ -60,7 +60,7 @@ public class PecaController {
 
     @GetMapping("/listar/os")
     public ResponseEntity<Map<String, Object>> listarPecaOs(
-            @RequestParam(required = false) String descricao,
+            @RequestParam(value = "descricao", required = false) String descricao,
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit
             ) {

@@ -62,6 +62,18 @@ public class ClienteController {
         return ResponseEntity.ok(ClienteDTO.criar(cliente));
     }
 
+    @GetMapping("/listar/os")
+    public ResponseEntity<Map<String, Object>> listarClienteOs(
+            @RequestParam(value = "telefone", required = false) String telefone,
+            @RequestParam(defaultValue = "0") int start,
+            @RequestParam(defaultValue = "25") int limit)
+    {
+        int page = start / limit;
+        Pageable pageable = PageRequest.of(page, limit);
+        Map<String, Object> clientes = clienteService.listarClienteOs(telefone, pageable);
+        return ResponseEntity.ok(clientes);
+    }
+
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {
         return ResponseEntity.ok("Ok");

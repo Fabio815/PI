@@ -48,8 +48,49 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             xtype: 'combobox',
             fieldLabel: 'Telefone',
             name: 'telefone',
-            flex: 3,
-            margin: '0 10 0 0'
+            flex: 4,
+            margin: '0 10 0 0',
+            listConfig: {
+                itemTpl: [
+                    '<div style="font-size:12px; font-family:sans-serif; line-height:16px; padding-left:5px; border-left: 10px solid #008000 ;">',
+                    '<div>Nome: {nome:htmlEncode}</div>',
+                    '<div>Telefone: {telefone:htmlEncode}</div>',
+                    '</div>'
+                ]
+            },
+            minChars: 0,
+            autoSelect: false,
+            autoSelectLast: false,
+            displayField: 'telefone',
+            queryMode: 'remote',
+            queryParam: 'telefone',
+            pageSize: 25,
+            store: {
+                fields: [{
+                    name: 'id',
+                    type: 'int',
+                }, {
+                    name: 'nome',
+                    type: 'string'
+                }, {
+                    name: 'telefone',
+                    type: 'string'
+                }],
+                proxy: {
+                    type: 'ajax',
+                    url: window.location.origin + '/cliente/listar/os',
+                    method: 'GET',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'listaClientes',
+                        totalProperty: 'total'
+                    }
+                },
+                pageSize: 25,
+                autoLoad: false,
+                autoDestroy: true
+            },
+            maxLength: 80
         }, {
             xtype: 'textfield',
             fieldLabel: 'Nome',
@@ -129,13 +170,15 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     pageSize: 25,
                     store: {
                         fields: [{
-                                name: 'nome',
-                                type: 'string'
-                            }, {
-                                name: 'preco',
-                                type: 'float'
-                            }
-                        ],
+                            name: 'id',
+                            type: 'int',
+                        }, {
+                            name: 'nome',
+                            type: 'string'
+                        }, {
+                            name: 'preco',
+                            type: 'float'
+                        }],
                         proxy: {
                             type: 'ajax',
                             url: window.location.origin + '/peca/listar/os',

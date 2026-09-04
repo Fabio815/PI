@@ -12,6 +12,7 @@ import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,14 +58,14 @@ public class ClienteService {
         } else {
             listaClientes = clienteRepository.findAll(pageable);
         }
-        List<ClienteDTO> valor = listaClientes.getContent().stream()
-                .map(ClienteDTO::criar)
-                .toList();
+        return carregarObjetoTelefone(listaClientes);
+    }
 
-        Map<String, Object> resposta = new HashMap<>();
-        resposta.put("listaClientes", valor);
-        resposta.put("total", listaClientes.getTotalElements());
-        return resposta;
+    public Map<String, Object> listarClienteOs(String telefone, Pageable pageable) {
+        Page<Cliente> listaClientes;
+
+        listaClientes = clienteRepository.findAllByTelefoneAndStatus(telefone, Status.ATIVO, pageable);
+        return carregarObjetoTelefone(listaClientes);
     }
 
     @Transactional
@@ -132,5 +133,17 @@ public class ClienteService {
         } else {
             return  Status.ATIVO;
         }
+    }
+
+    @NonNull
+    private Map<String, Object> carregarObjetoTelefone(Page<Cliente> listaClientes) {
+        List<ClienteDTO> valor = listaClientes.getContent().stream()
+                .map(ClienteDTO::criar)
+                .toList();
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("listaClientes", valor);
+        resposta.put("total", listaClientes.getTotalElements());
+        return resposta;
     }
 }
