@@ -3,7 +3,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     xtype: 'cadastro-os-panel',
 
     requires: [
-        'ProjSistemaOs.view.cliente.ClienteWindow'
+        'ProjSistemaOs.view.cliente.ClienteWindow',
+        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
     ],
 
     controller: {
@@ -23,6 +24,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     },
     resizable: false,
     width: 800,
+    height: 600,
+    scrollable: 'y',
     bodyPadding: 15,
     ui: 'light',
     padding: 5,
@@ -45,26 +48,31 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         xtype: 'container',
         layout: 'hbox',
         items: [{
-            xtype: 'combobox',
-            fieldLabel: 'Telefone',
-            name: 'telefone',
+            xtype: 'tagfieldhtmllabel',
+            fieldLabel: 'Cliente',
+            name: 'cliente',
             flex: 4,
             margin: '0 10 0 0',
+            minChars: 0,
+            autoSelect: false,
+            valueField: 'id',
+            autoSelectLast: false,
+            queryMode: 'remote',
+            queryParam: 'nome',
+            pageSize: 25,
+            multiSelect: false,
             listConfig: {
                 itemTpl: [
-                    '<div style="font-size:12px; font-family:sans-serif; line-height:16px; padding-left:5px; border-left: 10px solid #008000 ;">',
-                    '<div>Nome: {nome:htmlEncode}</div>',
+                    '<i class="fa fa-user" style="color:#90D5FF;"></i> {nome:htmlEncode}',
                     '<div>Telefone: {telefone:htmlEncode}</div>',
                     '</div>'
                 ]
             },
-            minChars: 0,
-            autoSelect: false,
-            autoSelectLast: false,
-            displayField: 'telefone',
-            queryMode: 'remote',
-            queryParam: 'telefone',
-            pageSize: 25,
+            labelTpl: [
+                '<div style="font-size:12px;">',
+                    '<i class="fa fa-user" style="color:#90D5FF;"></i> {nome:htmlEncode} - {telefone:htmlEncode}',
+                '</div>',
+            ],
             store: {
                 fields: [{
                     name: 'id',
@@ -91,11 +99,6 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 autoDestroy: true
             },
             maxLength: 80
-        }, {
-            xtype: 'textfield',
-            fieldLabel: 'Nome',
-            name: 'nome',
-            flex: 5
         }, {
             xtype: 'button',
             iconCls: 'fa fa-user-plus',
@@ -150,24 +153,30 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 layout: 'hbox',
                 margin: '0 0 10 0',
                 items: [{
-                    xtype: 'combobox',
+                    xtype: 'tagfieldhtmllabel',
                     margin: '0 10 0 0',
                     flex: 4,
+                    minChars: 0,
+                    autoSelect: false,
+                    autoSelectLast: false,
+                    reference: 'comboPeca',
+                    valueField: 'id',
+                    queryMode: 'remote',
+                    queryParam: 'descricao',
+                    multiSelect: false,
+                    pageSize: 25,
                     listConfig: {
                         itemTpl: [
-                            '<div style="font-size:12px; font-family:sans-serif; line-height:16px; padding-left:5px; border-left: 10px solid #FF0000;">',
-                            '<div>{nome:htmlEncode}</div>',
+                            '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {preco:htmlEncode}',
                             '<div>Valor/Unidade: R${preco:number("0,000.00##")}</div>',
                             '</div>'
                         ]
                     },
-                    minChars: 0,
-                    autoSelect: false,
-                    autoSelectLast: false,
-                    displayField: 'nome',
-                    queryMode: 'remote',
-                    queryParam: 'descricao',
-                    pageSize: 25,
+                    labelTpl: [
+                        '<div style="font-size:12px;">',
+                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {preco:htmlEncode}',
+                        '</div>',
+                    ],
                     store: {
                         fields: [{
                             name: 'id',
@@ -195,15 +204,20 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     maxLength: 80
                 }, {
                     xtype: 'numberfield',
+                    referece: 'qtdPeca',
                     flex: 1,
-                    margin: '0 10 0 0'
+                    margin: '0 10 0 0',
+                    minValue: 1,
+                    value: 1
                 }, {
                     xtype: 'button',
                     iconCls: 'fa fa-plus',
+                    handler: 'adicionarCliente'
                 }]
             }, {
                 xtype: 'grid',
                 title: 'Peças',
+                reference: 'gridPecas',
                 ui: 'light',
                 border: true,
                 columnLines: true,
@@ -213,6 +227,45 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 enableColumnHide: false,
                 enableColumnMove: false,
                 enableColumnResize: false,
+                store: {
+                    fields: [{
+                        name: 'pecaId', type: 'int'
+                    }, {
+                        name: 'nome',
+                        type: 'string'
+                    }, {
+                        name: 'preco',
+                        type: 'float'
+                    }, {
+                        name: 'quantidade',
+                        type: 'int'
+                    }, {
+                        name: 'valoTotal',
+                        type: 'float'
+                    }],
+                    data: []
+                },
+                columns: [{
+                    text: 'Nome',
+                    dataIndex: 'nome',
+                    flex: 3
+                }, {
+                    text: 'Preco',
+                    dataIndex: 'preco',
+                    renderer: function (value) {
+                        return 'R$ ' + Ext.util.Format.number(value, '0,000.00');
+                    },
+                    flex: 2
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 40,
+                    align: 'center',
+                    items: [{
+                        iconCls: 'fa fa-check',
+                        tooltip: 'Remover',
+                        handler: 'removerPecaGrid'
+                    }]
+                }]
             }]
         }]
     }, {

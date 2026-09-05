@@ -2,6 +2,7 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.ClienteService;
 import br.com.sistemaos.domain.entity.Cliente;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.infraestrura.dto.ClienteDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarClienteDTO;
 import jakarta.validation.Valid;
@@ -13,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 //Ultima modificação 23/03/26
 @RestController
@@ -64,13 +67,15 @@ public class ClienteController {
 
     @GetMapping("/listar/os")
     public ResponseEntity<Map<String, Object>> listarClienteOs(
-            @RequestParam(value = "telefone", required = false) String telefone,
+            @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit)
     {
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-        Map<String, Object> clientes = clienteService.listarClienteOs(telefone, pageable);
+        List<String> status = new ArrayList<>();
+        status.add("ATIVO");
+        Map<String, Object> clientes = clienteService.listarClientes(null, nome, status, pageable);
         return ResponseEntity.ok(clientes);
     }
 

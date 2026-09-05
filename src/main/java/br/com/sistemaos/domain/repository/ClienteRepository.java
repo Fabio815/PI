@@ -32,13 +32,6 @@ public interface ClienteRepository extends JpaRepository <Cliente, Long>, JpaSpe
     @Query("select c from Cliente c where c.telefone=:telefone")
     Cliente findByTelefone(String telefone);
 
-    @Query("""
-        select c from Cliente c
-        where (:telefone is null or lower(c.nome) like lower(concat('%', :telefone, '%') ))
-        and c.status=:status
-        """)
-    Page<Cliente> findAllByTelefoneAndStatus(String telefone, Status status, Pageable pageable);
-
     //Isso é uma query, onde o Long id é parametro que será passado para buscar o cliente
     //@Query("from Cliente as c where c.id=:id")
     //Cliente buscarClientePorId(Long id);

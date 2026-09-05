@@ -61,12 +61,12 @@ public class ClienteService {
         return carregarObjetoTelefone(listaClientes);
     }
 
-    public Map<String, Object> listarClienteOs(String telefone, Pageable pageable) {
+    /*public Map<String, Object> listarClienteOs(String nome, Pageable pageable) {
         Page<Cliente> listaClientes;
 
-        listaClientes = clienteRepository.findAllByTelefoneAndStatus(telefone, Status.ATIVO, pageable);
+        listaClientes = clienteRepository.listarClientes(nome, Status.ATIVO, null, pageable);
         return carregarObjetoTelefone(listaClientes);
-    }
+    }*/
 
     @Transactional
     public Cliente atualizarCliente(Long id, SalvarClienteDTO salvarClienteDTO) {
