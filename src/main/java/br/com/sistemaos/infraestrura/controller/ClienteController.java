@@ -39,7 +39,7 @@ public class ClienteController {
     //@GetMapping
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listar(
-            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "id", required = false) long id,
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "status", required = false) List<String> status,
             @RequestParam(defaultValue = "0") int start,

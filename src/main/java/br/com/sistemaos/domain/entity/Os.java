@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class Os {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "data_emissao", nullable = false)
     private LocalDate dataEmissao;
