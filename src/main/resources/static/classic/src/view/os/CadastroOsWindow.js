@@ -88,7 +88,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 orcamento: {
                     valorMaoDeObra: values.maoDeObra,
                     observacoes: values.observacoes,
-                    itens: itens,
+                    itens: itens
                 }
             };
 
