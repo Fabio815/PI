@@ -10,5 +10,4 @@ public class SalvarPecaDTO {
     private final String nome;
     private final int quantidade;
     private final Double preco;
-    private final Status status;
 }

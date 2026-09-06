@@ -1,26 +1,19 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.entity.Orcamento;
-import br.com.sistemaos.domain.entity.Usuario;
-import br.com.sistemaos.domain.model.StatusOs;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Persistable;
+import lombok.Getter;
 
+import java.time.LocalDate;
+
+@Getter
 @AllArgsConstructor
 public class SalvarOsDTO {
-    private final StatusOs status;
-    private final Usuario usuario;
-    private final Cliente cliente;
-    private final Orcamento orcamento;
+    @NotNull(message = "Cliente é obrigatório")
+    private final Long clienteId;
 
-    public Persistable<java.lang.Object> getCliente() {
-    }
+    private final Long usuarioId;
 
-    public Persistable<java.lang.Object> getUsuario() {
-    }
-
-    public StatusOs getStatus() {
-        return null;
-    }
+    @NotNull(message = "Orçamento é obrigatório")
+    private final SalvarOrcamentoDTO orcamento;
 }

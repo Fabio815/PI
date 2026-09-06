@@ -3,6 +3,7 @@ package br.com.sistemaos.domain.entity;
 import br.com.sistemaos.domain.model.StatusOs;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Os {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

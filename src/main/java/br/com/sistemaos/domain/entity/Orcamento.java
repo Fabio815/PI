@@ -30,6 +30,6 @@ public class Orcamento {
     @OneToOne(mappedBy = "orcamento")
     private Os os;
 
-    @OneToMany(mappedBy = "orcamento")
+    @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL)
     private List<ItemOrcamento> itemOrcamento;
 }

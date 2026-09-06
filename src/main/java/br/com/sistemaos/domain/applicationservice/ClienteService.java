@@ -108,7 +108,7 @@ public class ClienteService {
         return true;
     }
 
-    private Cliente carregarCliente(Long id) {
+    public Cliente carregarCliente(Long id) {
         Optional<Cliente> op = clienteRepository.findById(id);
         if (op.isEmpty()) {
             throw new ClienteNaoEncontradoException(id);

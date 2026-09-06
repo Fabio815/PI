@@ -76,8 +76,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             grid.getStore().each(function(rec) {
                 itens.push({
                     pecaId: rec.get('pecaId'),
-                    quantidade: rec.get('quantidade'),
-                    valorUnitario: rec.get('preco')
+                    quantidade: rec.get('quantidade')
                 });
             });
 
@@ -93,7 +92,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             };
 
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/usuarios/adicionar',
+                url: sistemaOsLocal.apiUrl + '/os/cadastrar',
                 method: 'POST',
                 data: playload,
                 success: function (conn, response, options, eOpts) {

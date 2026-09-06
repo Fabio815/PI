@@ -1,14 +1,11 @@
 package br.com.sistemaos.domain.applicationservice;
 
-import br.com.sistemaos.domain.entity.Cliente;
-import br.com.sistemaos.domain.entity.Os;
-import br.com.sistemaos.domain.entity.Usuario;
+import br.com.sistemaos.domain.entity.*;
 import br.com.sistemaos.domain.model.StatusOs;
 import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.domain.repository.OsRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
-import br.com.sistemaos.infraestrura.dto.OsDTO;
-import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
+import br.com.sistemaos.infraestrura.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,35 +17,30 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OsService {
-
     private final OsRepository osRepository;
-    private final ClienteRepository clienteRepository;
-    private final UsuarioRepository usuarioRepository;
-    private java.lang.Object LocalDate;
+    private final ClienteService clienteService;
+    private final UsuarioService usuarioService;
+    private final PecaService pecaService;
 
     @Transactional
     public Os adicionarOs(SalvarOsDTO salvarOsDTO) {
+        Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
+        Usuario usuario = usuarioService.carregarUsuario(salvarOsDTO.getUsuarioId());
+        Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
 
-        Cliente cliente = clienteRepository
-                .findById(salvarOsDTO.getCliente().getId())
-                .orElseThrow();
-
-        Usuario usuario = usuarioRepository
-                .findById(salvarOsDTO.getUsuario().getId())
-                .orElseThrow();
-
-        Os os = new Os();
-
-        os.setCliente(cliente);
-        os.setUsuario(usuario);
-        os.setStatus(salvarOsDTO.getStatus());
-        os.setDataEmissao(LocalDate.now());
-
+        Os os = Os.builder()
+                .dataEmissao(LocalDate.now())
+                .status(StatusOs.PENDENTE)
+                .cliente(cliente)
+                .usuario(usuario)
+                .orcamento(orcamento)
+                .build();
         osRepository.save(os);
 
         return os;
@@ -59,7 +51,7 @@ public class OsService {
             List<String> status,
             Pageable pageable) {
 
-        Page<Os> listaOs;
+        /*Page<Os> listaOs;
 
         listaOs = osRepository.findAll(pageable);
 
@@ -73,6 +65,39 @@ public class OsService {
         resposta.put("listaOs", valor);
         resposta.put("total", listaOs.getTotalElements());
 
-        return resposta;
+        return resposta;*/
+        return null;
+    }
+
+    private Orcamento montarOrcamento(SalvarOrcamentoDTO dto) {
+        List<ItemOrcamento> itens = dto.getItens().stream()
+                .map(this::montarItem)
+                .toList();
+
+        double valorPecas = itens.stream().mapToDouble(ItemOrcamento::getValorTotal).sum();
+
+        double valorServico = Optional.ofNullable(dto.getValorServico()).orElse(0.0);
+
+        Orcamento orcamento = new Orcamento();
+        orcamento.setValorServico(valorServico);
+        orcamento.setObservacoes(dto.getObservacoes());
+        orcamento.setValorTotal(valorPecas + valorServico);
+        orcamento.setItemOrcamento(itens);
+
+        itens.forEach(item -> item.setOrcamento(orcamento));
+
+        return orcamento;
+    }
+
+    private ItemOrcamento montarItem(SalvarItemOrcamentoDTO dto) {
+        Peca peca = pecaService.carregarPeca(dto.getPecaId());
+
+        ItemOrcamento item = new ItemOrcamento();
+        item.setQuantidade(dto.getQuantidade());
+        item.setValorUnitario(peca.getPreco());
+        item.setValorTotal(peca.getPreco() * dto.getQuantidade());
+        item.setItem(peca);
+
+        return item;
     }
 }

@@ -32,5 +32,5 @@ public class ItemOrcamento {
 
     @ManyToOne
     @JoinColumn(name = "peca_id", unique = true)
-    private Peca peca;
+    private Peca item;
 }

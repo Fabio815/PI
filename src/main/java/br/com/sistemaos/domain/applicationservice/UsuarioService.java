@@ -147,7 +147,7 @@ public class UsuarioService {
                 }).orElse(false);
     }
 
-    private Usuario carregarUsuario(Long id) {
+    public Usuario carregarUsuario(Long id) {
         Optional<Usuario> op = usuarioRepository.findById(id);
         if (op.isEmpty()) {
             throw new UsuarioNaoEncontradoException(id);

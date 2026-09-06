@@ -23,6 +23,4 @@ public class SalvarUsuarioDTO {
 
     @NotNull(message = "Chave não pode ser nulo")
     private final Perfil chave;
-
-    private final Status status;
 }

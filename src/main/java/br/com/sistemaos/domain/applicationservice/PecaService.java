@@ -7,7 +7,9 @@ import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.PecaRepository;
 import br.com.sistemaos.infraestrura.dto.PecaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarPecaDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
@@ -107,5 +109,10 @@ public class PecaService {
         resposta.put("total", pecas.getTotalElements());
 
         return resposta;
+    }
+
+    public Peca carregarPeca(Long id) {
+        return pecaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
     }
 }

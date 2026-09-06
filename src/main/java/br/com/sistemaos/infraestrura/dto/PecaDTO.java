@@ -3,10 +3,12 @@ package br.com.sistemaos.infraestrura.dto;
 import br.com.sistemaos.domain.entity.Peca;
 import br.com.sistemaos.domain.model.Status;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class PecaDTO {
     private final Long id;
     private final String nome;
