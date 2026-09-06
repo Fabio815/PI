@@ -8,6 +8,10 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
     ],
 
     controller: {
+        init: function () {
+            var grid = this.lookupReference('gridPecas');
+            grid.getStore().on('datachanged', this.atualizarTotalOrcamento, this);
+        },
         adicionarCliente: function(){
             Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
                 floating: true,
@@ -15,6 +19,95 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 iconCls: 'fa fa-plus',
             }).show();
         },
+        adicionarPecaGrid: function () {
+            var view = this.getView(),
+            combo = view.lookupReference('comboPeca'),
+            qtdField = view.lookupReference('qtdPeca'),
+            grid = view.lookupReference('gridPecas');
+
+            var records = combo.getValueRecords();
+            var quantidade = qtdField.getValue();
+
+            if (Ext.isEmpty(records)) {
+                Ext.Msg.alert('Atenção', 'Selecione a peça.');
+                return;
+            }
+            if (Ext.isEmpty(quantidade)) {
+                Ext.Msg.alert("Atenção", "Selecione a quantidade");
+                return;
+            }
+
+            var record = records[0];
+            var preco = record.get('preco');
+
+            grid.getStore().add({
+                pecaId: record.get('id'),
+                nome: record.get('nome'),
+                preco: preco,
+                quantidade: quantidade,
+                valorTotal: preco * quantidade,
+            });
+
+            combo.setValue(null);
+            qtdField.setValue(1);
+        },
+
+        removerPecaGrid: function(grid, rowIndex) {
+            grid.getStore().removeAt(rowIndex);
+        },
+        atualizarTotalOrcamento: function () {
+            var me = this, view = me.getView(),
+                grid = view.lookupReference('gridPecas'),
+                orcamentoTotal = view.lookupReference('orcamentoTotal'),
+                maoDeObra = view.lookupReference('maoDeObra');
+
+            var totalPecas = 0;
+            grid.getStore().each(function(rec) {
+                totalPecas += rec.get('valorTotal');
+            });
+
+            orcamentoTotal.setValue(totalPecas + maoDeObra.getValue() || 0);
+        },
+        cadastrarOs: function () {
+            var me = this, vw = me.getView(),
+                values = vw.getForm().getValues(),
+                grid = vw.lookupReference('gridPecas'),
+                itens = [];
+            grid.getStore().each(function(rec) {
+                itens.push({
+                    pecaId: rec.get('pecaId'),
+                    quantidade: rec.get('quantidade'),
+                    valorUnitario: rec.get('preco')
+                });
+            });
+
+            var playload = {
+                clienteId: values.cliente,
+                modelo: values.modelo,
+                cor: values.cor,
+                orcamento: {
+                    valorMaoDeObra: values.maoDeObra,
+                    observacoes: values.observacoes,
+                    itens: itens,
+                }
+            };
+
+            Ext.Ajax.request({
+                url: sistemaOsLocal.apiUrl + '/usuarios/adicionar',
+                method: 'POST',
+                data: playload,
+                success: function (conn, response, options, eOpts) {
+                    let r = Ext.JSON.decode(conn.responseText, true);
+                    if (r) {
+                        vw.fireEvent('ossalva');
+                        vw.close();
+                    }
+                },
+                failure: function (conn, response, options, eOpts) {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            });
+        }
     },
 
     title: 'Cadastro Os',
@@ -113,15 +206,19 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         margin: '10 0 0 0',
         items: [{
             xtype: 'textfield',
+            name: 'modelo',
             fieldLabel: 'Modelo/Marca',
             flex: 3,
             margin: '0 10 0 0'
         }, {
             xtype: 'textfield',
+            name: 'cor',
             fieldLabel: 'Cor',
             flex: 2
         }, {
             xtype: 'numberfield',
+            name: 'maoDeObra',
+            reference: 'maoDeObra',
             fieldLabel: 'Mão de obra',
             margin: '0 0 0 10'
         }]
@@ -167,14 +264,14 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     pageSize: 25,
                     listConfig: {
                         itemTpl: [
-                            '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {preco:htmlEncode}',
+                            '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode}',
                             '<div>Valor/Unidade: R${preco:number("0,000.00##")}</div>',
                             '</div>'
                         ]
                     },
                     labelTpl: [
                         '<div style="font-size:12px;">',
-                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {preco:htmlEncode}',
+                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - R${preco:number("0,000.00##")}',
                         '</div>',
                     ],
                     store: {
@@ -204,7 +301,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     maxLength: 80
                 }, {
                     xtype: 'numberfield',
-                    referece: 'qtdPeca',
+                    reference: 'qtdPeca',
                     flex: 1,
                     margin: '0 10 0 0',
                     minValue: 1,
@@ -212,7 +309,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 }, {
                     xtype: 'button',
                     iconCls: 'fa fa-plus',
-                    handler: 'adicionarCliente'
+                    handler: 'adicionarPecaGrid'
                 }]
             }, {
                 xtype: 'grid',
@@ -222,14 +319,16 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 border: true,
                 columnLines: true,
                 scrollable: 'y',
-                minHeight: 150,
+                minHeight: 200,
+                maxHeight: 200,
                 disableSelection: true,
                 enableColumnHide: false,
                 enableColumnMove: false,
                 enableColumnResize: false,
                 store: {
                     fields: [{
-                        name: 'pecaId', type: 'int'
+                        name: 'pecaId',
+                        type: 'int'
                     }, {
                         name: 'nome',
                         type: 'string'
@@ -240,28 +339,35 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                         name: 'quantidade',
                         type: 'int'
                     }, {
-                        name: 'valoTotal',
+                        name: 'valorTotal',
                         type: 'float'
                     }],
-                    data: []
+                    data: [],
                 },
                 columns: [{
                     text: 'Nome',
                     dataIndex: 'nome',
-                    flex: 3
+                    flex: 4
                 }, {
-                    text: 'Preco',
+                    text: 'Preco Unitário',
                     dataIndex: 'preco',
                     renderer: function (value) {
-                        return 'R$ ' + Ext.util.Format.number(value, '0,000.00');
+                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
                     },
                     flex: 2
+                }, {
+                    text: 'Total',
+                    dataIndex: 'valorTotal',
+                    flex: 2,
+                    renderer: function (value) {
+                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                    },
                 }, {
                     xtype: 'actioncolumn',
                     width: 40,
                     align: 'center',
                     items: [{
-                        iconCls: 'fa fa-check',
+                        iconCls: 'fa fa-trash',
                         tooltip: 'Remover',
                         handler: 'removerPecaGrid'
                     }]
@@ -270,14 +376,18 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         }]
     }, {
         xtype: 'textarea',
+        name: 'observacoes',
         fieldLabel: 'Observações',
     }, {
         xtype: 'container',
         layout: 'hbox',
         items: [{
             xtype: 'numberfield',
+            name: 'orcamento',
+            reference: 'orcamentoTotal',
             fieldLabel: 'Orçamento',
-            width: 150
+            width: 150,
+            readOnly: true
         }]
     }],
 
@@ -289,6 +399,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         },
     }, {
         text: 'Cadastar',
-        iconCls: 'fa fa-check'
+        iconCls: 'fa fa-check',
+        handler: 'cadastrarOs'
     }]
 });
