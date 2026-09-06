@@ -71,8 +71,10 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         cadastrarOs: function () {
             var me = this, vw = me.getView(),
                 values = vw.getForm().getValues(),
+                comboCliente = vw.lookupReference('comboCliente'),
                 grid = vw.lookupReference('gridPecas'),
                 itens = [];
+
             grid.getStore().each(function(rec) {
                 itens.push({
                     pecaId: rec.get('pecaId'),
@@ -80,12 +82,18 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 });
             });
 
-            var playload = {
-                clienteId: values.cliente,
-                modelo: values.modelo,
-                cor: values.cor,
+            var clienteRecords = comboCliente.getValueRecords();
+            if (Ext.isEmpty(clienteRecords)) {
+                Ext.Msg.alert('Atenção', 'Selecione um cliente.');
+                return;
+            }
+            var clienteId = clienteRecords[0].get('id');
+
+            var payload = {
+                usuarioId: 1,
+                clienteId: clienteId,
                 orcamento: {
-                    valorMaoDeObra: values.maoDeObra,
+                    valorServico: values.maoDeObra,
                     observacoes: values.observacoes,
                     itens: itens
                 }
@@ -94,7 +102,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             Ext.Ajax.request({
                 url: sistemaOsLocal.apiUrl + '/os/cadastrar',
                 method: 'POST',
-                data: playload,
+                jsonData: payload,
                 success: function (conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
                     if (r) {
@@ -142,6 +150,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         items: [{
             xtype: 'tagfieldhtmllabel',
             fieldLabel: 'Cliente',
+            reference: 'comboCliente',
             name: 'cliente',
             flex: 4,
             margin: '0 10 0 0',

@@ -27,10 +27,10 @@ public class ItemOrcamento {
 
     //relacionamento
     @ManyToOne
-    @JoinColumn(name = "orcamento_id", unique = true)
+    @JoinColumn(name = "orcamento_id")
     private Orcamento orcamento;
 
     @ManyToOne
-    @JoinColumn(name = "peca_id", unique = true)
+    @JoinColumn(name = "peca_id")
     private Peca item;
 }

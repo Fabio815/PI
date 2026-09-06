@@ -17,5 +17,5 @@ public class SalvarItemOrcamentoDTO {   // também ajustei o nome, ver ponto 5
     private final Double valorUnitario;
 
     @NotNull(message = "Peça é obrigatória")
-    private final Long pecaId;   // ✅
+    private final Long pecaId;
 }

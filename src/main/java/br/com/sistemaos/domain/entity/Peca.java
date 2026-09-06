@@ -33,6 +33,6 @@ public class Peca {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "peca")
+    @OneToMany(mappedBy = "item")
     private List<ItemOrcamento> itens;
 }
