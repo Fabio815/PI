@@ -1,12 +1,13 @@
 package br.com.sistemaos.domain.applicationservice;
 
 import br.com.sistemaos.domain.entity.*;
+import br.com.sistemaos.domain.exception.ConverteStatusException;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.StatusOs;
-import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.domain.repository.OsRepository;
-import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.*;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,27 +44,12 @@ public class OsService {
         return os;
     }
 
-    public Map<String, Object> listarOs(
-            Long id,
-            List<String> status,
-            Pageable pageable) {
-
-        /*Page<Os> listaOs;
-
-        listaOs = osRepository.findAll(pageable);
-
-        List<OsDTO> valor = listaOs.getContent()
-                .stream()
-                .map(OsDTO::criar)
-                .toList();
-
-        Map<String, Object> resposta = new HashMap<>();
-
-        resposta.put("listaOs", valor);
-        resposta.put("total", listaOs.getTotalElements());
-
-        return resposta;*/
-        return null;
+    public Map<String, Object> listarOs(Long id, String nome, StatusOs status, Boolean ativo, Pageable pageable) {
+        Page<OsListagemDTO> pagina = osRepository.listarOs(id, nome, status, ativo, pageable);
+        return Map.of(
+                "listaOs", pagina.getContent(),
+                "total", pagina.getTotalElements()
+        );
     }
 
     public Os carregarPorId(Long id) {
@@ -104,5 +87,26 @@ public class OsService {
         item.setItem(peca);
 
         return item;
+    }
+    private List<Status> converterParaStatusList(List<String> status) {
+        if (status == null) {
+            return null;
+        }
+        try {
+            return status.stream().map(s -> Status.valueOf(s)).toList();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new ConverteStatusException(status.toString());
+        }
+    }
+    @NonNull
+    private Map<String, Object> carregarObjeto(Page<Os> listarOs) {
+        List<OsDTO> valor = listarOs.getContent().stream()
+                .map(OsDTO::criar)
+                .toList();
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("listaClientes", valor);
+        resposta.put("total", listarOs.getTotalElements());
+        return resposta;
     }
 }

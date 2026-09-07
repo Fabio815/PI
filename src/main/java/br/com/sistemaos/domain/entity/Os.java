@@ -39,4 +39,7 @@ public class Os {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "orcamento_id", unique = true)
     private Orcamento orcamento;
+
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo = true;
 }

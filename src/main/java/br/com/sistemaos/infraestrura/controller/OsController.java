@@ -2,6 +2,7 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.OsService;
 import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.model.StatusOs;
 import br.com.sistemaos.infraestrura.dto.OsDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
 import jakarta.validation.Valid;
@@ -30,17 +31,17 @@ public class OsController {
         return ResponseEntity.created(URI.create("/os/" + os.getId())).body(OsDTO.criar(os));
     }
 
-    @GetMapping("/listar") //Responsavel pela listagem da OS
+    @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listar(
-            @RequestParam(value = "id", required = false) long id,
-            @RequestParam(value = "status", required = false) List<String> status,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) StatusOs status,
+            @RequestParam(required = false) Boolean ativo,
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit) {
-
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-        Map<String, Object> listaOs = osService.listarOs(id, status, pageable);
-        return ResponseEntity.ok(listaOs);
+        return ResponseEntity.ok(osService.listarOs(id, nome, status, ativo, pageable));
     }
 
     @GetMapping("/carregar/{id}")
