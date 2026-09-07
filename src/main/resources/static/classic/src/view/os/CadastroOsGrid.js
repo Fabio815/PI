@@ -16,6 +16,15 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 modal: true,
                 iconCls: 'fa fa-thin fa-plus',
             }).show();
+        },
+        carregarInformacoesOs: function () {
+            var me = this, vw = me.getViewModel();
+
+            Ext.create('ProjSistemaOs.view.os.InformacoesOsWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-thin fa-plus',
+            }).show();
         }
     },
 
@@ -34,7 +43,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         xtype: 'button',
         tooltip: 'Vizualizar',
         iconCls: 'fa fa-eye',
-        handler: 'recarregarGrid'
+        handler: 'carregarInformacoesOs'
     }, '-', {
         xtype: 'button',
         tooltip: 'Recarregar',

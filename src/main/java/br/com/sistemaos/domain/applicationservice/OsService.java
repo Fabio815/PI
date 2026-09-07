@@ -69,6 +69,12 @@ public class OsService {
         return null;
     }
 
+    public Os carregarPorId(Long id) {
+
+
+        return null; //retorna uma OS
+    }
+
     private Orcamento montarOrcamento(SalvarOrcamentoDTO dto) {
         List<ItemOrcamento> itens = dto.getItens().stream()
                 .map(this::montarItem)
@@ -98,11 +104,5 @@ public class OsService {
         item.setItem(peca);
 
         return item;
-    }
-
-    public Os carregarPorId(Long id) {
-
-
-        return null; //retorna uma OS
     }
 }

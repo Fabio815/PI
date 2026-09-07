@@ -26,6 +26,7 @@ Ext.define('ProjSistemaOs.store.Cliente', {
         beforeLoad: function(store) {
             var filtros = store.getFilters().items;
             var params = {};
+
             for (let f of filtros) {
                 let propriedade = f.getProperty();
                 let valor = f.getValue();
