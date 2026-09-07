@@ -101,6 +101,8 @@ public class OsService {
     }
 
     public Os carregarPorId(Long id) {
-        return null;
+
+
+        return null; //retorna uma OS
     }
 }

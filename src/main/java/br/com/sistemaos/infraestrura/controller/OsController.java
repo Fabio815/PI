@@ -43,8 +43,9 @@ public class OsController {
         return ResponseEntity.ok(listaOs);
     }
 
-    public ResponseEntity<OsDTO> carregarPorId(long id) {
+    @GetMapping("/carregar/{id}")
+    public ResponseEntity<OsDTO> carregarPorId(@PathVariable("id") Long id) {
         Os os = osService.carregarPorId(id);
-        return null;
+        return null; //Retorna um OsDTO
     }
 }
