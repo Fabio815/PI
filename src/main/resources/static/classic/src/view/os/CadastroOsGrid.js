@@ -19,11 +19,18 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         },
         carregarInformacoesOs: function () {
             var me = this, vw = me.getViewModel();
-
             Ext.create('ProjSistemaOs.view.os.InformacoesOsWindow', {
                 floating: true,
                 modal: true,
-                iconCls: 'fa fa-thin fa-plus',
+                iconCls: 'fa fa-eye'
+            }).show();
+        },
+        editarOs: function () {
+            var me = this, vw = me.getViewModel();
+            Ext.create('ProjSistemaOs.view.os.AtualizarOsWindow', {
+                floating: true,
+                modal: true,
+                iconCls: 'fa fa-pen'
             }).show();
         }
     },
@@ -45,6 +52,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         iconCls: 'fa fa-eye',
         handler: 'carregarInformacoesOs'
     }, '-', {
+        xtype: 'button',
+        tooltip: 'Editar',
+        iconCls: 'fa fa-pen',
+        handler: 'editarOs'
+    },'-', {
         xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',

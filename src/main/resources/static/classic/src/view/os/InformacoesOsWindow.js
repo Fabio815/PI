@@ -2,16 +2,56 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
     extend: 'Ext.form.Panel',
     xtype: 'informacoes-os-panel',
 
-    requires: [
-        'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
-    ],
+    osId: null,   // definido na criação: Ext.create('...InformacoesOsWindow', { osId: 5 }).show()
 
     controller: {
+        init: function () {
+            var view = this.getView();
+            if (view.osId) {
+                this.carregarOs(view.osId);
+            }
+        },
 
+        carregarOs: function (id) {
+            var view = this.getView();
+            Ext.Ajax.request({
+                url: sistemaOsLocal.apiUrl + '/os/' + id,
+                method: 'GET',
+                success: function (response) {
+                    var os = Ext.JSON.decode(response.responseText, true);
+
+                    view.getForm().setValues({
+                        modelo: os.modelo,
+                        cor: os.cor,
+                        maoDeObra: os.orcamento.valorServico,
+                        observacoes: os.orcamento.observacoes,
+                        orcamento: os.orcamento.valorTotal
+                    });
+
+                    var clienteDisplay = view.lookupReference('clienteDisplay');
+                    clienteDisplay.setValue(os.cliente.nome + ' - ' + os.cliente.telefone);
+
+                    var grid = view.lookupReference('gridPecas');
+                    var dadosGrid = os.orcamento.itens.map(function (item) {
+                        return {
+                            pecaId: item.peca.id,
+                            nome: item.peca.nome,
+                            preco: item.valorUnitario,
+                            quantidade: item.quantidade,
+                            valorTotal: item.valorTotal
+                        };
+                    });
+                    grid.getStore().loadData(dadosGrid);
+                },
+                failure: function () {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            });
+        }
     },
 
     title: 'Os',
+    iconCls: 'fa fa-eye',
     layout: {
         type: 'vbox',
         align: 'stretch'
@@ -39,10 +79,15 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
     },
 
     items: [{
-        xtype: 'textfield',
-        fieldLabel: 'Cliente',
-        reference: 'clienteDisplay',
-        readOnly: true
+        xtype: 'container',
+        layout: 'hbox',
+        items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Cliente',
+            reference: 'clienteDisplay',
+            readOnly: true,
+            flex: 4
+        }]
     }, {
         xtype: 'container',
         layout: 'hbox',
@@ -57,15 +102,15 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
         }, {
             xtype: 'textfield',
             name: 'cor',
-            readOnly: true,
             fieldLabel: 'Cor',
+            readOnly: true,
             flex: 2
         }, {
             xtype: 'numberfield',
             name: 'maoDeObra',
-            readOnly: true,
             reference: 'maoDeObra',
             fieldLabel: 'Mão de obra',
+            readOnly: true,
             margin: '0 0 0 10'
         }]
     }, {
@@ -90,10 +135,6 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                 align: 'stretch'
             },
             items: [{
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 10 0'
-            }, {
                 xtype: 'grid',
                 title: 'Peças',
                 reference: 'gridPecas',
@@ -124,7 +165,7 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                         name: 'valorTotal',
                         type: 'float'
                     }],
-                    data: [],
+                    data: []
                 },
                 columns: [{
                     text: 'Nome',
@@ -143,15 +184,15 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                     flex: 2,
                     renderer: function (value) {
                         return Ext.util.Format.currency(value, 'R$ ', 2, false);
-                    },
+                    }
                 }]
             }]
         }]
     }, {
         xtype: 'textarea',
         name: 'observacoes',
-        readOnly: true,
         fieldLabel: 'Observações',
+        readOnly: true
     }, {
         xtype: 'container',
         layout: 'hbox',
@@ -170,6 +211,6 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
         iconCls: 'fa fa-times',
         handler: function (btn) {
             btn.up('informacoes-os-panel').destroy();
-        },
+        }
     }]
 });
