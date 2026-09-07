@@ -43,7 +43,8 @@ public class OsController {
         return ResponseEntity.ok(listaOs);
     }
 
-    @GetMapping("/teste")
-    public ResponseEntity<String> teste() { return ResponseEntity.ok("Ok"); }
+    public ResponseEntity<OsDTO> carregarPorId(long id) {
+        Os os = osService.carregarPorId(id);
+        return null;
+    }
 }
-//O Controller tem que se conectar com o Service, ele vai puxar as informações do servidor e vamos criar a os

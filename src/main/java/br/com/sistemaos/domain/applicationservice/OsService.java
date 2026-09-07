@@ -75,7 +75,6 @@ public class OsService {
                 .toList();
 
         double valorPecas = itens.stream().mapToDouble(ItemOrcamento::getValorTotal).sum();
-
         double valorServico = Optional.ofNullable(dto.getValorServico()).orElse(0.0);
 
         Orcamento orcamento = new Orcamento();
@@ -99,5 +98,9 @@ public class OsService {
         item.setItem(peca);
 
         return item;
+    }
+
+    public Os carregarPorId(Long id) {
+        return null;
     }
 }
