@@ -32,7 +32,7 @@ public class OsController {
 
     @GetMapping("/listar") //Responsavel pela listagem da OS
     public ResponseEntity<Map<String, Object>> listar(
-            @RequestParam(value = "id", required = false) long id,
+            @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "status", required = false) List<String> status,
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit) {

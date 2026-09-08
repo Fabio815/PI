@@ -51,7 +51,7 @@ public class OsService {
             List<String> status,
             Pageable pageable) {
 
-        /*Page<Os> listaOs;
+        Page<Os> listaOs;
 
         listaOs = osRepository.findAll(pageable);
 
@@ -65,8 +65,7 @@ public class OsService {
         resposta.put("listaOs", valor);
         resposta.put("total", listaOs.getTotalElements());
 
-        return resposta;*/
-        return null;
+        return resposta;
     }
 
     public Os carregarPorId(Long id) {
