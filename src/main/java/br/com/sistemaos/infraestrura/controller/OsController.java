@@ -2,6 +2,7 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.OsService;
 import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.infraestrura.dto.OsDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
 import jakarta.validation.Valid;
@@ -33,19 +34,20 @@ public class OsController {
     @GetMapping("/listar") //Responsavel pela listagem da OS
     public ResponseEntity<Map<String, Object>> listar(
             @RequestParam(value = "id", required = false) Long id,
-            @RequestParam(value = "status", required = false) List<String> status,
+            @RequestParam(value = "status", required = false) List<Status> status,
+            @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "25") int limit) {
 
         int page = start / limit;
         Pageable pageable = PageRequest.of(page, limit);
-        Map<String, Object> listaOs = osService.listarOs(id, status, pageable);
+        Map<String, Object> listaOs = osService.listarOs(id, nome, status, pageable);
         return ResponseEntity.ok(listaOs);
     }
 
-    @GetMapping("/carregar/{id}")
-    public ResponseEntity<OsDTO> carregarPorId(@PathVariable("id") Long id) {
-        Os os = osService.carregarPorId(id);
-        return null; //Retorna um OsDTO
+    @GetMapping("/{id}")
+    public ResponseEntity<OsDTO> carregar(@PathVariable Long id) {
+        Os os = osService.carregarOs(id);
+        return ResponseEntity.ok(OsDTO.criar(os));
     }
 }

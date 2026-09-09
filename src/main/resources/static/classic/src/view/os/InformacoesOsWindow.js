@@ -2,7 +2,7 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
     extend: 'Ext.form.Panel',
     xtype: 'informacoes-os-panel',
 
-    osId: null,   // definido na criação: Ext.create('...InformacoesOsWindow', { osId: 5 }).show()
+    osId: null,
 
     controller: {
         init: function () {

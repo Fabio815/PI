@@ -1,6 +1,5 @@
 package br.com.sistemaos.infraestrura.dto;
 
-import br.com.sistemaos.domain.entity.Orcamento;
 import br.com.sistemaos.domain.entity.Os;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.StatusOs;
@@ -17,10 +16,13 @@ import java.util.Objects;
 public class OsDTO {
     private final Long id;
     private final LocalDate dataEmissao;
-    private final StatusOs status;
+    private final StatusOs situacao;
     private final UsuarioDTO usuario;
     private final ClienteDTO cliente;
     private final OrcamentoDTO orcamento;
+    private final Status status;
+    private final String modelo;
+    private final String cor;
 
     public static OsDTO criar(Os os) {
         UsuarioDTO usuarioDTO = UsuarioDTO.criar(os.getUsuario());
@@ -30,10 +32,13 @@ public class OsDTO {
         return new OsDTO(
                 os.getId(),
                 os.getDataEmissao(),
-                os.getStatus(),
+                os.getSituacao(),
                 usuarioDTO,
                 clienteDTO,
-                orcamentoDTO
+                orcamentoDTO,
+                os.getStatus(),
+                os.getModelo(),
+                os.getCor()
         );
     }
 }

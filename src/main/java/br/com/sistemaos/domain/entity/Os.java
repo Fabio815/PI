@@ -1,5 +1,6 @@
 package br.com.sistemaos.domain.entity;
 
+import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.StatusOs;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,14 +19,24 @@ import java.time.LocalDate;
 public class Os {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "data_emissao", nullable = false)
     private LocalDate dataEmissao;
 
+    @Column(name = "modelo", length = 50)
+    private String modelo;
+
+    @Column(name = "cor", length = 30)
+    private String cor;
+
+    @Column(name = "situacao")
+    @Enumerated(EnumType.STRING)
+    private StatusOs situacao;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private StatusOs status;
+    private Status status;
 
     //relacionamento
     @ManyToOne

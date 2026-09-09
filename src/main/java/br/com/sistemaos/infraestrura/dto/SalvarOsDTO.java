@@ -12,6 +12,10 @@ public class SalvarOsDTO {
     @NotNull(message = "Cliente é obrigatório")
     private final Long clienteId;
 
+    private final String modelo;
+
+    private final String cor;
+
     private final Long usuarioId;
 
     @NotNull(message = "Orçamento é obrigatório")

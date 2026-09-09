@@ -4,10 +4,32 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
 
     requires: [
         'ProjSistemaOs.view.os.CadastroOsWindow',
-        'ProjSistemaOs.store.Os'
+        'ProjSistemaOs.view.os.AtualizarOsWindow',
+        'ProjSistemaOs.view.os.InformacoesOsWindow',
+        'ProjSistemaOs.store.Os',
+        'Ext.grid.column.Action',
+        'Ext.grid.column.Check',
+        'Ext.grid.plugin.CellEditing',
+        'Ext.grid.filters.Filters',
+        'Ext.toolbar.Paging',
     ],
 
+    plugins: ['gridfilters'],
+
     controller: {
+        recarregarGrid: function () {
+            var me = this, vw = me.getView();
+            if (me.getView() && !me.getView().destroyed) {
+                me.getView().getStore().reload();
+            }
+        },
+        limparPesquisa: function (e, t, eOpts) {
+            let a = e.up('grid');
+            if (a) {
+                a.filters.clearFilters();
+                a.getStore().getSorters().removeAll();
+            }
+        },
         adicionarOs: function () {
             var me = this, vw = me.getViewModel();
 
@@ -18,11 +40,19 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             }).show();
         },
         carregarInformacoesOs: function () {
-            var me = this, vw = me.getViewModel();
+            var me = this;
+            var grid = me.getView();
+            var record = grid.getSelection()[0];
+
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para visualizar.');
+                return;
+            }
             Ext.create('ProjSistemaOs.view.os.InformacoesOsWindow', {
                 floating: true,
                 modal: true,
-                iconCls: 'fa fa-eye'
+                iconCls: 'fa fa-eye',
+                osId: record.get('id')
             }).show();
         },
         editarOs: function () {
@@ -69,13 +99,19 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             click: "limparPesquisa"
         }
     }],
+    enableColumnHide: false,
+
     columns: [{
         text: 'Id',
         dataIndex: 'id',
+        filter: {
+            type: 'number',
+            menuItems: ['eq']
+        },
         flex: 1
     }, {
         text: 'Data de criação',
-        dataIndex: 'dataInicio',
+        dataIndex: 'dataEmissao',
         flex: 2,
         renderer: function (value) {
             return value ? Ext.Date.format(value, 'd/m/Y') : '';
@@ -83,6 +119,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     }, {
         text: 'Nome cliente',
         dataIndex: 'nomeCliente',
+        filter: 'string',
         flex: 4
     }, {
         text: 'Telefone',
@@ -90,11 +127,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         flex: 2
     }, {
         text: 'Preço',
-        dataIndex: 'preco',
+        dataIndex: 'valorTotal',
         flex: 1
     }, {
         text: 'Situação',
-        dataIndex: 'situacao',
+        dataIndex: 'status',
         flex: 3,
         renderer: function (value, metaData) {
             let cor = '';
@@ -123,8 +160,60 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             return value ? Ext.Date.format(value, 'd/m/Y') : '';
         }
     }, {
-        text: 'Ativo',
+        xtype: 'actioncolumn',
         dataIndex: 'status',
-        flex: 1
+        itemId: 'status',
+        width: 75,
+        text: 'Ativo',
+        align: 'center',
+        editable: false,
+        items: [{
+            getClass: function (v, meta, record) {
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get('_status')) {
+                        case 'ATIVO':
+                            return 'far fa-square red';
+                        case 'INATIVO':
+                            return 'far fa-check-square green';
+                    }
+                } else {
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'far fa-check-square';
+                        case 'INATIVO':
+                            return 'far fa-square';
+                    }
+                }
+            },
+            getTip: function(v, meta, record) {
+                if (record.get('status') && record.get('_status')) {
+                    switch (record.get('_status')) {
+                        case 'ATIVO':
+                            return 'Realmente inativar?';
+                        case 'INATIVO':
+                            return 'Realmente ativar?';
+                    }
+                } else {
+                    switch (record.get('status')) {
+                        case 'ATIVO':
+                            return 'Inativar';
+                        case 'INATIVO':
+                            return 'Ativar';
+                    }
+                }
+            },
+            handler: function(a, b, e, f, h, record, k) {
+                if (record.get('_status') === 'ATIVO' || record.get('_status') === 'INATIVO') {
+                    this.fireEvent("trocarStatus", a, b, e, f, h, record, k);
+                } else {
+                    record.set('_status', record.get('status'));
+                }
+            }
+        }],
+        filter: {
+            type: 'list',
+            options: [['ATIVO', 'Sim'], ['INATIVO', 'Não']],
+            value: 'ATIVO'
+        }
     }]
 });
