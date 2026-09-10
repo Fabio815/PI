@@ -92,6 +92,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             var payload = {
                 usuarioId: 1,
                 clienteId: clienteId,
+                cor: values.cor,
+                modelo: values.modelo,
                 orcamento: {
                     valorServico: values.maoDeObra,
                     observacoes: values.observacoes,

@@ -35,11 +35,8 @@ Ext.define('ProjSistemaOs.view.estoque.EstoqueGrid', {
                 floating: true,
                 modal: true,
                 iconCls: 'fa fa-plus',
-
                 listeners: {
                     pecasalva: function () {
-                        console.log('Produto salvo! Recarregando grid...');
-
                         grid.getStore().reload();
                     }
                 }

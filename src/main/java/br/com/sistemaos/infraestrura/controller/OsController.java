@@ -2,8 +2,10 @@ package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.OsService;
 import br.com.sistemaos.domain.entity.Os;
+import br.com.sistemaos.domain.entity.Peca;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.infraestrura.dto.OsDTO;
+import br.com.sistemaos.infraestrura.dto.PecaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -48,6 +50,12 @@ public class OsController {
     @GetMapping("/{id}")
     public ResponseEntity<OsDTO> carregar(@PathVariable Long id) {
         Os os = osService.carregarOs(id);
+        return ResponseEntity.ok(OsDTO.criar(os));
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<OsDTO> atualizarStatus(@PathVariable("id") Long id) {
+        Os os = osService.atualizarStatus(id);
         return ResponseEntity.ok(OsDTO.criar(os));
     }
 }

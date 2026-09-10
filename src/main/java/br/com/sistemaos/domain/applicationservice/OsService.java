@@ -65,6 +65,13 @@ public class OsService {
         return resposta;
     }
 
+    @Transactional
+    public Os atualizarStatus(Long id) {
+        Os os = carregarOs(id);
+        os.setStatus(trocarStatus(os));
+        return os;
+    }
+
     public Os carregarOs(Long id) {
         return osRepository.findById(id)
                 .orElseThrow(() -> new OsNaoEncontradaException(id));
@@ -99,5 +106,13 @@ public class OsService {
         item.setItem(peca);
 
         return item;
+    }
+
+    private Status trocarStatus(Os os) {
+        if (os.getStatus().equals(Status.ATIVO)) {
+            return Status.INATIVO;
+        } else {
+            return  Status.ATIVO;
+        }
     }
 }

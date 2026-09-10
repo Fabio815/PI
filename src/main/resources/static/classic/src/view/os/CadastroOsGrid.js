@@ -31,12 +31,17 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             }
         },
         adicionarOs: function () {
-            var me = this, vw = me.getViewModel();
+            var me = this;
 
             Ext.create('ProjSistemaOs.view.os.CadastroOsWindow', {
                 floating: true,
                 modal: true,
                 iconCls: 'fa fa-thin fa-plus',
+                listeners: {
+                    ossalva: function () {
+                        me.recarregarGrid();
+                    }
+                }
             }).show();
         },
         carregarInformacoesOs: function () {
@@ -52,7 +57,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 floating: true,
                 modal: true,
                 iconCls: 'fa fa-eye',
-                osId: record.get('id')
+                osId: record.get('id'),
             }).show();
         },
         editarOs: function () {
@@ -62,6 +67,34 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 modal: true,
                 iconCls: 'fa fa-pen'
             }).show();
+        },
+        listen: {
+            component: {
+                'cadastro-os-grid actioncolumn#status': {
+                    trocarStatus: function (a, b, e, f, h, record, k) {
+                        let me = this, vw = me.getView();
+                        Ext.Ajax.request({
+                            url: sistemaOsLocal.apiUrl + '/os/status/' + record.get('id'),
+                            method: 'PUT',
+                            jsonData: record.data,
+                            callback: function (success, response, options){
+                                if (vw && !vw.destroyed && !vw.isDestroying) {
+                                    let r = Ext.decode(options.responseText, true);
+                                    if (r) {
+                                        if (r) {
+                                            a.getStore().reload();
+                                        } else {
+                                            Avisos.mensagemAviso("Contate o administrador!");
+                                        }
+                                    } else {
+                                        Avisos.mostrarServidorIndisponivel();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         }
     },
 
@@ -131,7 +164,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         flex: 1
     }, {
         text: 'Situação',
-        dataIndex: 'status',
+        dataIndex: 'situacao',
         flex: 3,
         renderer: function (value, metaData) {
             let cor = '';
