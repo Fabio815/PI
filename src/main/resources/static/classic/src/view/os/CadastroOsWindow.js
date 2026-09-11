@@ -230,6 +230,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             name: 'maoDeObra',
             reference: 'maoDeObra',
             fieldLabel: 'Mão de obra',
+            decimalSeparator: ',',
+            decimalPrecision: 2,
+            submitLocaleSeparator: false,
             margin: '0 0 0 10'
         }]
     }, {
@@ -275,14 +278,24 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     listConfig: {
                         itemTpl: [
                             '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode}',
-                            '<div>Valor/Unidade: R${preco:number("0,000.00##")}</div>',
-                            '</div>'
+                            '<div>Valor/Unidade: {[this.formatarMoeda(values.preco)]}</div>',
+                            '</div>',
+                            {
+                                formatarMoeda: function (valor) {
+                                    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+                                }
+                            }
                         ]
                     },
                     labelTpl: [
                         '<div style="font-size:12px;">',
-                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - R${preco:number("0,000.00##")}',
+                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {[this.formatarMoeda(values.preco)]}',
                         '</div>',
+                        {
+                            formatarMoeda: function (valor) {
+                                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+                            }
+                        }
                     ],
                     store: {
                         fields: [{
@@ -358,11 +371,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     text: 'Nome',
                     dataIndex: 'nome',
                     flex: 4
-                }, {
+                },{
                     text: 'Preco Unitário',
                     dataIndex: 'preco',
                     renderer: function (value) {
-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                        return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
                     },
                     flex: 2
                 }, {
@@ -370,7 +383,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     dataIndex: 'valorTotal',
                     flex: 2,
                     renderer: function (value) {
-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                        return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
                     },
                 }, {
                     xtype: 'actioncolumn',
@@ -396,6 +409,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             name: 'orcamento',
             reference: 'orcamentoTotal',
             fieldLabel: 'Orçamento',
+            decimalSeparator: ',',
+            decimalPrecision: 2,
+            submitLocaleSeparator: false,
             width: 150,
             readOnly: true
         }]

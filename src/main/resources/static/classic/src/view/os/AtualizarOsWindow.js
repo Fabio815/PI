@@ -7,10 +7,61 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
         'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
     ],
 
+    osId: null,
+
     controller: {
         init: function () {
-            var grid = this.lookupReference('gridPecas');
+            var view = this.getView(),
+                grid = this.lookupReference('gridPecas');
+
             grid.getStore().on('datachanged', this.atualizarTotalOrcamento, this);
+
+            if (view.osId) {
+                this.carregarOs(view.osId);
+            }
+        },
+        carregarOs: function (id) {
+            var view = this.getView();
+
+            Ext.Ajax.request({
+                url: sistemaOsLocal.apiUrl + '/os/' + id,
+                method: 'GET',
+                success: function (response) {
+                    var os = Ext.JSON.decode(response.responseText, true);
+
+                    view.getForm().setValues({
+                        modelo: os.modelo,
+                        cor: os.cor,
+                        maoDeObra: os.orcamento.valorServico,
+                        situacao: os.situacao,
+                        observacoes: os.orcamento.observacoes,
+                        orcamento: os.orcamento.valorTotal
+                    });
+
+                    var comboCliente = view.lookupReference('comboCliente');
+                    comboCliente.getStore().add({
+                        id: os.cliente.id,
+                        nome: os.cliente.nome,
+                        telefone: os.cliente.telefone
+                    });
+                    comboCliente.setValue(os.cliente.id);
+
+                    var grid = view.lookupReference('gridPecas');
+                    var dadosGrid = os.orcamento.itens.map(function (item) {
+                        return {
+                            pecaId: item.peca.id,
+                            nome: item.peca.nome,
+                            preco: item.valorUnitario,
+                            quantidade: item.quantidade,
+                            valorTotal: item.valorTotal
+                        };
+                    });
+                    grid.getStore().loadData(dadosGrid);
+                },
+                failure: function () {
+                    Avisos.mostrarServidorIndisponivel();
+                }
+            });
         },
         adicionarCliente: function(){
             Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
@@ -68,19 +119,30 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
 
             orcamentoTotal.setValue(totalPecas + maoDeObra.getValue() || 0);
         },
-        cadastrarOs: function () {
+        atualizarOs: function () {
             var me = this, vw = me.getView(),
                 values = vw.getForm().getValues(),
                 comboCliente = vw.lookupReference('comboCliente'),
                 grid = vw.lookupReference('gridPecas'),
                 itens = [];
 
+            if (!vw.osId) {
+                Avisos.mensagemAviso('OS inválida para atualização.');
+                return;
+            }
+
             grid.getStore().each(function(rec) {
                 itens.push({
                     pecaId: rec.get('pecaId'),
-                    quantidade: rec.get('quantidade')
+                    quantidade: rec.get('quantidade'),
+                    valorUnitario: rec.get('preco')
                 });
             });
+
+            if (Ext.isEmpty(itens)) {
+                Ext.Msg.alert('Atenção', 'Adicione ao menos uma peça.');
+                return;
+            }
 
             var clienteRecords = comboCliente.getValueRecords();
             if (Ext.isEmpty(clienteRecords)) {
@@ -90,8 +152,10 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             var clienteId = clienteRecords[0].get('id');
 
             var payload = {
-                usuarioId: 1,
                 clienteId: clienteId,
+                modelo: values.modelo,
+                cor: values.cor,
+                situacao: values.situacao,
                 orcamento: {
                     valorServico: values.maoDeObra,
                     observacoes: values.observacoes,
@@ -100,8 +164,8 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             };
 
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/os/cadastrar',
-                method: 'POST',
+                url: sistemaOsLocal.apiUrl + '/os/atualizar/' + vw.osId,
+                method: 'PUT',
                 jsonData: payload,
                 success: function (conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
@@ -117,7 +181,7 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
         }
     },
 
-    title: 'Cadastro Os',
+    title: 'Atualizar Os',
     layout: {
         type: 'vbox',
         align: 'stretch'
@@ -228,7 +292,29 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             name: 'maoDeObra',
             reference: 'maoDeObra',
             fieldLabel: 'Mão de obra',
+            decimalSeparator: ',',
+            decimalPrecision: 2,
+            submitLocaleSeparator: false,
             margin: '0 0 0 10'
+        }, {
+            xtype: 'combobox',
+            name: 'situacao',
+            reference: 'situacao',
+            fieldLabel: 'Situação',
+            margin: '0 0 0 10',
+            editable: false,
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'text',
+            store: {
+                fields: ['value', 'text'],
+                data: [
+                    { value: 'PENDENTE', text: 'Pendente' },
+                    { value: 'EM_ANDAMENTO', text: 'Em Andamento' },
+                    { value: 'CONCLUIDO', text: 'Concluído' },
+                    { value: 'CANCELADO', text: 'Cancelado' }
+                ]
+            }
         }]
     }, {
         xtype: 'panel',
@@ -273,14 +359,25 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                     listConfig: {
                         itemTpl: [
                             '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode}',
-                            '<div>Valor/Unidade: R${preco:number("0,000.00##")}</div>',
-                            '</div>'
+                            '<div>Valor/Unidade: {[this.formatarMoeda(values.preco)]}</div>',
+                            '</div>',
+                            {
+                                formatarMoeda: function (valor) {
+                                    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+                                }
+                            }
                         ]
+
                     },
                     labelTpl: [
                         '<div style="font-size:12px;">',
-                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - R${preco:number("0,000.00##")}',
+                        '<i class="fa fa-screwdriver" style="color:#90D5FF;"></i> {nome:htmlEncode} - {[this.formatarMoeda(values.preco)]}',
                         '</div>',
+                        {
+                            formatarMoeda: function (valor) {
+                                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+                            }
+                        }
                     ],
                     store: {
                         fields: [{
@@ -394,6 +491,9 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             name: 'orcamento',
             reference: 'orcamentoTotal',
             fieldLabel: 'Orçamento',
+            decimalSeparator: ',',
+            decimalPrecision: 2,
+            submitLocaleSeparator: false,
             width: 150,
             readOnly: true
         }]
@@ -406,8 +506,8 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             btn.up('atualizar-os-panel').destroy();
         },
     }, {
-        text: 'Cadastar',
+        text: 'Salvar',
         iconCls: 'fa fa-check',
-        handler: 'cadastrarOs'
+        handler: 'atualizarOs'
     }]
 });

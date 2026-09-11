@@ -25,7 +25,7 @@ public interface OsRepository extends JpaRepository<Os, Long> {
     where (:id is null or os.id = :id)
     and (:nome is null or lower(os.cliente.nome) like lower(concat('%', :nome, '%')))
     and (:status is null or os.status in :status)
-    order by os.id desc
+    order by os.id asc
     """)
     Page<OsListagemDTO> listarOs(
             @Param("id") Long id,

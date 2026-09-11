@@ -61,11 +61,25 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             }).show();
         },
         editarOs: function () {
-            var me = this, vw = me.getViewModel();
+            var me = this;
+            var grid = me.getView();
+            var record = grid.getSelection()[0];
+
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para editar.');
+                return;
+            }
+
             Ext.create('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 floating: true,
                 modal: true,
-                iconCls: 'fa fa-pen'
+                iconCls: 'fa fa-pen',
+                osId: record.get('id'),
+                listeners: {
+                    ossalva: function () {
+                        me.recarregarGrid();
+                    }
+                }
             }).show();
         },
         listen: {
@@ -123,7 +137,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         xtype: 'button',
         tooltip: 'Recarregar',
         iconCls: 'fa fa-sync',
-        handler: 'recarregarGrid'
+        handler: 'recarregarGrid',
+    }, '-', {
+        xtype: 'button',
+        tooltip: 'Histórico',
+        iconCls: 'fa fa-scroll'
     }, '->', {
         xtype: "button",
         iconCls: "fas fa-ban",
@@ -161,7 +179,17 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     }, {
         text: 'Preço',
         dataIndex: 'valorTotal',
-        flex: 1
+        align: 'right',
+        renderer: function(value) {
+            if (Ext.isNumber(value)) {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value);
+            }
+            return value;
+        },
+        flex: 2
     }, {
         text: 'Situação',
         dataIndex: 'situacao',
