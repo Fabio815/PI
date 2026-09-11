@@ -9,6 +9,7 @@ import br.com.sistemaos.domain.repository.OsRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.*;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -69,6 +70,21 @@ public class OsService {
     public Os atualizarStatus(Long id) {
         Os os = carregarOs(id);
         os.setStatus(trocarStatus(os));
+        return os;
+    }
+
+    @Transactional
+    public Os atualizarOs(Long id, SalvarOsDTO salvarOsDTO) {
+        Os os = carregarOs(id);
+        Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
+        Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
+
+        os.setModelo(salvarOsDTO.getModelo());
+        os.setCor(salvarOsDTO.getCor());
+        os.setSituacao(salvarOsDTO.getSituacao());
+        os.setCliente(cliente);
+        os.setOrcamento(orcamento);
+
         return os;
     }
 

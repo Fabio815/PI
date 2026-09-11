@@ -47,6 +47,12 @@ public class OsController {
         return ResponseEntity.ok(listaOs);
     }
 
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<OsDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid SalvarOsDTO salvarOsDTO) {
+        Os os = osService.atualizarOs(id, salvarOsDTO);
+        return ResponseEntity.ok(OsDTO.criar(os));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<OsDTO> carregar(@PathVariable Long id) {
         Os os = osService.carregarOs(id);

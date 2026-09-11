@@ -1,5 +1,6 @@
 package br.com.sistemaos.infraestrura.dto;
 
+import br.com.sistemaos.domain.model.StatusOs;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class SalvarOsDTO {
     private final String cor;
 
     private final Long usuarioId;
+
+    private final StatusOs situacao;
 
     @NotNull(message = "Orçamento é obrigatório")
     private final SalvarOrcamentoDTO orcamento;
