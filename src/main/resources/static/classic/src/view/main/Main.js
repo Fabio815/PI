@@ -27,7 +27,8 @@ Ext.define('ProjSistemaOs.view.main.Main', {
 		'ProjSistemaOs.view.cliente.ClienteGrid',
         'ProjSistemaOs.view.estoque.EstoqueGrid',
         'ProjSistemaOs.view.paginaInicial.PaginaSistemaOs',
-        'ProjSistemaOs.view.os.CadastroOsGrid'
+        'ProjSistemaOs.view.os.CadastroOsGrid',
+        'ProjSistemaOs.util.SessaoUtil'
     ],
 
     controller: 'main',
@@ -47,7 +48,16 @@ Ext.define('ProjSistemaOs.view.main.Main', {
             text: 'Sistema de OS',
             flex: 0
         },
-        iconCls: 'fa-thin fa-bicycle'
+        iconCls: 'fa-thin fa-bicycle',
+        items: [{
+            xtype: 'component',
+            flex: 1
+        }, {
+            xtype: 'button',
+            text: 'Logout',
+            iconCls: 'fa fa-sign-out',
+            handler: 'logout'
+        }]
     },
 
     tabBar: {
