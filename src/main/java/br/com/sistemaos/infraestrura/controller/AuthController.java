@@ -1,21 +1,40 @@
 package br.com.sistemaos.infraestrura.controller;
 
 import br.com.sistemaos.domain.applicationservice.UsuarioService;
+import br.com.sistemaos.infraestrura.dto.LoginDTO;
+import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth" )
+@RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
     private final UsuarioService usuarioService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDTO> login(@RequestBody LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getSenha())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        var usuario = usuarioService.carregarPorEmail(loginDTO.getEmail());
+        return ResponseEntity.ok(UsuarioDTO.criar(usuario));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logout realizado com sucesso!");
     }
 
     @PostMapping("/recuperar")

@@ -1,6 +1,7 @@
 package br.com.sistemaos.domain.applicationservice;
 
 import br.com.sistemaos.domain.entity.*;
+import br.com.sistemaos.domain.exception.AcessoNegadoException;
 import br.com.sistemaos.domain.exception.OsNaoEncontradaException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.StatusOs;
@@ -8,6 +9,7 @@ import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.domain.repository.OsRepository;
 import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.*;
+import br.com.sistemaos.infraestrura.service.AutenticacaoService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class OsService {
     private final ClienteService clienteService;
     private final UsuarioService usuarioService;
     private final PecaService pecaService;
+    private final AutenticacaoService autenticacaoService;
 
     @Transactional
     public Os adicionarOs(SalvarOsDTO salvarOsDTO) {
@@ -69,6 +72,7 @@ public class OsService {
     @Transactional
     public Os atualizarStatus(Long id) {
         Os os = carregarOs(id);
+        validarAcessoEditar(os);
         os.setStatus(trocarStatus(os));
         return os;
     }
@@ -76,6 +80,7 @@ public class OsService {
     @Transactional
     public Os atualizarOs(Long id, SalvarOsDTO salvarOsDTO) {
         Os os = carregarOs(id);
+        validarAcessoEditar(os);
         Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
         Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
 
@@ -129,6 +134,12 @@ public class OsService {
             return Status.INATIVO;
         } else {
             return  Status.ATIVO;
+        }
+    }
+
+    private void validarAcessoEditar(Os os) {
+        if (!autenticacaoService.podeEditarOs(os.getUsuario())) {
+            throw new AcessoNegadoException("Você não tem permissão para editar esta OS");
         }
     }
 }

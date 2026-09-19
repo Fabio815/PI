@@ -1,5 +1,7 @@
 package br.com.sistemaos.infraestrura.exception;
 
+import br.com.sistemaos.domain.exception.AcessoNegadoException;
+import br.com.sistemaos.domain.exception.UsuarioNaoAutenticadoException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,16 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = RequestException.class)
     public ResponseEntity<Object> handlerRequestException  (RequestException ex, WebRequest request) {
         return handlerException(ex, ex.getCodigoErro(), ex.getMessage(), null, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = AcessoNegadoException.class)
+    public ResponseEntity<Object> handlerAcessoNegadoException(AcessoNegadoException ex, WebRequest request) {
+        return handlerException(ex, "acessoNegado", ex.getMessage(), null, HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(value = UsuarioNaoAutenticadoException.class)
+    public ResponseEntity<Object> handlerUsuarioNaoAutenticadoException(UsuarioNaoAutenticadoException ex, WebRequest request) {
+        return handlerException(ex, "usuarioNaoAutenticado", ex.getMessage(), null, HttpStatus.UNAUTHORIZED, request);
     }
 
     @Override

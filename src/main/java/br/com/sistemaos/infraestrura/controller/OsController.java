@@ -7,6 +7,7 @@ import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.infraestrura.dto.OsDTO;
 import br.com.sistemaos.infraestrura.dto.PecaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
+import br.com.sistemaos.infraestrura.service.AutenticacaoService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +27,20 @@ import java.util.Map;
 @Slf4j
 public class OsController {
     private final OsService osService;
+    private final AutenticacaoService autenticacaoService;
 
     @PostMapping("/cadastrar") //Cadastrar a OS
     public ResponseEntity<OsDTO> cadastrar(@RequestBody @Valid SalvarOsDTO salvarOsDTO) { //Recebe os dados e executa a validação
-        Os os = osService.adicionarOs(salvarOsDTO); //Cria e salva
+        Long usuarioId = autenticacaoService.obterIdUsuarioAutenticado();
+        SalvarOsDTO salvarOsDtoComUsuario = new SalvarOsDTO(
+                salvarOsDTO.getClienteId(),
+                salvarOsDTO.getModelo(),
+                salvarOsDTO.getCor(),
+                usuarioId,
+                salvarOsDTO.getSituacao(),
+                salvarOsDTO.getOrcamento()
+        );
+        Os os = osService.adicionarOs(salvarOsDtoComUsuario); //Cria e salva
         return ResponseEntity.created(URI.create("/os/" + os.getId())).body(OsDTO.criar(os));
     }
 
