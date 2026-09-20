@@ -6,7 +6,6 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
         'ProjSistemaOs.view.main.Main',
         'ProjSistemaOs.util.MensagemUtil',
         'ProjSistemaOs.util.Config',
-        'ProjSistemaOs.util.SessaoUtil',
         'ProjSistemaOs.view.usuario.RedefinirSenhaWindow'
     ],
 
@@ -16,7 +15,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                 me = this, vw = me.getView(),
                 form = vw.down('form').getForm().getValues();
             Ext.Ajax.request({
-                url: sistemaOsLocal.apiUrl + '/auth/login',
+                url: sistemaOsLocal.apiUrl + '/usuarios/login',
                 method: 'POST',
                 jsonData: {
                     email: form.login,
@@ -25,9 +24,10 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                 scope: this,
                 success: function(conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
-                    if (r && r.id) {
-                        SessaoUtil.definirUsuarioLogado(r);
+                    if (r && r.resposta.sucesso) {
                         viewport.removeAll();
+                        //Basicamente aqui estou criando um Viewport que é um container especial que se ajusta automaticamente
+                        // ao tamanho da tela e colocando o main dentro dele com o layout fit que faz ocupar a tela inteiro
                         Ext.create('Ext.container.Viewport', {
                             layout: 'fit',
                             items: [{
@@ -35,17 +35,15 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                                 perfil: r.chave
                             }]
                         });
+                        //localStorage.setItem('perfil', r.chave);
+                    } else if (r && !r.resposta.sucesso) {
+                        Avisos.mensagemAviso(r.resposta.mensagem);
                     } else {
-                        Avisos.mensagemAviso('Login inválido. Verifique email e senha.');
+                        Avisos.contateAdm();
                     }
                 },
-                failure: function(conn, response, options, eOpts) {
-                    var r = Ext.JSON.decode(conn.responseText, true);
-                    if (r && r.mensagemErro) {
-                        Avisos.mensagemAviso(r.mensagemErro);
-                    } else {
-                        Avisos.mostrarServidorIndisponivel();
-                    }
+                failure: function(response) {
+                    Avisos.mostrarServidorIndisponivel();
                 }
             })
         },

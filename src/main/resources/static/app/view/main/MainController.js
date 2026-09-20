@@ -7,8 +7,6 @@ Ext.define('ProjSistemaOs.view.main.MainController', {
 
     alias: 'controller.main',
 
-    requires: ['ProjSistemaOs.util.SessaoUtil'],
-
     onItemSelected: function (sender, record) {
         Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirm', this);
     },
@@ -17,21 +15,5 @@ Ext.define('ProjSistemaOs.view.main.MainController', {
         if (choice === 'yes') {
             //
         }
-    },
-
-    logout: function() {
-        var me = this;
-        Ext.Ajax.request({
-            url: sistemaOsLocal.apiUrl + '/auth/logout',
-            method: 'POST',
-            success: function() {
-                SessaoUtil.limparSessao();
-                window.location.href = '/';
-            },
-            failure: function() {
-                SessaoUtil.limparSessao();
-                window.location.href = '/';
-            }
-        });
     }
 });

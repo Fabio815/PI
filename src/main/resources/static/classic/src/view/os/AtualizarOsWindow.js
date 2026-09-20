@@ -4,12 +4,10 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
 
     requires: [
         'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.view.ux.TagFieldHtmlLabel',
-        'ProjSistemaOs.util.SessaoUtil'
+        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
     ],
 
     osId: null,
-    usuarioCriadorId: null,
 
     controller: {
         init: function () {
@@ -23,14 +21,13 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             }
         },
         carregarOs: function (id) {
-            var view = this.getView(), me = this;
+            var view = this.getView();
 
             Ext.Ajax.request({
                 url: sistemaOsLocal.apiUrl + '/os/' + id,
                 method: 'GET',
                 success: function (response) {
                     var os = Ext.JSON.decode(response.responseText, true);
-                    view.usuarioCriadorId = os.usuario.id;
 
                     view.getForm().setValues({
                         modelo: os.modelo,
@@ -60,35 +57,9 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                         };
                     });
                     grid.getStore().loadData(dadosGrid);
-
-                    if (!SessaoUtil.podeEditarOs(os.usuario.id)) {
-                        me.desabilitarEdicao(view);
-                    }
                 },
-                failure: function (conn) {
-                    var r = Ext.JSON.decode(conn.responseText, true);
-                    if (r && r.codigoErro === 'acessoNegado') {
-                        Avisos.mensagemAviso('Você não tem permissão para editar esta OS.');
-                        view.close();
-                    } else {
-                        Avisos.mostrarServidorIndisponivel();
-                    }
-                }
-            });
-        },
-        desabilitarEdicao: function(view) {
-            view.setTitle('Visualizar OS (Sem permissão de edição)');
-            view.down('[name=modelo]').setReadOnly(true);
-            view.down('[name=cor]').setReadOnly(true);
-            view.down('[name=maoDeObra]').setReadOnly(true);
-            view.down('[name=situacao]').setReadOnly(true);
-            view.down('[name=observacoes]').setReadOnly(true);
-            view.down('[reference=comboPeca]').setDisabled(true);
-            view.down('[handler=adicionarPecaGrid]').setDisabled(true);
-            var buttons = view.query('button');
-            buttons.forEach(function(btn) {
-                if (btn.getText() === 'Salvar') {
-                    btn.setDisabled(true);
+                failure: function () {
+                    Avisos.mostrarServidorIndisponivel();
                 }
             });
         },
@@ -204,12 +175,7 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
-                    var r = Ext.JSON.decode(conn.responseText, true);
-                    if (r && r.codigoErro === 'acessoNegado') {
-                        Avisos.mensagemAviso('Você não tem permissão para editar esta OS.');
-                    } else {
-                        Avisos.mostrarServidorIndisponivel();
-                    }
+                    Avisos.mostrarServidorIndisponivel();
                 }
             });
         }

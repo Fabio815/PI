@@ -4,8 +4,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
 
     requires: [
         'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.view.ux.TagFieldHtmlLabel',
-        'ProjSistemaOs.util.SessaoUtil'
+        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
     ],
 
     controller: {
@@ -89,15 +88,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 return;
             }
             var clienteId = clienteRecords[0].get('id');
-            var usuarioId = SessaoUtil.obterIdUsuarioLogado();
-
-            if (!usuarioId) {
-                Ext.Msg.alert('Erro', 'Usuário não autenticado. Faça login novamente.');
-                return;
-            }
 
             var payload = {
-                usuarioId: usuarioId,
+                usuarioId: 1,
                 clienteId: clienteId,
                 cor: values.cor,
                 modelo: values.modelo,
