@@ -155,11 +155,6 @@ public class UsuarioService {
         return op.get();
     }
 
-    public Usuario carregarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(email));
-    }
-
     private List<Status> converterParaStatusList(List<String> status) {
         if (status == null) {
             return null;
