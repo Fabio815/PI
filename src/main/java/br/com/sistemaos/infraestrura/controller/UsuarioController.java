@@ -3,13 +3,25 @@ package br.com.sistemaos.infraestrura.controller;
 import br.com.sistemaos.domain.applicationservice.UsuarioService;
 import br.com.sistemaos.domain.entity.Usuario;
 import br.com.sistemaos.infraestrura.dto.AtualizarUsuarioDTO;
+import br.com.sistemaos.infraestrura.dto.LoginResponseDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarUsuarioDTO;
 import br.com.sistemaos.infraestrura.dto.UsuarioDTO;
+import br.com.sistemaos.infraestrura.security.UsuarioLogadoService;
+import br.com.sistemaos.infraestrura.security.UsuarioPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -21,6 +33,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final UsuarioLogadoService usuarioLogadoService;
+    private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
 
     @PostMapping("/adicionar")
     public ResponseEntity<UsuarioDTO> adicionar(@RequestBody @Valid SalvarUsuarioDTO salvarUsuarioDTO) {
@@ -42,23 +57,48 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody Map<String, String> credentials,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(credentials.get("email"), credentials.get("senha"))
+            );
 
-        String email = credentials.get("email");
-        String senha = credentials.get("senha");
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            // Persiste o contexto na sessão HTTP, para as próximas requisições já virem autenticadas
+            securityContextRepository.saveContext(context, request, response);
 
-        Optional<UsuarioDTO> usuario = usuarioService.login(email, senha);
-
-        if (usuario.isPresent()) {
-            return ResponseEntity.ok(usuario.get());
+            Usuario usuario = ((UsuarioPrincipal) authentication.getPrincipal()).getUsuario();
+            return ResponseEntity.ok(LoginResponseDTO.sucesso(usuario));
+        } catch (BadCredentialsException | org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            return ResponseEntity.ok(LoginResponseDTO.erro("E-mail ou senha inválidos"));
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            return ResponseEntity.ok(LoginResponseDTO.erro("Usuário inativo"));
         }
-        Map<String, Resposta> resposta = new HashMap<>();
-        resposta.put("resposta", new Resposta(false, "E-mail ou senha inválidos"));
-        return ResponseEntity
-                .ok()
-                .body(resposta);
-    }*/
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        var session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sessao")
+    public ResponseEntity<UsuarioDTO> sessao() {
+        Usuario usuario = usuarioLogadoService.obterUsuarioLogado();
+        if (usuario == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(UsuarioDTO.criar(usuario));
+    }
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<UsuarioDTO> atualizarUsuario(

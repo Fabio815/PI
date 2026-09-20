@@ -19,7 +19,7 @@ public interface OsRepository extends JpaRepository<Os, Long> {
     @Query("""
     select new br.com.sistemaos.infraestrura.dto.OsListagemDTO(
         os.id, os.dataEmissao, os.cliente.nome, os.cliente.telefone,
-        os.orcamento.valorTotal, os.situacao, os.status
+        os.orcamento.valorTotal, os.situacao, os.status, os.usuario.id, os.usuario.nome
     )
     from Os os
     where (:id is null or os.id = :id)

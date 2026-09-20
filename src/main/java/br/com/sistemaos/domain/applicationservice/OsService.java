@@ -1,15 +1,15 @@
 package br.com.sistemaos.domain.applicationservice;
 
 import br.com.sistemaos.domain.entity.*;
+import br.com.sistemaos.domain.exception.AcessoNegadoException;
 import br.com.sistemaos.domain.exception.OsNaoEncontradaException;
+import br.com.sistemaos.domain.model.Perfil;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.model.StatusOs;
-import br.com.sistemaos.domain.repository.ClienteRepository;
 import br.com.sistemaos.domain.repository.OsRepository;
-import br.com.sistemaos.domain.repository.UsuarioRepository;
 import br.com.sistemaos.infraestrura.dto.*;
+import br.com.sistemaos.infraestrura.security.UsuarioLogadoService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,13 +28,13 @@ import java.util.Optional;
 public class OsService {
     private final OsRepository osRepository;
     private final ClienteService clienteService;
-    private final UsuarioService usuarioService;
     private final PecaService pecaService;
+    private final UsuarioLogadoService usuarioLogadoService;
 
     @Transactional
     public Os adicionarOs(SalvarOsDTO salvarOsDTO) {
         Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
-        Usuario usuario = usuarioService.carregarUsuario(salvarOsDTO.getUsuarioId());
+        Usuario usuario = usuarioLogadoService.obterUsuarioLogado();
         Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
 
         Os os = Os.builder()
@@ -69,6 +69,7 @@ public class OsService {
     @Transactional
     public Os atualizarStatus(Long id) {
         Os os = carregarOs(id);
+        validarPermissaoEdicao(os);
         os.setStatus(trocarStatus(os));
         return os;
     }
@@ -76,6 +77,8 @@ public class OsService {
     @Transactional
     public Os atualizarOs(Long id, SalvarOsDTO salvarOsDTO) {
         Os os = carregarOs(id);
+        validarPermissaoEdicao(os);
+
         Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
         Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
 
@@ -91,6 +94,22 @@ public class OsService {
     public Os carregarOs(Long id) {
         return osRepository.findById(id)
                 .orElseThrow(() -> new OsNaoEncontradaException(id));
+    }
+
+    /**
+     * ADM pode alterar qualquer OS. FUNCIONARIO só pode alterar a OS que ele mesmo criou
+     * (visualizar/listar continua liberado para qualquer um).
+     */
+    private void validarPermissaoEdicao(Os os) {
+        Usuario usuarioLogado = usuarioLogadoService.obterUsuarioLogado();
+
+        if (usuarioLogado.getChave() == Perfil.ADM) {
+            return;
+        }
+
+        if (os.getUsuario() == null || !os.getUsuario().getId().equals(usuarioLogado.getId())) {
+            throw new AcessoNegadoException("Você só pode alterar as ordens de serviço que você criou");
+        }
     }
 
     private Orcamento montarOrcamento(SalvarOrcamentoDTO dto) {

@@ -40,7 +40,7 @@ public class UsuarioService {
         Usuario usuario = Usuario.builder()
                 .nome(salvarUsuarioDTO.getNome())
                 .email(salvarUsuarioDTO.getEmail())
-                .senha(salvarUsuarioDTO.getSenha())
+                .senha(passwordEncoder.encode(salvarUsuarioDTO.getSenha()))
                 .status(Status.ATIVO)
                 .chave(salvarUsuarioDTO.getChave())
                 .build();

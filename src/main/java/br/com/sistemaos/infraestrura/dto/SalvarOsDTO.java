@@ -17,8 +17,6 @@ public class SalvarOsDTO {
 
     private final String cor;
 
-    private final Long usuarioId;
-
     private final StatusOs situacao;
 
     @NotNull(message = "Orçamento é obrigatório")

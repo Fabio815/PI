@@ -9,19 +9,24 @@ Ext.define('ProjSistemaOs.view.main.Main', {
     extend: 'Ext.tab.Panel',
     xtype: 'app-main',
 
-    /*initComponent: function() {
-        console.log(this.perfil);
-        if (this.perfil !== 'administrador') {
-            this.items.pop();
-        }
-
+    initComponent: function() {
         this.callParent();
-    },*/
+
+        if (!Sessao.isAdm()) {
+            var abaUsuarios = this.items.findBy(function (item) {
+                return item.title === 'Usuários';
+            });
+            if (abaUsuarios) {
+                this.remove(abaUsuarios, true);
+            }
+        }
+    },
 
     requires: [
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',
 
+        'ProjSistemaOs.util.Sessao',
         'ProjSistemaOs.view.main.MainController',
         'ProjSistemaOs.view.main.MainModel',
 		'ProjSistemaOs.view.cliente.ClienteGrid',
@@ -47,7 +52,22 @@ Ext.define('ProjSistemaOs.view.main.Main', {
             text: 'Sistema de OS',
             flex: 0
         },
-        iconCls: 'fa-thin fa-bicycle'
+        iconCls: 'fa-thin fa-bicycle',
+        items: [{
+            xtype: 'button',
+            text: 'Sair',
+            iconCls: 'fa fa-sign-out-alt',
+            handler: function () {
+                Ext.Ajax.request({
+                    url: sistemaOsLocal.apiUrl + '/usuarios/logout',
+                    method: 'POST',
+                    callback: function () {
+                        Sessao.limpar();
+                        window.location.reload();
+                    }
+                });
+            }
+        }]
     },
 
     tabBar: {
@@ -112,13 +132,12 @@ Ext.define('ProjSistemaOs.view.main.Main', {
         items: [{
             xtype: 'estoqueGrid'
         }]
-    },	{
+    }, {
         title: 'Usuários',
         iconCls: 'fa-cog',
         layout: 'fit',
         items: [{
               xtype: 'usuario-grid'
-        }],
-        //hidden: localStorage.getItem('perfil') !== 'administrador'
+        }]
     }]
 });

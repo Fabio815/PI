@@ -11,6 +11,8 @@ Ext.define('ProjSistemaOs.model.Os', {
         { name: 'valorTotal', type: 'float'},
         { name: 'situacao', type: 'string' },
         { name: 'status', type: 'string' },
-        { name: '_status', type: 'string' }
+        { name: '_status', type: 'string' },
+        { name: 'usuarioId', type: 'int' },
+        { name: 'usuarioNome', type: 'string' }
     ]
 });

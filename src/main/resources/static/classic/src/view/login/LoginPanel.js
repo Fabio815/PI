@@ -6,6 +6,7 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
         'ProjSistemaOs.view.main.Main',
         'ProjSistemaOs.util.MensagemUtil',
         'ProjSistemaOs.util.Config',
+        'ProjSistemaOs.util.Sessao',
         'ProjSistemaOs.view.usuario.RedefinirSenhaWindow'
     ],
 
@@ -25,6 +26,8 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                 success: function(conn, response, options, eOpts) {
                     let r = Ext.JSON.decode(conn.responseText, true);
                     if (r && r.resposta.sucesso) {
+                        Sessao.definirUsuario(r.id, r.nome, r.chave);
+
                         viewport.removeAll();
                         //Basicamente aqui estou criando um Viewport que é um container especial que se ajusta automaticamente
                         // ao tamanho da tela e colocando o main dentro dele com o layout fit que faz ocupar a tela inteiro
@@ -35,7 +38,6 @@ Ext.define('ProjSistemaOs.view.login.LoginPanel', {
                                 perfil: r.chave
                             }]
                         });
-                        //localStorage.setItem('perfil', r.chave);
                     } else if (r && !r.resposta.sucesso) {
                         Avisos.mensagemAviso(r.resposta.mensagem);
                     } else {

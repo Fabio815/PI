@@ -19,4 +19,6 @@ public class OsListagemDTO {
     private final Double valorTotal;
     private final StatusOs situacao;
     private final Status status;
+    private final Long usuarioId;
+    private final String usuarioNome;
 }

@@ -78,7 +78,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             grid.getStore().each(function(rec) {
                 itens.push({
                     pecaId: rec.get('pecaId'),
-                    quantidade: rec.get('quantidade')
+                    quantidade: rec.get('quantidade'),
+                    valorUnitario: rec.get('preco')
                 });
             });
 
@@ -90,8 +91,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             var clienteId = clienteRecords[0].get('id');
 
             var payload = {
-                usuarioId: 1,
                 clienteId: clienteId,
+                modelo: values.modelo,
+                cor: values.cor,
                 cor: values.cor,
                 modelo: values.modelo,
                 orcamento: {

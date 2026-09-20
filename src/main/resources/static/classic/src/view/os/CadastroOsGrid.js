@@ -6,6 +6,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         'ProjSistemaOs.view.os.CadastroOsWindow',
         'ProjSistemaOs.view.os.AtualizarOsWindow',
         'ProjSistemaOs.view.os.InformacoesOsWindow',
+        'ProjSistemaOs.util.Sessao',
         'ProjSistemaOs.store.Os',
         'Ext.grid.column.Action',
         'Ext.grid.column.Check',
@@ -70,6 +71,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 return;
             }
 
+            if (!Sessao.podeEditarOs(record.get('usuarioId'))) {
+                Ext.Msg.alert('Atenção', 'Você só pode editar as ordens de serviço que você criou.');
+                return;
+            }
+
             Ext.create('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 floating: true,
                 modal: true,
@@ -82,26 +88,37 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 }
             }).show();
         },
+        onSelectionChange: function (selModel, selected) {
+            var me = this,
+                btnEditar = me.lookupReference('btnEditar'),
+                record = selected[0];
+
+            btnEditar.setDisabled(!record || !Sessao.podeEditarOs(record.get('usuarioId')));
+        },
         listen: {
             component: {
                 'cadastro-os-grid actioncolumn#status': {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
+
+                        if (!Sessao.podeEditarOs(record.get('usuarioId'))) {
+                            record.set('_status', record.get('status'));
+                            Ext.Msg.alert('Atenção', 'Você só pode alterar as ordens de serviço que você criou.');
+                            return;
+                        }
+
                         Ext.Ajax.request({
                             url: sistemaOsLocal.apiUrl + '/os/status/' + record.get('id'),
                             method: 'PUT',
                             jsonData: record.data,
-                            callback: function (success, response, options){
+                            callback: function (options, success, response) {
                                 if (vw && !vw.destroyed && !vw.isDestroying) {
-                                    let r = Ext.decode(options.responseText, true);
-                                    if (r) {
-                                        if (r) {
-                                            a.getStore().reload();
-                                        } else {
-                                            Avisos.mensagemAviso("Contate o administrador!");
-                                        }
+                                    if (success) {
+                                        a.getStore().reload();
                                     } else {
-                                        Avisos.mostrarServidorIndisponivel();
+                                        record.set('_status', record.get('status'));
+                                        let r = Ext.decode(response.responseText, true);
+                                        Avisos.mensagemAviso(r && r.mensagemErro ? r.mensagemErro : "Contate o administrador!");
                                     }
                                 }
                             }
@@ -114,6 +131,13 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
 
     store: {
         type: 'os-listagem-store'
+    },
+
+    selModel: {
+        selType: 'rowmodel',
+        listeners: {
+            selectionchange: 'onSelectionChange'
+        }
     },
 
     title: 'Clientes',
@@ -132,6 +156,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         xtype: 'button',
         tooltip: 'Editar',
         iconCls: 'fa fa-pen',
+        reference: 'btnEditar',
+        disabled: true,
         handler: 'editarOs'
     },'-', {
         xtype: 'button',
@@ -175,6 +201,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     }, {
         text: 'Telefone',
         dataIndex: 'telefone',
+        flex: 2
+    }, {
+        text: 'Criado por',
+        dataIndex: 'usuarioNome',
+        filter: 'string',
         flex: 2
     }, {
         text: 'Preço',
