@@ -381,6 +381,10 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     },
                     flex: 2
                 }, {
+                    text: 'Quantidade',
+                    dataIndex: 'quantidade',
+                    flex: 2
+                }, {
                     text: 'Total',
                     dataIndex: 'valorTotal',
                     flex: 2,

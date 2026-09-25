@@ -49,7 +49,7 @@ Ext.define('ProjSistemaOs.view.main.Main', {
             align: 'stretchmax'
         },
         title: {
-            text: 'Sistema de OS',
+            text: 'Bike fácil',
             flex: 0
         },
         iconCls: 'fa-thin fa-bicycle',
