@@ -95,6 +95,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
 
             btnEditar.setDisabled(!record || !Sessao.podeEditarOs(record.get('usuarioId')));
         },
+        abrirHistorico: function (a, b, e) {
+            Ext.create('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
+                floating: true,
+                modal: true,
+            }).show();
+        },
         listen: {
             component: {
                 'cadastro-os-grid actioncolumn#status': {
@@ -167,7 +173,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     }, '-', {
         xtype: 'button',
         tooltip: 'Histórico',
-        iconCls: 'fa fa-scroll'
+        iconCls: 'fa fa-scroll',
+        handler: 'abrirHistorico'
     }, '->', {
         xtype: "button",
         iconCls: "fas fa-ban",
