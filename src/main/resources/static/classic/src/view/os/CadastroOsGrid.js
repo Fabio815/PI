@@ -96,9 +96,19 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             btnEditar.setDisabled(!record || !Sessao.podeEditarOs(record.get('usuarioId')));
         },
         abrirHistorico: function (a, b, e) {
+            var me = this;
+            var grid = me.getView();
+            var record = grid.getSelection()[0];
+
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para ver o histórico.');
+                return;
+            }
+
             Ext.create('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
                 floating: true,
                 modal: true,
+                osId: record.get('id'),
             }).show();
         },
         listen: {

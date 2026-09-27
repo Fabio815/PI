@@ -17,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +27,7 @@ public class OsService {
     private final ClienteService clienteService;
     private final PecaService pecaService;
     private final UsuarioLogadoService usuarioLogadoService;
+    private final HistoricoService historicoService;
 
     @Transactional
     public Os adicionarOs(SalvarOsDTO salvarOsDTO) {
@@ -70,8 +68,18 @@ public class OsService {
     public Os atualizarStatus(Long id) {
         Os os = carregarOs(id);
         validarPermissaoEdicao(os);
-        os.setStatus(trocarStatus(os));
-        return os;
+
+        Usuario usuarioLogado = usuarioLogadoService.obterUsuarioLogado();
+        Status statusAntigo = os.getStatus();
+        Status statusNovo = trocarStatus(os);
+
+        os.setStatus(statusNovo);
+        Os osSalva = osRepository.save(os);
+
+        List<HistoricoOs> historicos = historicoService.gerarHistoricoStatus(statusAntigo, statusNovo, usuarioLogado);
+        historicoService.salvarTodos(historicos, osSalva);
+
+        return osSalva;
     }
 
     @Transactional
@@ -79,7 +87,12 @@ public class OsService {
         Os os = carregarOs(id);
         validarPermissaoEdicao(os);
 
+        Usuario usuarioLogado = usuarioLogadoService.obterUsuarioLogado();
         Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
+
+        // compara ANTES de sobrescrever os valores da OS
+        List<HistoricoOs> historicos = historicoService.compararEGerarHistorico(os, salvarOsDTO, cliente, usuarioLogado);
+
         Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
 
         os.setModelo(salvarOsDTO.getModelo());
@@ -88,7 +101,15 @@ public class OsService {
         os.setCliente(cliente);
         os.setOrcamento(orcamento);
 
-        return os;
+        Os osSalva = osRepository.save(os);
+        historicoService.salvarTodos(historicos, osSalva);
+
+        return osSalva;
+    }
+
+    public List<HistoricoOsDTO> listarHistorico(Long id) {
+        carregarOs(id); // garante que a OS existe (lança OsNaoEncontradaException se não)
+        return historicoService.listarPorOs(id);
     }
 
     public Os carregarOs(Long id) {

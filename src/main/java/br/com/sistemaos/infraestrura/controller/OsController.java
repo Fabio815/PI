@@ -4,6 +4,7 @@ import br.com.sistemaos.domain.applicationservice.OsService;
 import br.com.sistemaos.domain.entity.Os;
 import br.com.sistemaos.domain.entity.Peca;
 import br.com.sistemaos.domain.model.Status;
+import br.com.sistemaos.infraestrura.dto.HistoricoOsDTO;
 import br.com.sistemaos.infraestrura.dto.OsDTO;
 import br.com.sistemaos.infraestrura.dto.PecaDTO;
 import br.com.sistemaos.infraestrura.dto.SalvarOsDTO;
@@ -63,5 +64,11 @@ public class OsController {
     public ResponseEntity<OsDTO> atualizarStatus(@PathVariable("id") Long id) {
         Os os = osService.atualizarStatus(id);
         return ResponseEntity.ok(OsDTO.criar(os));
+    }
+
+    @GetMapping("/{id}/historico") //Lista o histórico de alterações de uma OS
+    public ResponseEntity<List<HistoricoOsDTO>> listarHistorico(@PathVariable("id") Long id) {
+        List<HistoricoOsDTO> historico = osService.listarHistorico(id);
+        return ResponseEntity.ok(historico);
     }
 }

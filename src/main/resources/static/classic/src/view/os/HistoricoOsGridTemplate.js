@@ -1,6 +1,12 @@
 Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
     extend: 'Ext.grid.Panel',
     xtype: 'grid-template-historico',
+
+    // Passe o id da OS ao criar o componente: Ext.create({ xtype: 'grid-template-historico', osId: 5 }).show();
+    config: {
+        osId: null
+    },
+
     controller: {
         boxReady: function (a) {
             a.mon(
@@ -49,6 +55,78 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
         },
         onEsc: function () {
             this.getView().destroy()
+        }
+    },
+
+    // Monta a URL com o osId recebido e só então carrega a store.
+    // Precisa ser feito aqui porque o osId só existe depois que o
+    // componente é criado (Ext.create({..., osId: X})), então não dá
+    // pra deixar a URL fixa lá no viewModel declarativo.
+    initComponent: function () {
+        this.callParent(arguments);
+
+        var osId = this.getOsId();
+        var store = this.getViewModel().getStore('historicos');
+
+        if (!osId) {
+            Ext.raise('HistoricoOsGridTemplate: osId não informado ao criar o componente.');
+        }
+
+        store.getProxy().setUrl(window.location.origin + '/os/' + osId + '/historico');
+        store.load();
+    },
+
+    // Sem isso a grid usa uma store própria vazia por padrão -
+    // a store do viewModel era carregada (por isso não dava erro
+    // e a requisição aparecia com dados), mas a grid nunca "via" ela.
+    bind: {
+        store: '{historicos}'
+    },
+
+    viewModel: {
+        stores: {
+            historicos: {
+                fields: [{
+                    name: 'dataAlteracao',
+                    type: 'date',
+                    dateFormat: 'Y-m-d\\TH:i:s'
+                }, {
+                    name: 'campoAlterado',
+                    type: 'string'
+                }, {
+                    name: 'id',
+                    type: 'int'
+                }, {
+                    name: 'de',
+                    type: 'string'
+                }, {
+                    name: 'para',
+                    type: 'string'
+                }, {
+                    name: 'usuario'
+                }
+                ],
+                proxy: {
+                    type: 'ajax',
+                    // URL provisória - é sobrescrita em initComponent com o osId real
+                    url: window.location.origin + '/os/historico',
+                    method: 'GET',
+                    reader: {
+                        type: 'json'
+                    }
+                },
+                pageSize: 30,
+                remoteFilter: true,
+                remoteSort: true,
+                autoLoad: false, // o load agora é manual, disparado em initComponent
+                autoDestroy: true,
+                sorters: [
+                    {
+                        property: 'dataAlteracao',
+                        direction: 'DESC'
+                    }
+                ]
+            }
         }
     },
     keyMap: {
@@ -109,68 +187,64 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
             }
         },
         items: [{
-                dataIndex: 'usuario',
-                //text: Portal.util.Util.configuraCabecalho('Usuário', 2),
-                text: 'Usuário',
-                tpl: [
-                    '<tpl for="usuario">',
-                    '{dsLogin:htmlEncode}',
-                    '</tpl>'
-                ],
-                flex: 2,
-                requiresMenu: true,
-                filter: 'string'
-            }, {
-                xtype: 'gridcolumn',
-                dataIndex: 'dtRegistro',
-                sortable: true,
-                //text: Portal.util.Util.configuraCabecalho('Dt. do Historico', 2),
-                text: 'Dt. do Histórico',
-                formatter: 'date("d/m/Y H:i:s")',
-                align: 'center',
-                flex: 2,
-                filter: {
-                    type: 'date',
-                    dateFormat: 'Y-m-d'
-                }
-            }, {
-                xtype: 'gridcolumn',
-                dataIndex: 'idTemplate',
-                //text: Portal.util.Util.configuraCabecalho('Id', 2),
-                text: 'Id',
-                renderer: Ext.util.Format.htmlEncode,
-                flex: 1,
-                requiresMenu: false
-            }, {
-                xtype: 'gridcolumn',
-                dataIndex: 'descricao',
-                //text: Portal.util.Util.configuraCabecalho('Descrição', 2),
-                text: 'Descrição',
-                renderer: Ext.util.Format.htmlEncode,
-                flex: 3,
-                requiresMenu: true,
-                filter: 'string'
-            }, {
-                dataIndex: 'de',
-                //text: Portal.util.Util.configuraCabecalho('De', 2),
-                text: 'De',
-                tpl: [
-                    '<div style="white-space: pre-wrap">{de:htmlEncode}</div>'
-                ],
-                flex: 4,
-                requiresMenu: true,
-                filter: 'string'
-            }, {
-                dataIndex: 'para',
-                //text: Portal.util.Util.configuraCabecalho('Para', 2),
-                text: 'Para',
-                tpl: [
-                    '<div style="white-space: pre-wrap">{para:htmlEncode}</div>'
-                ],
-                flex: 4,
-                requiresMenu: true,
-                filter: 'string'
+            dataIndex: 'usuario',
+            text: 'Usuário',
+            // "usuario" é um objeto (UsuarioDTO: id, nome, email, chave, status).
+            // Precisa de tpl porque a coluna herda xtype: 'templatecolumn' do defaults.
+            tpl: [
+                '<tpl for="usuario">',
+                '{nome:htmlEncode}',
+                '</tpl>'
+            ],
+            flex: 2,
+            requiresMenu: true,
+            filter: 'string'
+        }, {
+            xtype: 'gridcolumn',
+            dataIndex: 'dataAlteracao',
+            sortable: true,
+            text: 'Dt. do Histórico',
+            formatter: 'date("d/m/Y H:i:s")',
+            align: 'center',
+            flex: 2,
+            filter: {
+                type: 'date',
+                dateFormat: 'Y-m-d'
             }
+        }, {
+            xtype: 'gridcolumn',
+            dataIndex: 'id',
+            text: 'Id',
+            renderer: Ext.util.Format.htmlEncode,
+            flex: 1,
+            requiresMenu: false
+        }, {
+            xtype: 'gridcolumn',
+            dataIndex: 'campoAlterado',
+            text: 'Descrição',
+            renderer: Ext.util.Format.htmlEncode,
+            flex: 3,
+            requiresMenu: true,
+            filter: 'string'
+        }, {
+            dataIndex: 'de',
+            text: 'De',
+            tpl: [
+                '<div style="white-space: pre-wrap">{de:htmlEncode}</div>'
+            ],
+            flex: 4,
+            requiresMenu: true,
+            filter: 'string'
+        }, {
+            dataIndex: 'para',
+            text: 'Para',
+            tpl: [
+                '<div style="white-space: pre-wrap">{para:htmlEncode}</div>'
+            ],
+            flex: 4,
+            requiresMenu: true,
+            filter: 'string'
+        }
         ]
     },
     bbar: {
