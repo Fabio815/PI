@@ -49,4 +49,7 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario")
     private List<Os> ordensServico;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<HistoricoOs> historicoAlteracoes;
 }

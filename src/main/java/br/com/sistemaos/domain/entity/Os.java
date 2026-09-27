@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "os")
@@ -50,4 +51,7 @@ public class Os {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "orcamento_id", unique = true)
     private Orcamento orcamento;
+
+    @OneToMany(mappedBy = "os", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoricoOs> historico;
 }
