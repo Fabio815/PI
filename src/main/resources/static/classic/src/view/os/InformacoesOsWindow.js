@@ -19,13 +19,19 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                 method: 'GET',
                 success: function (response) {
                     var os = Ext.JSON.decode(response.responseText, true);
+                    var formatadorMoeda = new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
 
                     view.getForm().setValues({
                         modelo: os.modelo,
                         cor: os.cor,
-                        maoDeObra: os.orcamento.valorServico,
+                        maoDeObra: formatadorMoeda.format(os.orcamento.valorServico || 0),
                         observacoes: os.orcamento.observacoes,
-                        orcamento: os.orcamento.valorTotal
+                        orcamento: formatadorMoeda.format(os.orcamento.valorTotal || 0)
                     });
 
                     var clienteDisplay = view.lookupReference('clienteDisplay');
@@ -106,11 +112,12 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
             readOnly: true,
             flex: 2
         }, {
-            xtype: 'numberfield',
+            xtype: 'textfield',
             name: 'maoDeObra',
             reference: 'maoDeObra',
-            fieldLabel: 'Mão de obra',
+            fieldLabel: 'Mão de obra (R$)',
             readOnly: true,
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             margin: '0 0 0 10'
         }]
     }, {
@@ -174,8 +181,10 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                 }, {
                     text: 'Preco Unitário',
                     dataIndex: 'preco',
-                    renderer: function (value) {
-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
                     },
                     flex: 2
                 }, {
@@ -186,8 +195,10 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
                     text: 'Total',
                     dataIndex: 'valorTotal',
                     flex: 2,
-                    renderer: function (value) {
-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
                     }
                 }]
             }]
@@ -201,11 +212,12 @@ Ext.define('ProjSistemaOs.view.os.InformacoesOsWindow', {
         xtype: 'container',
         layout: 'hbox',
         items: [{
-            xtype: 'numberfield',
+            xtype: 'textfield',
             name: 'orcamento',
             reference: 'orcamentoTotal',
-            fieldLabel: 'Orçamento',
+            fieldLabel: 'Orçamento (R$)',
             width: 150,
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             readOnly: true
         }]
     }],

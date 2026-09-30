@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +29,16 @@ public class OsController {
     private final OsService osService;
 
     @PostMapping("/cadastrar") //Cadastrar a OS
-    public ResponseEntity<OsDTO> cadastrar(@RequestBody @Valid SalvarOsDTO salvarOsDTO) { //Recebe os dados e executa a validação
-        Os os = osService.adicionarOs(salvarOsDTO); //Cria e salva
-        return ResponseEntity.created(URI.create("/os/" + os.getId())).body(OsDTO.criar(os));
+    public ResponseEntity<Map<String, Object>> cadastrar(@RequestBody @Valid SalvarOsDTO salvarOsDTO) { //Recebe os dados e executa a validação
+        OsService.ResultadoCadastroOs resultado = osService.adicionarOs(salvarOsDTO);
+
+        Map<String, Object> resposta = new LinkedHashMap<>();
+        resposta.put("os", OsDTO.criar(resultado.os()));
+        resposta.put("avisosEstoque", resultado.avisosEstoque());
+
+        return ResponseEntity
+                .created(URI.create("/os/" + resultado.os().getId()))
+                .body(resposta);
     }
 
     @GetMapping("/listar") //Responsavel pela listagem da OS

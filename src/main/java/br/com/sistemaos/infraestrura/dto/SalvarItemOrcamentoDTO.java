@@ -10,7 +10,7 @@ import lombok.Getter;
 public class SalvarItemOrcamentoDTO {   // também ajustei o nome, ver ponto 5
     @NotNull(message = "Quantidade não pode ser nula")
     @Min(value = 1, message = "Quantidade deve ser maior que zero")
-    private final int quantidade;
+    private final Integer quantidade;
 
     @NotNull(message = "Valor não pode ser nulo")
     @Min(value = 0)

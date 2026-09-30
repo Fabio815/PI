@@ -115,4 +115,9 @@ public class PecaService {
         return pecaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
     }
+
+    public Peca carregarPecaParaBaixa(Long id) {
+        return pecaRepository.buscarPorIdParaBaixa(id)
+                .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
+    }
 }

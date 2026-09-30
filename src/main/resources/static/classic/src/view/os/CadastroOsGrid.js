@@ -211,7 +211,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         text: 'Preço',
         dataIndex: 'valorTotal',
         align: 'right',
-        renderer: function(value) {
+        renderer: function(value, metaData) {
+            metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
             if (Ext.isNumber(value)) {
                 return new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
