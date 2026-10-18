@@ -12,6 +12,47 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             var grid = this.lookupReference('gridPecas');
             grid.getStore().on('datachanged', this.atualizarTotalOrcamento, this);
         },
+        formatarMoeda: function (valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(valor || 0);
+        },
+        converterMoedaParaNumero: function (valor) {
+            if (Ext.isNumber(valor)) {
+                return valor;
+            }
+
+            var digitos = String(valor || '').replace(/\D/g, '');
+            return digitos ? parseInt(digitos, 10) / 100 : 0;
+        },
+        formatarMaoDeObra: function (campo, novoValor, valorAnterior) {
+            if (campo.formatandoMoeda) {
+                return;
+            }
+
+            if (String(novoValor || '').indexOf('-') !== -1) {
+                campo.formatandoMoeda = true;
+                campo.setValue(valorAnterior || 'R$ 0,00');
+                campo.formatandoMoeda = false;
+                campo.markInvalid('Valores negativos não são permitidos.');
+                return;
+            }
+
+            var valorNumerico = this.converterMoedaParaNumero(novoValor);
+            var valorFormatado = this.formatarMoeda(valorNumerico);
+
+            if (novoValor !== valorFormatado) {
+                campo.formatandoMoeda = true;
+                campo.setValue(valorFormatado);
+                campo.formatandoMoeda = false;
+            }
+
+            campo.clearInvalid();
+            this.atualizarTotalOrcamento();
+        },
         adicionarCliente: function(){
             Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
                 floating: true,
@@ -26,14 +67,14 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             grid = view.lookupReference('gridPecas');
 
             var records = combo.getValueRecords();
-            var quantidade = qtdField.getValue();
+            var quantidade = Number(qtdField.getValue());
 
             if (Ext.isEmpty(records)) {
                 Ext.Msg.alert('Atenção', 'Selecione a peça.');
                 return;
             }
-            if (Ext.isEmpty(quantidade)) {
-                Ext.Msg.alert("Atenção", "Selecione a quantidade");
+            if (!Number.isInteger(quantidade) || quantidade < 1) {
+                Ext.Msg.alert('Atenção', 'Informe uma quantidade inteira maior que zero.');
                 return;
             }
 
@@ -66,7 +107,8 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 totalPecas += rec.get('valorTotal');
             });
 
-            orcamentoTotal.setValue(totalPecas + maoDeObra.getValue() || 0);
+            var valorMaoDeObra = me.converterMoedaParaNumero(maoDeObra.getValue());
+            orcamentoTotal.setValue(me.formatarMoeda(totalPecas + valorMaoDeObra));
         },
         cadastrarOs: function () {
             var me = this, vw = me.getView(),
@@ -74,6 +116,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 comboCliente = vw.lookupReference('comboCliente'),
                 grid = vw.lookupReference('gridPecas'),
                 itens = [];
+
+            if (!vw.getForm().isValid()) {
+                Ext.Msg.alert('Atenção', 'Corrija os campos inválidos antes de cadastrar a OS.');
+                return;
+            }
 
             grid.getStore().each(function(rec) {
                 itens.push({
@@ -97,7 +144,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 cor: values.cor,
                 modelo: values.modelo,
                 orcamento: {
-                    valorServico: values.maoDeObra,
+                    valorServico: me.converterMoedaParaNumero(values.maoDeObra),
                     observacoes: values.observacoes,
                     itens: itens
                 }
@@ -112,6 +159,15 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     if (r) {
                         vw.fireEvent('ossalva');
                         vw.close();
+
+                        if (r.avisosEstoque && r.avisosEstoque.length > 0) {
+                            Avisos.mensagemAviso(
+                                'OS cadastrada com sucesso.<br><br>' +
+                                Ext.Array.map(r.avisosEstoque, function (aviso) {
+                                    return Ext.String.htmlEncode(aviso);
+                                }).join('<br>')
+                            );
+                        }
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
@@ -228,13 +284,17 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             fieldLabel: 'Cor',
             flex: 2
         }, {
-            xtype: 'numberfield',
+            xtype: 'textfield',
             name: 'maoDeObra',
             reference: 'maoDeObra',
-            fieldLabel: 'Mão de obra',
-            decimalSeparator: ',',
-            decimalPrecision: 2,
-            submitLocaleSeparator: false,
+            fieldLabel: 'Mão de obra (R$)',
+            value: 'R$ 0,00',
+            allowBlank: false,
+            maskRe: /[0-9]/,
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+            listeners: {
+                change: 'formatarMaoDeObra'
+            },
             margin: '0 0 0 10'
         }]
     }, {
@@ -327,9 +387,13 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 }, {
                     xtype: 'numberfield',
                     reference: 'qtdPeca',
+                    fieldLabel: 'Quantidade',
                     flex: 1,
                     margin: '0 10 0 0',
                     minValue: 1,
+                    allowDecimals: false,
+                    allowExponential: false,
+                    allowBlank: false,
                     value: 1
                 }, {
                     xtype: 'button',
@@ -376,7 +440,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 },{
                     text: 'Preco Unitário',
                     dataIndex: 'preco',
-                    renderer: function (value) {
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
                         return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
                     },
                     flex: 2
@@ -388,7 +454,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     text: 'Total',
                     dataIndex: 'valorTotal',
                     flex: 2,
-                    renderer: function (value) {
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
                         return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
                     },
                 }, {
@@ -411,13 +479,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
         xtype: 'container',
         layout: 'hbox',
         items: [{
-            xtype: 'numberfield',
+            xtype: 'textfield',
             name: 'orcamento',
             reference: 'orcamentoTotal',
-            fieldLabel: 'Orçamento',
-            decimalSeparator: ',',
-            decimalPrecision: 2,
-            submitLocaleSeparator: false,
+            fieldLabel: 'Orçamento (R$)',
+            value: 'R$ 0,00',
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             width: 150,
             readOnly: true
         }]

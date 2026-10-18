@@ -2,9 +2,11 @@ package br.com.sistemaos.domain.repository;
 
 import br.com.sistemaos.domain.entity.Peca;
 import br.com.sistemaos.domain.model.Status;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,6 +15,10 @@ import java.util.Optional;
 
 public interface PecaRepository extends JpaRepository<Peca, Long> {
     Optional<Peca> findByNome(String nome);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Peca p where p.id = :id")
+    Optional<Peca> buscarPorIdParaBaixa(@Param("id") Long id);
 
     @Query("""
     SELECT p

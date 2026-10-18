@@ -291,10 +291,13 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             xtype: 'numberfield',
             name: 'maoDeObra',
             reference: 'maoDeObra',
-            fieldLabel: 'Mão de obra',
+            fieldLabel: 'Mão de obra (R$)',
             decimalSeparator: ',',
             decimalPrecision: 2,
             submitLocaleSeparator: false,
+            minValue: 0,
+            allowExponential: false,
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             margin: '0 0 0 10'
         }, {
             xtype: 'combobox',
@@ -456,7 +459,9 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 }, {
                     text: 'Preco Unitário',
                     dataIndex: 'preco',
-                    renderer: function (value) {
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
                         return Ext.util.Format.currency(value, 'R$ ', 2, false);
                     },
                     flex: 2
@@ -468,7 +473,9 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                     text: 'Total',
                     dataIndex: 'valorTotal',
                     flex: 2,
-                    renderer: function (value) {
+                    align: 'right',
+                    renderer: function (value, metaData) {
+                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
                         return Ext.util.Format.currency(value, 'R$ ', 2, false);
                     },
                 }, {
@@ -494,10 +501,11 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             xtype: 'numberfield',
             name: 'orcamento',
             reference: 'orcamentoTotal',
-            fieldLabel: 'Orçamento',
+            fieldLabel: 'Orçamento (R$)',
             decimalSeparator: ',',
             decimalPrecision: 2,
             submitLocaleSeparator: false,
+            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             width: 150,
             readOnly: true
         }]
