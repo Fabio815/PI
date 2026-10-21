@@ -17,3 +17,32 @@ Ext.application({
     mainView: 'ProjSistemaOs.view.login.LoginPanel'
     //mainView: 'ProjSistemaOs.view.main.Main'
 });
+// Menu "Filtros" que aparece no menu da coluna
+Ext.define('ProjSistemaOs.overrides.FiltersPtBr', {
+    override: 'Ext.grid.filters.Filters',
+    menuFilterText: 'Filtros'
+});
+
+// Filtro de texto
+Ext.define('ProjSistemaOs.overrides.FilterStringPtBr', {
+    override: 'Ext.grid.filters.filter.String',
+    emptyText: 'Digite o texto do filtro...'
+});
+
+// Filtro de data (Antes / Depois / Em)
+Ext.define('ProjSistemaOs.overrides.FilterDatePtBr', {
+    override: 'Ext.grid.filters.filter.Date',
+    fields: {
+        lt: { text: 'Antes de' },
+        gt: { text: 'Depois de' },
+        eq: { text: 'Em' }
+    }
+});
+
+// Itens do menu da coluna (ordenação e colunas)
+Ext.define('ProjSistemaOs.overrides.ColumnPtBr', {
+    override: 'Ext.grid.column.Column',
+    sortAscText: 'Ordenar crescente',
+    sortDescText: 'Ordenar decrescente',
+    columnsText: 'Colunas'
+});

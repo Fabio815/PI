@@ -2,7 +2,6 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
     extend: 'Ext.grid.Panel',
     xtype: 'grid-template-historico',
 
-    // Passe o id da OS ao criar o componente: Ext.create({ xtype: 'grid-template-historico', osId: 5 }).show();
     config: {
         osId: null
     },
@@ -48,6 +47,15 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
                 },
                 this
             )
+            a.headerCt.on('menucreate', function (ct, menu) {
+                menu.on('beforeshow', function () {
+                    var coluna = ct.getMenu().activeHeader,
+                        ordenavel = coluna && coluna.sortable;
+
+                    menu.down('#ascItem').setHidden(!ordenavel);
+                    menu.down('#descItem').setHidden(!ordenavel);
+                });
+            });
         },
         limparPesquisa: function (a, b, e) {
             if (a = a.up('grid')) a.filters.clearFilters(),
@@ -57,11 +65,6 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
             this.getView().destroy()
         }
     },
-
-    // Monta a URL com o osId recebido e só então carrega a store.
-    // Precisa ser feito aqui porque o osId só existe depois que o
-    // componente é criado (Ext.create({..., osId: X})), então não dá
-    // pra deixar a URL fixa lá no viewModel declarativo.
     initComponent: function () {
         this.callParent(arguments);
 
@@ -76,9 +79,6 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
         store.load();
     },
 
-    // Sem isso a grid usa uma store própria vazia por padrão -
-    // a store do viewModel era carregada (por isso não dava erro
-    // e a requisição aparecia com dados), mas a grid nunca "via" ela.
     bind: {
         store: '{historicos}'
     },
@@ -104,21 +104,27 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
                     type: 'string'
                 }, {
                     name: 'usuario'
-                }
-                ],
+                }, {
+                    name: 'usuarioNome',
+                    type: 'string',
+                    persist: false,
+                    depends: ['usuario'],
+                    calculate: function (data) {
+                        return data.usuario ? data.usuario.nome : '';
+                    }
+                }],
                 proxy: {
                     type: 'ajax',
-                    // URL provisória - é sobrescrita em initComponent com o osId real
                     url: window.location.origin + '/os/historico',
                     method: 'GET',
                     reader: {
                         type: 'json'
                     }
                 },
-                pageSize: 30,
-                remoteFilter: true,
-                remoteSort: true,
-                autoLoad: false, // o load agora é manual, disparado em initComponent
+                pageSize: 0,
+                remoteFilter: false,
+                remoteSort: false,
+                autoLoad: false,
                 autoDestroy: true,
                 sorters: [
                     {
@@ -140,13 +146,13 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
     ui: 'light',
     floating: true,
     modal: true,
-    defaultALign: 'c-c',
+    defaultAlign: 'c-c',
     border: false,
     columnLines: false,
     scrollable: 'y',
     enableColumnHide: false,
     enableColumnMove: false,
-    enableCulumnResize: false,
+    enableColumnResize: false,
     multiColumnSort: false,
     disableSelection: true,
     reserveScrollbar: true,
@@ -189,8 +195,6 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
         items: [{
             dataIndex: 'usuario',
             text: 'Usuário',
-            // "usuario" é um objeto (UsuarioDTO: id, nome, email, chave, status).
-            // Precisa de tpl porque a coluna herda xtype: 'templatecolumn' do defaults.
             tpl: [
                 '<tpl for="usuario">',
                 '{nome:htmlEncode}',
@@ -198,7 +202,10 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
             ],
             flex: 2,
             requiresMenu: true,
-            filter: 'string'
+            filter: {
+                type: 'string',
+                dataIndex: 'usuarioNome'
+            }
         }, {
             xtype: 'gridcolumn',
             dataIndex: 'dataAlteracao',
@@ -234,7 +241,7 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
             ],
             flex: 4,
             requiresMenu: true,
-            filter: 'string'
+            //filter: 'string'
         }, {
             dataIndex: 'para',
             text: 'Para',
@@ -243,7 +250,7 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
             ],
             flex: 4,
             requiresMenu: true,
-            filter: 'string'
+            //filter: 'string'
         }
         ]
     },
@@ -256,18 +263,16 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
         },
         items: [
             {
-                xtype: 'pagingtoolbar',
-                displayInfo: true,
-                displayMsg: '{0} - {1} de {2}',
-                emptyMsg: 'Nenhum',
-                style: {
-                    backgroundColor: '#f6f6f8'
-                },
+                xtype: 'tbtext',
+                bind: {
+                    text: '{historicos.count} registro(s)'
+                }
             },
             '-',
             {
                 xtype: 'button',
                 iconCls: 'fas fa-ban',
+                tooltip: 'Limpar filtros',
                 listeners: {
                     click: 'limparPesquisa'
                 }
