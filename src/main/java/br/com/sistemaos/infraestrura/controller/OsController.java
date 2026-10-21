@@ -74,7 +74,7 @@ public class OsController {
         return ResponseEntity.ok(OsDTO.criar(os));
     }
 
-    @GetMapping("/{id}/historico") //Lista o histórico de alterações de uma OS
+    @GetMapping("/{id}/historico")
     public ResponseEntity<List<HistoricoOsDTO>> listarHistorico(@PathVariable("id") Long id) {
         List<HistoricoOsDTO> historico = osService.listarHistorico(id);
         return ResponseEntity.ok(historico);

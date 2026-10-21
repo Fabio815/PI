@@ -115,7 +115,7 @@ public class OsService {
     }
 
     public List<HistoricoOsDTO> listarHistorico(Long id) {
-        carregarOs(id); // garante que a OS existe (lança OsNaoEncontradaException se não)
+        carregarOs(id);
         return historicoService.listarPorOs(id);
     }
 
