@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,10 +27,9 @@ public class Orcamento {
     @Column(name = "observacoes", length = 100)
     private String observacoes;
 
-    //relacionamento
     @OneToOne(mappedBy = "orcamento")
     private Os os;
 
-    @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL)
-    private List<ItemOrcamento> itemOrcamento;
+    @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemOrcamento> itemOrcamento = new ArrayList<>();
 }

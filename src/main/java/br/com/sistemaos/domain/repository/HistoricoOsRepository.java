@@ -8,5 +8,8 @@ import java.util.List;
 
 @Repository
 public interface HistoricoOsRepository extends JpaRepository<HistoricoOs, Long> {
+    List<HistoricoOs> findByOsIdOrderByDataAlteracaoDescIdDesc(Long osId);
+
+    /** Compatível com chamadas externas anteriores. */
     List<HistoricoOs> findByOsIdOrderByDataAlteracaoDesc(Long osId);
 }

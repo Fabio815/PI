@@ -6,7 +6,13 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         'ProjSistemaOs.view.os.CadastroOsWindow',
         'ProjSistemaOs.view.os.AtualizarOsWindow',
         'ProjSistemaOs.view.os.InformacoesOsWindow',
+        'ProjSistemaOs.view.os.HistoricoOsWindow',
+        'ProjSistemaOs.view.os.ComentariosOsWindow',
+        'ProjSistemaOs.view.os.AtribuirOsWindow',
+        'ProjSistemaOs.view.os.AlterarSituacaoOsWindow',
+        'ProjSistemaOs.view.os.RelatorioOsWindow',
         'ProjSistemaOs.util.Sessao',
+        'ProjSistemaOs.util.OsOperacional',
         'ProjSistemaOs.store.Os',
         'Ext.grid.column.Action',
         'Ext.grid.column.Check',
@@ -18,6 +24,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
     plugins: ['gridfilters'],
 
     controller: {
+        init: function () {
+            var view = this.getView(), admin = Sessao.isAdm();
+            view.lookupReference('btnAtribuir').setHidden(!admin);
+            view.lookupReference('btnReabrir').setHidden(!admin);
+        },
         recarregarGrid: function () {
             var me = this, vw = me.getView();
             if (me.getView() && !me.getView().destroyed) {
@@ -75,6 +86,10 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 Ext.Msg.alert('Atenção', 'Você só pode editar as ordens de serviço que você criou.');
                 return;
             }
+            if (OsOperacional.estaEncerrada(record.data)) {
+                Ext.Msg.alert('Atenção', 'OS encerrada: reabra-a antes de editar seus campos.');
+                return;
+            }
 
             Ext.create('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 floating: true,
@@ -90,12 +105,16 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         },
         onSelectionChange: function (selModel, selected) {
             var me = this,
-                btnEditar = me.lookupReference('btnEditar'),
-                record = selected[0];
-
-            btnEditar.setDisabled(!record || !Sessao.podeEditarOs(record.get('usuarioId')));
+                record = selected[0], encerrada = record && OsOperacional.estaEncerrada(record.data),
+                podeEditar = !!record && !encerrada && Sessao.podeEditarOs(record.get('usuarioId'));
+            me.lookupReference('btnEditar').setDisabled(!podeEditar);
+            me.lookupReference('btnSituacao').setDisabled(!podeEditar);
+            me.lookupReference('btnAtribuir').setDisabled(!record || !Sessao.isAdm());
+            me.lookupReference('btnReabrir').setDisabled(!record || !encerrada || !Sessao.isAdm());
+            me.lookupReference('btnComentarios').setDisabled(!record);
+            me.lookupReference('btnHistorico').setDisabled(!record);
         },
-        abrirHistorico: function (a, b, e) {
+        abrirHistorico: function () {
             var me = this;
             var grid = me.getView();
             var record = grid.getSelection()[0];
@@ -105,11 +124,92 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 return;
             }
 
-            Ext.create('ProjSistemaOs.view.os.HistoricoOsGridTemplate', {
+            Ext.create('ProjSistemaOs.view.os.HistoricoOsWindow', {
                 floating: true,
                 modal: true,
-                osId: record.get('id'),
+                osId: record.get('id')
             }).show();
+        },
+        abrirComentarios: function () {
+            var grid = this.getView(), record = grid.getSelection()[0];
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para ver os comentários.');
+                return;
+            }
+            Ext.create('ProjSistemaOs.view.os.ComentariosOsWindow', {
+                osId: record.get('id'),
+                modal: true,
+                listeners: { comentariosalterados: this.recarregarGrid, scope: this }
+            }).show();
+        },
+        abrirAtribuicao: function () {
+            var me = this, record = me.getView().getSelection()[0];
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para atribuir responsável.');
+                return;
+            }
+            if (!Sessao.isAdm()) {
+                Ext.Msg.alert('Atenção', 'Somente administradores podem atribuir ou reatribuir uma OS.');
+                return;
+            }
+            Ext.create('ProjSistemaOs.view.os.AtribuirOsWindow', {
+                osId: record.get('id'),
+                responsavelIdAtual: record.get('responsavelId'),
+                responsavelNomeAtual: record.get('responsavelNome'),
+                listeners: { ossalva: this.recarregarGrid, scope: this }
+            }).show();
+        },
+        abrirSituacao: function () {
+            var me = this, record = me.getView().getSelection()[0];
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para alterar a situação.');
+                return;
+            }
+            if (!Sessao.podeEditarOs(record.get('usuarioId'))) {
+                Ext.Msg.alert('Atenção', 'Você só pode alterar a situação das ordens de serviço que criou.');
+                return;
+            }
+            if (OsOperacional.estaEncerrada(record.data)) {
+                Ext.Msg.alert('Atenção', 'OS encerrada: reabra-a antes de alterar a situação.');
+                return;
+            }
+            Ext.create('ProjSistemaOs.view.os.AlterarSituacaoOsWindow', {
+                osId: record.get('id'),
+                situacaoAtual: record.get('situacao'),
+                listeners: { ossalva: this.recarregarGrid, scope: this }
+            }).show();
+        },
+        reabrirOs: function () {
+            var me = this, record = me.getView().getSelection()[0];
+            if (!record) {
+                Ext.Msg.alert('Atenção', 'Selecione uma OS para reabrir.');
+                return;
+            }
+            if (!Sessao.isAdm()) {
+                Ext.Msg.alert('Atenção', 'Somente administradores podem reabrir OS.');
+                return;
+            }
+            if (!OsOperacional.estaEncerrada(record.data)) {
+                Ext.Msg.alert('Atenção', 'Somente uma OS concluída ou cancelada pode ser reaberta.');
+                return;
+            }
+            Ext.Msg.confirm('Reabrir OS', 'Reabrir a OS #' + Ext.String.htmlEncode(String(record.get('id'))) + ' para Pendente?', function (choice) {
+                if (choice !== 'yes') { return; }
+                Ext.Ajax.request({
+                    url: OsOperacional.apiUrl('/os/' + encodeURIComponent(record.get('id')) + '/reabrir'),
+                    method: 'POST',
+                    callback: function (options, success, response) {
+                        if (success) {
+                            me.recarregarGrid();
+                        } else {
+                            OsOperacional.exibirErro(response, 'Não foi possível reabrir a OS.');
+                        }
+                    }
+                });
+            });
+        },
+        abrirRelatorio: function () {
+            Ext.create('ProjSistemaOs.view.os.RelatorioOsWindow', { floating: true, modal: true }).show();
         },
         listen: {
             component: {
@@ -117,6 +217,11 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                     trocarStatus: function (a, b, e, f, h, record, k) {
                         let me = this, vw = me.getView();
 
+                        if (OsOperacional.estaEncerrada(record.data)) {
+                            record.set('_status', record.get('status'));
+                            Ext.Msg.alert('Atenção', 'OS encerrada: reabra-a antes de alterar o status ativo/inativo.');
+                            return;
+                        }
                         if (!Sessao.podeEditarOs(record.get('usuarioId'))) {
                             record.set('_status', record.get('status'));
                             Ext.Msg.alert('Atenção', 'Você só pode alterar as ordens de serviço que você criou.');
@@ -133,8 +238,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                                         a.getStore().reload();
                                     } else {
                                         record.set('_status', record.get('status'));
-                                        let r = Ext.decode(response.responseText, true);
-                                        Avisos.mensagemAviso(r && r.mensagemErro ? r.mensagemErro : "Contate o administrador!");
+                                        OsOperacional.exibirErro(response, 'Não foi possível alterar o status da OS.');
                                     }
                                 }
                             }
@@ -184,7 +288,44 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         xtype: 'button',
         tooltip: 'Histórico',
         iconCls: 'fa fa-scroll',
+        reference: 'btnHistorico',
+        disabled: true,
         handler: 'abrirHistorico'
+    }, '-', {
+        xtype: 'button',
+        tooltip: 'Comentários',
+        iconCls: 'fa fa-comment',
+        reference: 'btnComentarios',
+        disabled: true,
+        handler: 'abrirComentarios'
+    }, '-', {
+        xtype: 'button',
+        tooltip: 'Alterar situação',
+        iconCls: 'fa fa-exchange-alt',
+        reference: 'btnSituacao',
+        disabled: true,
+        handler: 'abrirSituacao'
+    }, '-', {
+        xtype: 'button',
+        tooltip: 'Atribuir/reatribuir responsável (ADM)',
+        iconCls: 'fa fa-user-tag',
+        reference: 'btnAtribuir',
+        disabled: true,
+        hidden: true,
+        handler: 'abrirAtribuicao'
+    }, '-', {
+        xtype: 'button',
+        tooltip: 'Reabrir OS (ADM)',
+        iconCls: 'fa fa-undo',
+        reference: 'btnReabrir',
+        disabled: true,
+        hidden: true,
+        handler: 'reabrirOs'
+    }, '-', {
+        xtype: 'button',
+        text: 'Relatório',
+        iconCls: 'fa fa-chart-bar',
+        handler: 'abrirRelatorio'
     }, '->', {
         xtype: "button",
         iconCls: "fas fa-ban",
@@ -225,6 +366,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         filter: 'string',
         flex: 2
     }, {
+        text: 'Responsável',
+        dataIndex: 'responsavelNome',
+        filter: 'string',
+        flex: 2,
+        renderer: function (value) { return Ext.String.htmlEncode(value || ''); }
+    }, {
         text: 'Preço',
         dataIndex: 'valorTotal',
         align: 'right',
@@ -245,14 +392,14 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         flex: 3,
         renderer: function (value, metaData) {
             let cor = '';
-            switch (value) {
-                case 'Concluído':
+            switch (OsOperacional.normalizarSituacao(value)) {
+                case 'CONCLUIDO':
                     cor = 'background-color: #46C248; color: white;';
                     break;
-                case 'Em Andamento':
+                case 'EM_ANDAMENTO':
                     cor = 'background-color: #3D69D1; color: white;';
                     break;
-                case 'Cancelado':
+                case 'CANCELADO':
                     cor = 'background-color: #C74040; color: white;';
                     break;
                 default:
@@ -260,7 +407,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                     break;
             }
             metaData.style = cor;
-            return value;
+            return Ext.String.htmlEncode(value || '');
         }
     }, {
         text: 'Data de finalização',
@@ -279,6 +426,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         editable: false,
         items: [{
             getClass: function (v, meta, record) {
+                if (OsOperacional.estaEncerrada(record.data)) {
+                    return 'x-item-disabled far fa-lock';
+                }
                 if (record.get('status') && record.get('_status')) {
                     switch (record.get('_status')) {
                         case 'ATIVO':
@@ -296,6 +446,9 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
                 }
             },
             getTip: function(v, meta, record) {
+                if (OsOperacional.estaEncerrada(record.data)) {
+                    return 'OS encerrada. Reabra antes de alterar o status ativo/inativo.';
+                }
                 if (record.get('status') && record.get('_status')) {
                     switch (record.get('_status')) {
                         case 'ATIVO':

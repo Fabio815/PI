@@ -21,4 +21,14 @@ public class OsListagemDTO {
     private final Status status;
     private final Long usuarioId;
     private final String usuarioNome;
+    private final Long responsavelId;
+    private final String responsavelNome;
+    private final LocalDate dataFim;
+
+    public OsListagemDTO(Long id, LocalDate dataEmissao, String nomeCliente, String telefone,
+                         Double valorTotal, StatusOs situacao, Status status,
+                         Long usuarioId, String usuarioNome) {
+        this(id, dataEmissao, nomeCliente, telefone, valorTotal, situacao, status,
+                usuarioId, usuarioNome, usuarioId, usuarioNome, null);
+    }
 }

@@ -4,7 +4,8 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
 
     requires: [
         'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
+        'ProjSistemaOs.view.ux.TagFieldHtmlLabel',
+        'ProjSistemaOs.util.OsOperacional'
     ],
 
     osId: null,
@@ -28,12 +29,22 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 method: 'GET',
                 success: function (response) {
                     var os = Ext.JSON.decode(response.responseText, true);
+                    if (!os) {
+                        OsOperacional.exibirErro(response, 'Resposta inválida ao carregar a OS.');
+                        return;
+                    }
+                    if (OsOperacional.estaEncerrada(os)) {
+                        view.encerrada = true;
+                        Ext.Msg.alert('OS encerrada', 'Os campos de uma OS encerrada não podem ser editados. Reabra a OS antes.', function () {
+                            if (view && !view.destroyed) { view.close(); }
+                        });
+                        return;
+                    }
 
                     view.getForm().setValues({
                         modelo: os.modelo,
                         cor: os.cor,
                         maoDeObra: os.orcamento.valorServico,
-                        situacao: os.situacao,
                         observacoes: os.orcamento.observacoes,
                         orcamento: os.orcamento.valorTotal
                     });
@@ -58,8 +69,8 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                     });
                     grid.getStore().loadData(dadosGrid);
                 },
-                failure: function () {
-                    Avisos.mostrarServidorIndisponivel();
+                failure: function (response) {
+                    OsOperacional.exibirErro(response, 'Não foi possível carregar a OS para edição.');
                 }
             });
         },
@@ -130,6 +141,10 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 Avisos.mensagemAviso('OS inválida para atualização.');
                 return;
             }
+            if (vw.encerrada) {
+                Ext.Msg.alert('OS encerrada', 'Os campos de uma OS encerrada não podem ser editados. Reabra a OS antes.');
+                return;
+            }
 
             grid.getStore().each(function(rec) {
                 itens.push({
@@ -155,7 +170,6 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                 clienteId: clienteId,
                 modelo: values.modelo,
                 cor: values.cor,
-                situacao: values.situacao,
                 orcamento: {
                     valorServico: values.maoDeObra,
                     observacoes: values.observacoes,
@@ -175,7 +189,7 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
-                    Avisos.mostrarServidorIndisponivel();
+                    OsOperacional.exibirErro(conn, 'Não foi possível atualizar a OS.');
                 }
             });
         }
@@ -299,25 +313,6 @@ Ext.define('ProjSistemaOs.view.os.AtualizarOsWindow', {
             allowExponential: false,
             fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
             margin: '0 0 0 10'
-        }, {
-            xtype: 'combobox',
-            name: 'situacao',
-            reference: 'situacao',
-            fieldLabel: 'Situação',
-            margin: '0 0 0 10',
-            editable: false,
-            queryMode: 'local',
-            valueField: 'value',
-            displayField: 'text',
-            store: {
-                fields: ['value', 'text'],
-                data: [
-                    { value: 'PENDENTE', text: 'Pendente' },
-                    { value: 'EM_ANDAMENTO', text: 'Em Andamento' },
-                    { value: 'CONCLUIDO', text: 'Concluído' },
-                    { value: 'CANCELADO', text: 'Cancelado' }
-                ]
-            }
         }]
     }, {
         xtype: 'panel',

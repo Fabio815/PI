@@ -13,6 +13,10 @@ Ext.define('ProjSistemaOs.model.Os', {
         { name: 'status', type: 'string' },
         { name: '_status', type: 'string' },
         { name: 'usuarioId', type: 'int' },
-        { name: 'usuarioNome', type: 'string' }
+        { name: 'usuarioNome', type: 'string' },
+        { name: 'responsavelId', type: 'int' },
+        { name: 'responsavelNome', type: 'string' },
+        { name: 'dataFim', type: 'date', dateFormat: 'Y-m-d' },
+        { name: 'encerrada', type: 'boolean' }
     ]
 });

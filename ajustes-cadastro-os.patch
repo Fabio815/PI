@@ -1,0 +1,592 @@
+--- a/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarOrcamentoDTO.java
++++ b/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarOrcamentoDTO.java
+@@ -1,6 +1,10 @@
+ package br.com.sistemaos.infraestrura.dto;
+ 
++import jakarta.validation.Valid;
++import jakarta.validation.constraints.DecimalMin;
++import jakarta.validation.constraints.Digits;
+ import jakarta.validation.constraints.NotEmpty;
++import jakarta.validation.constraints.NotNull;
+ import jakarta.validation.constraints.Size;
+ import lombok.AllArgsConstructor;
+ import lombok.Getter;
+@@ -10,11 +14,15 @@
+ @Getter
+ @AllArgsConstructor
+ public class SalvarOrcamentoDTO {
++    @NotNull(message = "Mão de obra é obrigatória")
++    @DecimalMin(value = "0.00", inclusive = true, message = "Mão de obra não pode ser negativa")
++    @Digits(integer = 10, fraction = 2, message = "Mão de obra deve possuir no máximo duas casas decimais")
+     private Double valorServico;
+ 
+     @Size(max = 100, message = "Observação inválida")
+     private String observacoes;
+ 
++    @Valid
+     @NotEmpty(message = "Orçamento precisa ter ao menos um item")
+     private final List<SalvarItemOrcamentoDTO> itens;
+ }
+--- a/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarItemOrcamentoDTO.java
++++ b/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarItemOrcamentoDTO.java
+@@ -10,7 +10,7 @@
+ public class SalvarItemOrcamentoDTO {   // também ajustei o nome, ver ponto 5
+     @NotNull(message = "Quantidade não pode ser nula")
+     @Min(value = 1, message = "Quantidade deve ser maior que zero")
+-    private final int quantidade;
++    private final Integer quantidade;
+ 
+     @NotNull(message = "Valor não pode ser nulo")
+     @Min(value = 0)
+--- a/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarOsDTO.java
++++ b/src/main/java/br/com/sistemaos/infraestrura/dto/SalvarOsDTO.java
+@@ -1,6 +1,7 @@
+ package br.com.sistemaos.infraestrura.dto;
+ 
+ import br.com.sistemaos.domain.model.StatusOs;
++import jakarta.validation.Valid;
+ import jakarta.validation.constraints.NotNull;
+ import lombok.AllArgsConstructor;
+ import lombok.Getter;
+@@ -19,6 +20,7 @@
+ 
+     private final StatusOs situacao;
+ 
++    @Valid
+     @NotNull(message = "Orçamento é obrigatório")
+     private final SalvarOrcamentoDTO orcamento;
+ }
+--- a/src/main/java/br/com/sistemaos/domain/repository/PecaRepository.java
++++ b/src/main/java/br/com/sistemaos/domain/repository/PecaRepository.java
+@@ -2,9 +2,11 @@
+ 
+ import br.com.sistemaos.domain.entity.Peca;
+ import br.com.sistemaos.domain.model.Status;
++import jakarta.persistence.LockModeType;
+ import org.springframework.data.domain.Page;
+ import org.springframework.data.domain.Pageable;
+ import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.data.jpa.repository.Lock;
+ import org.springframework.data.jpa.repository.Query;
+ import org.springframework.data.repository.query.Param;
+ 
+@@ -13,6 +15,10 @@
+ 
+ public interface PecaRepository extends JpaRepository<Peca, Long> {
+     Optional<Peca> findByNome(String nome);
++
++    @Lock(LockModeType.PESSIMISTIC_WRITE)
++    @Query("select p from Peca p where p.id = :id")
++    Optional<Peca> buscarPorIdParaBaixa(@Param("id") Long id);
+ 
+     @Query("""
+     SELECT p
+--- a/src/main/java/br/com/sistemaos/domain/applicationservice/PecaService.java
++++ b/src/main/java/br/com/sistemaos/domain/applicationservice/PecaService.java
+@@ -115,4 +115,9 @@
+         return pecaRepository.findById(id)
+                 .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
+     }
++
++    public Peca carregarPecaParaBaixa(Long id) {
++        return pecaRepository.buscarPorIdParaBaixa(id)
++                .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
++    }
+ }
+--- a/src/main/java/br/com/sistemaos/domain/applicationservice/OsService.java
++++ b/src/main/java/br/com/sistemaos/domain/applicationservice/OsService.java
+@@ -16,7 +16,10 @@
+ import org.springframework.data.domain.Pageable;
+ import org.springframework.stereotype.Service;
+ 
++import java.math.BigDecimal;
++import java.math.RoundingMode;
+ import java.time.LocalDate;
++import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -32,10 +35,11 @@
+     private final UsuarioLogadoService usuarioLogadoService;
+ 
+     @Transactional
+-    public Os adicionarOs(SalvarOsDTO salvarOsDTO) {
++    public ResultadoCadastroOs adicionarOs(SalvarOsDTO salvarOsDTO) {
+         Cliente cliente = clienteService.carregarCliente(salvarOsDTO.getClienteId());
+         Usuario usuario = usuarioLogadoService.obterUsuarioLogado();
+-        Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento());
++        List<String> avisosEstoque = new ArrayList<>();
++        Orcamento orcamento = montarOrcamento(salvarOsDTO.getOrcamento(), true, avisosEstoque);
+ 
+         Os os = Os.builder()
+                 .dataEmissao(LocalDate.now())
+@@ -49,7 +53,7 @@
+                 .build();
+         osRepository.save(os);
+ 
+-        return os;
++        return new ResultadoCadastroOs(os, List.copyOf(avisosEstoque));
+     }
+ 
+     public Map<String, Object> listarOs(Long id, String nome, List<Status> status, Pageable pageable) {
+@@ -113,17 +117,26 @@
+     }
+ 
+     private Orcamento montarOrcamento(SalvarOrcamentoDTO dto) {
++        return montarOrcamento(dto, false, new ArrayList<>());
++    }
++
++    private Orcamento montarOrcamento(
++            SalvarOrcamentoDTO dto,
++            boolean baixarEstoque,
++            List<String> avisosEstoque) {
+         List<ItemOrcamento> itens = dto.getItens().stream()
+-                .map(this::montarItem)
++                .map(itemDto -> montarItem(itemDto, baixarEstoque, avisosEstoque))
+                 .toList();
+ 
+-        double valorPecas = itens.stream().mapToDouble(ItemOrcamento::getValorTotal).sum();
+-        double valorServico = Optional.ofNullable(dto.getValorServico()).orElse(0.0);
++        double valorPecas = arredondarMoeda(
++                itens.stream().mapToDouble(ItemOrcamento::getValorTotal).sum());
++        double valorServico = arredondarMoeda(
++                Optional.ofNullable(dto.getValorServico()).orElse(0.0));
+ 
+         Orcamento orcamento = new Orcamento();
+         orcamento.setValorServico(valorServico);
+         orcamento.setObservacoes(dto.getObservacoes());
+-        orcamento.setValorTotal(valorPecas + valorServico);
++        orcamento.setValorTotal(arredondarMoeda(valorPecas + valorServico));
+         orcamento.setItemOrcamento(itens);
+ 
+         itens.forEach(item -> item.setOrcamento(orcamento));
+@@ -131,16 +144,49 @@
+         return orcamento;
+     }
+ 
+-    private ItemOrcamento montarItem(SalvarItemOrcamentoDTO dto) {
+-        Peca peca = pecaService.carregarPeca(dto.getPecaId());
++    private ItemOrcamento montarItem(
++            SalvarItemOrcamentoDTO dto,
++            boolean baixarEstoque,
++            List<String> avisosEstoque) {
++        Peca peca = baixarEstoque
++                ? pecaService.carregarPecaParaBaixa(dto.getPecaId())
++                : pecaService.carregarPeca(dto.getPecaId());
++
++        int quantidadeSolicitada = dto.getQuantidade();
++
++        if (baixarEstoque) {
++            int quantidadeDisponivel = peca.getQuantidade();
++
++            if (quantidadeDisponivel < quantidadeSolicitada) {
++                int quantidadeFaltante = quantidadeSolicitada - quantidadeDisponivel;
++                avisosEstoque.add(String.format(
++                        "Peça '%s': solicitada %d, disponível %d, faltam %d unidade(s).",
++                        peca.getNome(),
++                        quantidadeSolicitada,
++                        quantidadeDisponivel,
++                        quantidadeFaltante));
++            }
++
++            // A OS não é bloqueada por insuficiência. A baixa integral registra o déficit
++            // como estoque negativo, preservando exatamente a quantidade usada na OS.
++            peca.setQuantidade(quantidadeDisponivel - quantidadeSolicitada);
++        }
++
++        double valorUnitario = arredondarMoeda(peca.getPreco());
+ 
+         ItemOrcamento item = new ItemOrcamento();
+-        item.setQuantidade(dto.getQuantidade());
+-        item.setValorUnitario(peca.getPreco());
+-        item.setValorTotal(peca.getPreco() * dto.getQuantidade());
++        item.setQuantidade(quantidadeSolicitada);
++        item.setValorUnitario(valorUnitario);
++        item.setValorTotal(arredondarMoeda(valorUnitario * quantidadeSolicitada));
+         item.setItem(peca);
+ 
+         return item;
++    }
++
++    private double arredondarMoeda(Double valor) {
++        return BigDecimal.valueOf(valor)
++                .setScale(2, RoundingMode.HALF_UP)
++                .doubleValue();
+     }
+ 
+     private Status trocarStatus(Os os) {
+@@ -150,4 +196,7 @@
+             return  Status.ATIVO;
+         }
+     }
++
++    public record ResultadoCadastroOs(Os os, List<String> avisosEstoque) {
++    }
+ }
+--- a/src/main/java/br/com/sistemaos/infraestrura/controller/OsController.java
++++ b/src/main/java/br/com/sistemaos/infraestrura/controller/OsController.java
+@@ -16,6 +16,7 @@
+ import org.springframework.web.bind.annotation.*;
+ 
+ import java.net.URI;
++import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+ 
+@@ -28,9 +29,16 @@
+     private final OsService osService;
+ 
+     @PostMapping("/cadastrar") //Cadastrar a OS
+-    public ResponseEntity<OsDTO> cadastrar(@RequestBody @Valid SalvarOsDTO salvarOsDTO) { //Recebe os dados e executa a validação
+-        Os os = osService.adicionarOs(salvarOsDTO); //Cria e salva
+-        return ResponseEntity.created(URI.create("/os/" + os.getId())).body(OsDTO.criar(os));
++    public ResponseEntity<Map<String, Object>> cadastrar(@RequestBody @Valid SalvarOsDTO salvarOsDTO) { //Recebe os dados e executa a validação
++        OsService.ResultadoCadastroOs resultado = osService.adicionarOs(salvarOsDTO);
++
++        Map<String, Object> resposta = new LinkedHashMap<>();
++        resposta.put("os", OsDTO.criar(resultado.os()));
++        resposta.put("avisosEstoque", resultado.avisosEstoque());
++
++        return ResponseEntity
++                .created(URI.create("/os/" + resultado.os().getId()))
++                .body(resposta);
+     }
+ 
+     @GetMapping("/listar") //Responsavel pela listagem da OS
+--- a/src/main/resources/static/classic/src/view/os/CadastroOsWindow.js
++++ b/src/main/resources/static/classic/src/view/os/CadastroOsWindow.js
+@@ -11,6 +11,47 @@
+         init: function () {
+             var grid = this.lookupReference('gridPecas');
+             grid.getStore().on('datachanged', this.atualizarTotalOrcamento, this);
++        },
++        formatarMoeda: function (valor) {
++            return new Intl.NumberFormat('pt-BR', {
++                style: 'currency',
++                currency: 'BRL',
++                minimumFractionDigits: 2,
++                maximumFractionDigits: 2
++            }).format(valor || 0);
++        },
++        converterMoedaParaNumero: function (valor) {
++            if (Ext.isNumber(valor)) {
++                return valor;
++            }
++
++            var digitos = String(valor || '').replace(/\D/g, '');
++            return digitos ? parseInt(digitos, 10) / 100 : 0;
++        },
++        formatarMaoDeObra: function (campo, novoValor, valorAnterior) {
++            if (campo.formatandoMoeda) {
++                return;
++            }
++
++            if (String(novoValor || '').indexOf('-') !== -1) {
++                campo.formatandoMoeda = true;
++                campo.setValue(valorAnterior || 'R$ 0,00');
++                campo.formatandoMoeda = false;
++                campo.markInvalid('Valores negativos não são permitidos.');
++                return;
++            }
++
++            var valorNumerico = this.converterMoedaParaNumero(novoValor);
++            var valorFormatado = this.formatarMoeda(valorNumerico);
++
++            if (novoValor !== valorFormatado) {
++                campo.formatandoMoeda = true;
++                campo.setValue(valorFormatado);
++                campo.formatandoMoeda = false;
++            }
++
++            campo.clearInvalid();
++            this.atualizarTotalOrcamento();
+         },
+         adicionarCliente: function(){
+             Ext.create('ProjSistemaOs.view.cliente.ClienteWindow', {
+@@ -26,14 +67,14 @@
+             grid = view.lookupReference('gridPecas');
+ 
+             var records = combo.getValueRecords();
+-            var quantidade = qtdField.getValue();
++            var quantidade = Number(qtdField.getValue());
+ 
+             if (Ext.isEmpty(records)) {
+                 Ext.Msg.alert('Atenção', 'Selecione a peça.');
+                 return;
+             }
+-            if (Ext.isEmpty(quantidade)) {
+-                Ext.Msg.alert("Atenção", "Selecione a quantidade");
++            if (!Number.isInteger(quantidade) || quantidade < 1) {
++                Ext.Msg.alert('Atenção', 'Informe uma quantidade inteira maior que zero.');
+                 return;
+             }
+ 
+@@ -66,7 +107,8 @@
+                 totalPecas += rec.get('valorTotal');
+             });
+ 
+-            orcamentoTotal.setValue(totalPecas + maoDeObra.getValue() || 0);
++            var valorMaoDeObra = me.converterMoedaParaNumero(maoDeObra.getValue());
++            orcamentoTotal.setValue(me.formatarMoeda(totalPecas + valorMaoDeObra));
+         },
+         cadastrarOs: function () {
+             var me = this, vw = me.getView(),
+@@ -74,6 +116,11 @@
+                 comboCliente = vw.lookupReference('comboCliente'),
+                 grid = vw.lookupReference('gridPecas'),
+                 itens = [];
++
++            if (!vw.getForm().isValid()) {
++                Ext.Msg.alert('Atenção', 'Corrija os campos inválidos antes de cadastrar a OS.');
++                return;
++            }
+ 
+             grid.getStore().each(function(rec) {
+                 itens.push({
+@@ -97,7 +144,7 @@
+                 cor: values.cor,
+                 modelo: values.modelo,
+                 orcamento: {
+-                    valorServico: values.maoDeObra,
++                    valorServico: me.converterMoedaParaNumero(values.maoDeObra),
+                     observacoes: values.observacoes,
+                     itens: itens
+                 }
+@@ -112,6 +159,15 @@
+                     if (r) {
+                         vw.fireEvent('ossalva');
+                         vw.close();
++
++                        if (r.avisosEstoque && r.avisosEstoque.length > 0) {
++                            Avisos.mensagemAviso(
++                                'OS cadastrada com sucesso.<br><br>' +
++                                Ext.Array.map(r.avisosEstoque, function (aviso) {
++                                    return Ext.String.htmlEncode(aviso);
++                                }).join('<br>')
++                            );
++                        }
+                     }
+                 },
+                 failure: function (conn, response, options, eOpts) {
+@@ -228,13 +284,17 @@
+             fieldLabel: 'Cor',
+             flex: 2
+         }, {
+-            xtype: 'numberfield',
++            xtype: 'textfield',
+             name: 'maoDeObra',
+             reference: 'maoDeObra',
+-            fieldLabel: 'Mão de obra',
+-            decimalSeparator: ',',
+-            decimalPrecision: 2,
+-            submitLocaleSeparator: false,
++            fieldLabel: 'Mão de obra (R$)',
++            value: 'R$ 0,00',
++            allowBlank: false,
++            maskRe: /[0-9]/,
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
++            listeners: {
++                change: 'formatarMaoDeObra'
++            },
+             margin: '0 0 0 10'
+         }]
+     }, {
+@@ -327,9 +387,13 @@
+                 }, {
+                     xtype: 'numberfield',
+                     reference: 'qtdPeca',
++                    fieldLabel: 'Quantidade',
+                     flex: 1,
+                     margin: '0 10 0 0',
+                     minValue: 1,
++                    allowDecimals: false,
++                    allowExponential: false,
++                    allowBlank: false,
+                     value: 1
+                 }, {
+                     xtype: 'button',
+@@ -376,7 +440,9 @@
+                 },{
+                     text: 'Preco Unitário',
+                     dataIndex: 'preco',
+-                    renderer: function (value) {
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                         return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
+                     },
+                     flex: 2
+@@ -388,7 +454,9 @@
+                     text: 'Total',
+                     dataIndex: 'valorTotal',
+                     flex: 2,
+-                    renderer: function (value) {
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                         return Ext.isNumber(value) ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : value;
+                     },
+                 }, {
+@@ -411,13 +479,12 @@
+         xtype: 'container',
+         layout: 'hbox',
+         items: [{
+-            xtype: 'numberfield',
++            xtype: 'textfield',
+             name: 'orcamento',
+             reference: 'orcamentoTotal',
+-            fieldLabel: 'Orçamento',
+-            decimalSeparator: ',',
+-            decimalPrecision: 2,
+-            submitLocaleSeparator: false,
++            fieldLabel: 'Orçamento (R$)',
++            value: 'R$ 0,00',
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+             width: 150,
+             readOnly: true
+         }]
+--- a/src/main/resources/static/classic/src/view/os/CadastroOsGrid.js
++++ b/src/main/resources/static/classic/src/view/os/CadastroOsGrid.js
+@@ -211,7 +211,8 @@
+         text: 'Preço',
+         dataIndex: 'valorTotal',
+         align: 'right',
+-        renderer: function(value) {
++        renderer: function(value, metaData) {
++            metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+             if (Ext.isNumber(value)) {
+                 return new Intl.NumberFormat('pt-BR', {
+                     style: 'currency',
+--- a/src/main/resources/static/classic/src/view/os/AtualizarOsWindow.js
++++ b/src/main/resources/static/classic/src/view/os/AtualizarOsWindow.js
+@@ -291,10 +291,13 @@
+             xtype: 'numberfield',
+             name: 'maoDeObra',
+             reference: 'maoDeObra',
+-            fieldLabel: 'Mão de obra',
++            fieldLabel: 'Mão de obra (R$)',
+             decimalSeparator: ',',
+             decimalPrecision: 2,
+             submitLocaleSeparator: false,
++            minValue: 0,
++            allowExponential: false,
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+             margin: '0 0 0 10'
+         }, {
+             xtype: 'combobox',
+@@ -456,7 +459,9 @@
+                 }, {
+                     text: 'Preco Unitário',
+                     dataIndex: 'preco',
+-                    renderer: function (value) {
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                         return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                     },
+                     flex: 2
+@@ -468,7 +473,9 @@
+                     text: 'Total',
+                     dataIndex: 'valorTotal',
+                     flex: 2,
+-                    renderer: function (value) {
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
+                         return Ext.util.Format.currency(value, 'R$ ', 2, false);
+                     },
+                 }, {
+@@ -494,10 +501,11 @@
+             xtype: 'numberfield',
+             name: 'orcamento',
+             reference: 'orcamentoTotal',
+-            fieldLabel: 'Orçamento',
++            fieldLabel: 'Orçamento (R$)',
+             decimalSeparator: ',',
+             decimalPrecision: 2,
+             submitLocaleSeparator: false,
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+             width: 150,
+             readOnly: true
+         }]
+--- a/src/main/resources/static/classic/src/view/os/InformacoesOsWindow.js
++++ b/src/main/resources/static/classic/src/view/os/InformacoesOsWindow.js
+@@ -19,13 +19,19 @@
+                 method: 'GET',
+                 success: function (response) {
+                     var os = Ext.JSON.decode(response.responseText, true);
++                    var formatadorMoeda = new Intl.NumberFormat('pt-BR', {
++                        style: 'currency',
++                        currency: 'BRL',
++                        minimumFractionDigits: 2,
++                        maximumFractionDigits: 2
++                    });
+ 
+                     view.getForm().setValues({
+                         modelo: os.modelo,
+                         cor: os.cor,
+-                        maoDeObra: os.orcamento.valorServico,
++                        maoDeObra: formatadorMoeda.format(os.orcamento.valorServico || 0),
+                         observacoes: os.orcamento.observacoes,
+-                        orcamento: os.orcamento.valorTotal
++                        orcamento: formatadorMoeda.format(os.orcamento.valorTotal || 0)
+                     });
+ 
+                     var clienteDisplay = view.lookupReference('clienteDisplay');
+@@ -106,11 +112,12 @@
+             readOnly: true,
+             flex: 2
+         }, {
+-            xtype: 'numberfield',
++            xtype: 'textfield',
+             name: 'maoDeObra',
+             reference: 'maoDeObra',
+-            fieldLabel: 'Mão de obra',
+-            readOnly: true,
++            fieldLabel: 'Mão de obra (R$)',
++            readOnly: true,
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+             margin: '0 0 0 10'
+         }]
+     }, {
+@@ -174,8 +181,10 @@
+                 }, {
+                     text: 'Preco Unitário',
+                     dataIndex: 'preco',
+-                    renderer: function (value) {
+-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
++                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+                     },
+                     flex: 2
+                 }, {
+@@ -186,8 +195,10 @@
+                     text: 'Total',
+                     dataIndex: 'valorTotal',
+                     flex: 2,
+-                    renderer: function (value) {
+-                        return Ext.util.Format.currency(value, 'R$ ', 2, false);
++                    align: 'right',
++                    renderer: function (value, metaData) {
++                        metaData.style = 'text-align:right;font-variant-numeric:tabular-nums;';
++                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+                     }
+                 }]
+             }]
+@@ -201,11 +212,12 @@
+         xtype: 'container',
+         layout: 'hbox',
+         items: [{
+-            xtype: 'numberfield',
++            xtype: 'textfield',
+             name: 'orcamento',
+             reference: 'orcamentoTotal',
+-            fieldLabel: 'Orçamento',
++            fieldLabel: 'Orçamento (R$)',
+             width: 150,
++            fieldStyle: 'text-align:right;font-variant-numeric:tabular-nums;',
+             readOnly: true
+         }]
+     }],

@@ -4,13 +4,20 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
 
     requires: [
         'ProjSistemaOs.view.cliente.ClienteWindow',
-        'ProjSistemaOs.view.ux.TagFieldHtmlLabel'
+        'ProjSistemaOs.view.ux.TagFieldHtmlLabel',
+        'ProjSistemaOs.util.OsOperacional'
     ],
 
     controller: {
         init: function () {
             var grid = this.lookupReference('gridPecas');
             grid.getStore().on('datachanged', this.atualizarTotalOrcamento, this);
+            OsOperacional.carregarResponsaveis(function (rows, success) {
+                var combo = this.lookupReference('responsavel');
+                if (success && combo && !combo.destroyed) {
+                    combo.getStore().loadData(rows || []);
+                }
+            }, this);
         },
         formatarMoeda: function (valor) {
             return new Intl.NumberFormat('pt-BR', {
@@ -130,25 +137,32 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                 });
             });
 
+            if (Ext.isEmpty(itens)) {
+                Ext.Msg.alert('Atenção', 'Adicione ao menos uma peça.');
+                return;
+            }
+
             var clienteRecords = comboCliente.getValueRecords();
             if (Ext.isEmpty(clienteRecords)) {
                 Ext.Msg.alert('Atenção', 'Selecione um cliente.');
                 return;
             }
             var clienteId = clienteRecords[0].get('id');
+            var responsavelId = vw.lookupReference('responsavel').getValue();
 
             var payload = {
                 clienteId: clienteId,
                 modelo: values.modelo,
                 cor: values.cor,
-                cor: values.cor,
-                modelo: values.modelo,
                 orcamento: {
                     valorServico: me.converterMoedaParaNumero(values.maoDeObra),
                     observacoes: values.observacoes,
                     itens: itens
                 }
             };
+            if (responsavelId !== null && responsavelId !== undefined && responsavelId !== '') {
+                payload.responsavelId = Number(responsavelId);
+            }
 
             Ext.Ajax.request({
                 url: sistemaOsLocal.apiUrl + '/os/cadastrar',
@@ -171,7 +185,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
                     }
                 },
                 failure: function (conn, response, options, eOpts) {
-                    Avisos.mostrarServidorIndisponivel();
+                    OsOperacional.exibirErro(conn, 'Não foi possível cadastrar a OS.');
                 }
             });
         }
@@ -268,6 +282,21 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsWindow', {
             ui: 'default-toolbar',
             handler: 'adicionarCliente'
         }]
+    }, {
+        xtype: 'combobox',
+        reference: 'responsavel',
+        name: 'responsavelId',
+        fieldLabel: 'Responsável designado (opcional)',
+        emptyText: 'Vazio: responsável será o usuário que criou a OS',
+        queryMode: 'local',
+        valueField: 'id',
+        displayField: 'nome',
+        editable: false,
+        forceSelection: true,
+        allowBlank: true,
+        store: { fields: [{ name: 'id', type: 'int' }, { name: 'nome', type: 'string' }], data: [] },
+        listConfig: { itemTpl: '{nome:htmlEncode}' },
+        margin: '10 0 0 0'
     }, {
         xtype: 'container',
         layout: 'hbox',

@@ -105,7 +105,8 @@ public class UsuarioService {
 
     @Transactional
     public Usuario atualizarStatus(Long id) {
-        Usuario usuario = carregarUsuario(id);
+        Usuario usuario = usuarioRepository.findByIdForResponsavelUpdate(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
         usuario.setStatus(trocarStatus(usuario));
         return usuario;
     }

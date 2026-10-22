@@ -3,6 +3,7 @@ package br.com.sistemaos.domain.applicationservice;
 import br.com.sistemaos.domain.entity.Peca;
 import br.com.sistemaos.domain.exception.PecaDuplicadoException;
 import br.com.sistemaos.domain.exception.PecaNaoEncontradoExpection;
+import br.com.sistemaos.domain.exception.RecursoNaoEncontradoException;
 import br.com.sistemaos.domain.model.Status;
 import br.com.sistemaos.domain.repository.PecaRepository;
 import br.com.sistemaos.infraestrura.dto.PecaDTO;
@@ -113,11 +114,11 @@ public class PecaService {
 
     public Peca carregarPeca(Long id) {
         return pecaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Peça não encontrada: " + id));
     }
 
     public Peca carregarPecaParaBaixa(Long id) {
         return pecaRepository.buscarPorIdParaBaixa(id)
-                .orElseThrow(() -> new EntityNotFoundException("Peça não encontrada: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Peça não encontrada: " + id));
     }
 }

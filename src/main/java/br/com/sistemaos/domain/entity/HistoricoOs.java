@@ -1,5 +1,6 @@
 package br.com.sistemaos.domain.entity;
 
+import br.com.sistemaos.domain.model.TipoEventoHistorico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class HistoricoOs {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,13 +26,27 @@ public class HistoricoOs {
     @Column(name = "campo_alterado", nullable = false, length = 50)
     private String campoAlterado;
 
-    @Column(name = "de", length = 100)
+    @Column(name = "de", length = 4000)
     private String de;
 
-    @Column(name = "para", length = 100)
+    @Column(name = "para", length = 4000)
     private String para;
 
-    //relacionamento
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_evento", length = 40)
+    private TipoEventoHistorico tipoEvento;
+
+    @Column(name = "descricao", length = 4000)
+    private String descricao;
+
+    @ManyToOne
+    @JoinColumn(name = "responsavel_anterior_id")
+    private Usuario responsavelAnterior;
+
+    @ManyToOne
+    @JoinColumn(name = "novo_responsavel_id")
+    private Usuario novoResponsavel;
+
     @ManyToOne
     @JoinColumn(name = "os_id", nullable = false)
     private Os os;
@@ -40,4 +54,10 @@ public class HistoricoOs {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    /** Construtor legado: eventos existentes não recebem tipo inventado. */
+    public HistoricoOs(Long id, LocalDateTime dataAlteracao, String campoAlterado, String de,
+                       String para, Os os, Usuario usuario) {
+        this(id, dataAlteracao, campoAlterado, de, para, null, null, null, null, os, usuario);
+    }
 }

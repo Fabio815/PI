@@ -39,10 +39,13 @@ public class Os {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    //relacionamento
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "responsavel_id")
+    private Usuario responsavel;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
@@ -52,6 +55,17 @@ public class Os {
     @JoinColumn(name = "orcamento_id", unique = true)
     private Orcamento orcamento;
 
+    @Column(name = "data_fim")
+    private LocalDate dataFim;
+
     @OneToMany(mappedBy = "os", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HistoricoOs> historico;
+
+    /** Construtor compatível com o modelo anterior à atribuição e encerramento explícitos. */
+    public Os(Long id, LocalDate dataEmissao, String modelo, String cor, StatusOs situacao,
+              Status status, Usuario usuario, Cliente cliente, Orcamento orcamento,
+              List<HistoricoOs> historico) {
+        this(id, dataEmissao, modelo, cor, situacao, status, usuario, null, cliente,
+                orcamento, null, historico);
+    }
 }
