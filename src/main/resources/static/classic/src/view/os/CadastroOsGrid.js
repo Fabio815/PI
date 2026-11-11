@@ -360,12 +360,12 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
         text: 'Telefone',
         dataIndex: 'telefone',
         flex: 2
-    }, {
+    }, /*{
         text: 'Criado por',
         dataIndex: 'usuarioNome',
         filter: 'string',
         flex: 2
-    }, {
+    }*/ {
         text: 'Responsável',
         dataIndex: 'responsavelNome',
         filter: 'string',
