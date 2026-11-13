@@ -1,5 +1,5 @@
 Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     xtype: 'relatorio-os-window',
 
     requires: [
@@ -348,15 +348,22 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
     },
 
     title: 'Relatório de ordens de serviço',
-    iconCls: 'fa fa-chart-bar',
-    modal: true,
-    resizable: true,
-    maximizable: true,
-    width: 1180,
-    height: 900,
-    minWidth: 900,
-    minHeight: 700,
-    layout: 'fit',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+    resizable: false,
+    width: 1080,
+    height: 600,
+    scrollable: 'y',
+    bodyPadding: 15,
+    ui: 'light',
+    padding: 5,
+    shadow: true,
+    style: {
+        backgroundColor: "#ececec",
+        borderRadius: '5px'
+    },
     listeners: {
         afterrender: function (window) {
             if (window.getController()) { window.getController().redesenharGraficos(); }
@@ -441,7 +448,7 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
                 }]
             }, {
                 xtype: 'container',
-                margin: '4 0 0 0',
+                margin: '10 0 0 0',
                 layout: { type: 'hbox', align: 'end' },
                 defaults: { labelAlign: 'top', margin: '0 10 0 0' },
                 items: [{
@@ -500,10 +507,12 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
             xtype: 'grid',
             reference: 'tabelaRelatorio',
             title: 'Ordens de serviço',
-            margin: '10 0 0 0',
-            flex: 1,
-            minHeight: 280,
+            ui: 'light',
+            border: true,
             columnLines: true,
+            scrollable: 'y',
+            minHeight: 300,
+            maxHeight: 300,
             store: {
                 fields: ['id', 'dataEmissao', 'dataFim', 'clienteId', 'clienteNome', 'responsavelId', 'responsavelNome', 'situacao', 'status', 'valorTotal'],
                 data: []
