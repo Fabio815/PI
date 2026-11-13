@@ -209,7 +209,7 @@ Ext.define('ProjSistemaOs.view.os.CadastroOsGrid', {
             });
         },
         abrirRelatorio: function () {
-            Ext.create('ProjSistemaOs.view.os.RelatorioOsWindow', { floating: true, modal: true }).show();
+            Ext.create('ProjSistemaOs.view.os.RelatorioOsWindow', { floating: true, modal: true, iconCls: 'fa fa-clipboard-list' }).show();
         },
         listen: {
             component: {

@@ -378,10 +378,12 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
     items: [{
         xtype: 'panel',
         layout: { type: 'vbox', align: 'stretch' },
-        bodyPadding: 10,
         scrollable: 'y',
         items: [{
+            ui: 'light',
+            border: '1px solid black',
             xtype: 'form',
+            iconCls: 'fa fa-filter',
             reference: 'filtrosForm',
             title: 'Filtros',
             bodyPadding: '8 10',
