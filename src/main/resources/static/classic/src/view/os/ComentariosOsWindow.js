@@ -1,5 +1,5 @@
 Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     xtype: 'comentarios-os-window',
 
     requires: [
@@ -142,12 +142,27 @@ Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
     },
 
     title: 'Comentários da OS',
+
+    // Comportamento que antes vinha do Ext.window.Window
     modal: true,
     floating: true,
-    width: 920,
-    height: 620,
+    ui: 'light',
+    width: 800,
+    height: 600,
+    scrollable: 'y',
+    bodyPadding: 15,
     layout: 'fit',
-    bodyPadding: 8,
+    padding: 5,
+    shadow: true,
+    header: {
+        style: {
+            backgroundColor: "#ececec"
+        }
+    },
+    style: {
+        backgroundColor: "#ececec",
+        borderRadius: '5px'
+    },
     items: [{
         xtype: 'container',
         layout: { type: 'vbox', align: 'stretch' },
@@ -187,7 +202,7 @@ Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
                 text: 'Criado em',
                 dataIndex: 'dataCriacao',
                 flex: 2,
-                renderer: function (value) { return this.up('window').getController().formatarData(value); }
+                renderer: function (value) { return this.up('comentarios-os-window').getController().formatarData(value); }
             }, {
                 text: 'Edição',
                 dataIndex: 'editadoPor',
@@ -196,7 +211,7 @@ Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
                     if (!value || !value.nome) {
                         return '';
                     }
-                    var quando = this.up('window').getController().formatarData(record.get('dataEdicao'));
+                    var quando = this.up('comentarios-os-window').getController().formatarData(record.get('dataEdicao'));
                     return Ext.String.htmlEncode(value.nome) + (quando ? ' — ' + Ext.String.htmlEncode(quando) : '');
                 }
             }, {
@@ -207,10 +222,10 @@ Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
                     iconCls: 'fa fa-pen',
                     tooltip: 'Editar comentário',
                     getClass: function (value, meta, record) {
-                        return this.up('window').getController().podeEditarRegistro(record) ? 'fa fa-pen' : 'x-hidden';
+                        return this.up('comentarios-os-window').getController().podeEditarRegistro(record) ? 'fa fa-pen' : 'x-hidden';
                     },
                     handler: function (grid, rowIndex) {
-                        this.up('window').getController().editarComentario(grid, rowIndex);
+                        this.up('comentarios-os-window').getController().editarComentario(grid, rowIndex);
                     }
                 }]
             }]
@@ -229,7 +244,7 @@ Ext.define('ProjSistemaOs.view.os.ComentariosOsWindow', {
     }],
     buttons: [{
         text: 'Fechar',
-        handler: function (button) { button.up('window').close(); }
+        handler: function (button) { button.up('comentarios-os-window').close(); }
     }, {
         text: 'Comentar',
         iconCls: 'fa fa-comment',

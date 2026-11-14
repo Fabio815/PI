@@ -1,5 +1,5 @@
 Ext.define('ProjSistemaOs.view.os.HistoricoOsWindow', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     xtype: 'historico-os-window',
 
     requires: ['ProjSistemaOs.util.OsOperacional'],
@@ -103,16 +103,38 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsWindow', {
     },
 
     title: 'Histórico de OS',
-    modal: true,
+
+    // Comportamento que antes vinha do Ext.window.Window
     floating: true,
-    width: 1180,
-    height: 730,
-    minWidth: 800,
-    minHeight: 520,
-    layout: 'fit',
+    closable: true,
+    closeAction: 'destroy',
+    draggable: true,
+    resizable: false,
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+    width: 1080,
+    height: 600,
+    scrollable: 'y',
+    bodyPadding: 15,
+    ui: 'light',
+    padding: 5,
+    shadow: true,
+    style: {
+        backgroundColor: "#ececec",
+        borderRadius: '5px'
+    },
+    header: {
+        style: {
+            backgroundColor: "#ececec"
+        }
+    },
     items: [{
         xtype: 'grid',
         reference: 'gridHistorico',
+        flex: 1,
         scrollable: true,
         store: {
             fields: [
@@ -133,7 +155,7 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsWindow', {
             text: 'Data',
             dataIndex: 'dataAlteracao',
             width: 150,
-            renderer: function (value) { return this.up('window').getController().formatarData(value); }
+            renderer: function (value) { return this.up('historico-os-window').getController().formatarData(value); }
         }, {
             text: 'Evento',
             dataIndex: 'tipoEvento',
@@ -175,12 +197,12 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsWindow', {
             text: 'Responsável anterior',
             dataIndex: 'responsavelAnterior',
             flex: 2,
-            renderer: function (value) { return this.up('window').getController().nomeResponsavel(value); }
+            renderer: function (value) { return this.up('historico-os-window').getController().nomeResponsavel(value); }
         }, {
             text: 'Novo responsável',
             dataIndex: 'novoResponsavel',
             flex: 2,
-            renderer: function (value) { return this.up('window').getController().nomeResponsavel(value); }
+            renderer: function (value) { return this.up('historico-os-window').getController().nomeResponsavel(value); }
         }]
     }],
     tbar: [{
@@ -261,6 +283,6 @@ Ext.define('ProjSistemaOs.view.os.HistoricoOsWindow', {
     buttons: [{
         text: 'Fechar',
         iconCls: 'fa fa-times',
-        handler: function (button) { button.up('window').close(); }
+        handler: function (button) { button.up('historico-os-window').close(); }
     }]
 });

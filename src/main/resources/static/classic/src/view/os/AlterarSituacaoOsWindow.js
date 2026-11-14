@@ -1,5 +1,5 @@
 Ext.define('ProjSistemaOs.view.os.AlterarSituacaoOsWindow', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     xtype: 'alterar-situacao-os-window',
 
     requires: ['ProjSistemaOs.util.OsOperacional'],
@@ -44,12 +44,31 @@ Ext.define('ProjSistemaOs.view.os.AlterarSituacaoOsWindow', {
     },
 
     title: 'Alterar situação da OS',
+
+    // Comportamento que antes vinha do Ext.window.Window
     modal: true,
     floating: true,
-    width: 430,
-    bodyPadding: 16,
+    closable: true,
+    closeAction: 'destroy',
+    draggable: true,
     resizable: false,
+
+    scrollable: 'y',
+    bodyPadding: 15,
+    ui: 'light',
+    padding: 5,
+    shadow: true,
+    width: 430,
     layout: 'fit',
+    style: {
+        backgroundColor: "#ececec",
+        borderRadius: '5px'
+    },
+    header: {
+        style: {
+            backgroundColor: "#ececec"
+        }
+    },
     items: [{
         xtype: 'form',
         defaults: { anchor: '100%', labelAlign: 'top' },
@@ -75,7 +94,10 @@ Ext.define('ProjSistemaOs.view.os.AlterarSituacaoOsWindow', {
             }
         }]
     }],
-    buttons: [{ text: 'Cancelar', handler: function (button) { button.up('window').close(); } }, {
+    buttons: [{
+        text: 'Cancelar',
+        handler: function (button) { button.up('alterar-situacao-os-window').close(); }
+    }, {
         text: 'Salvar',
         iconCls: 'fa fa-check',
         handler: 'salvarSituacao'

@@ -348,11 +348,18 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
     },
 
     title: 'Relatório de ordens de serviço',
+
+    // Comportamento que antes vinha do Ext.window.Window
+    floating: true,
+    closable: true,
+    closeAction: 'destroy',
+    draggable: true,
+    resizable: false,
+
     layout: {
         type: 'vbox',
         align: 'stretch'
     },
-    resizable: false,
     width: 1080,
     height: 600,
     scrollable: 'y',
@@ -364,13 +371,18 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
         backgroundColor: "#ececec",
         borderRadius: '5px'
     },
+    header: {
+        style: {
+            backgroundColor: "#ececec"
+        }
+    },
     listeners: {
-        afterrender: function (window) {
-            if (window.getController()) { window.getController().redesenharGraficos(); }
+        afterrender: function (view) {
+            if (view.getController()) { view.getController().redesenharGraficos(); }
         },
-        resize: function (window) {
-            if (window.getController()) {
-                window.getController().redesenharGraficos();
+        resize: function (view) {
+            if (view.getController()) {
+                view.getController().redesenharGraficos();
             }
         }
     },
@@ -579,10 +591,14 @@ Ext.define('ProjSistemaOs.view.os.RelatorioOsWindow', {
             items: [{
                 xtype: 'panel',
                 title: 'Ordens por situação',
+                ui: 'light',
+                border: '1px solid #fff',
                 items: [{ xtype: 'component', reference: 'graficoStatus', autoEl: { tag: 'div' } }]
             }, {
                 xtype: 'panel',
                 title: 'Emissões por dia',
+                ui: 'light',
+                border: '1px solid #fff',
                 margin: 0,
                 items: [{ xtype: 'component', reference: 'graficoPeriodo', autoEl: { tag: 'div' } }]
             }]
